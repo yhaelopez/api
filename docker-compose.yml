@@ -66,6 +66,7 @@ services:
     volumes:
       - npm_data:/data
       - npm_letsencrypt:/etc/letsencrypt
+      - ./docker/npm/config.json:/app/config/config.json
     networks:
       - laravel
 

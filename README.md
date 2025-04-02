@@ -1,41 +1,36 @@
 # Laravel API Project
 
-## Nginx Proxy Manager Setup
+## Local Development with Nginx Proxy Manager
 
-This project uses Nginx Proxy Manager for managing local domains and SSL.
+This project comes with a pre-configured Nginx Proxy Manager setup for local domains.
 
-### Accessing the Admin Panel
+### Setting Up Your Local Environment
 
-1. After starting the containers with `docker-compose up -d`, access the Nginx Proxy Manager admin panel at:
-   - URL: http://localhost:81
-   - Default Email: admin@example.com
-   - Default Password: changeme
-   
-2. After logging in for the first time, you'll be prompted to change your password.
+1. Start the Docker containers:
+   ```bash
+   docker-compose up -d
+   ```
 
-### Setting Up a Local Domain
-
-1. Add an entry to your hosts file:
+2. Add the following entry to your hosts file:
    ```
    127.0.0.1  api.local
    ```
-   - On Linux/Mac: Edit `/etc/hosts`
-   - On Windows: Edit `C:\Windows\System32\drivers\etc\hosts`
+   - On Linux/Mac: Edit `/etc/hosts` with `sudo nano /etc/hosts`
+   - On Windows: Edit `C:\Windows\System32\drivers\etc\hosts` as Administrator
 
-2. In the NPM admin panel, go to "Hosts" > "Proxy Hosts" and click "Add Proxy Host"
+3. Access your application at: http://api.local
 
-3. Enter the following details:
-   - Domain: api.local
-   - Scheme: http
-   - Forward Hostname/IP: nginx
-   - Forward Port: 80
-   - Check "Block Common Exploits"
+The Nginx Proxy Manager is already configured to route requests from api.local to your Laravel application.
 
-4. (Optional) SSL Tab:
-   - Select "Request a new SSL Certificate" if you want HTTPS for local development
-   - Check "Force SSL" to redirect HTTP to HTTPS
+### Nginx Proxy Manager Admin (if needed)
 
-5. Save and your local domain is ready to use!
+If you need to modify the proxy settings or add additional domains:
+
+1. Access the admin panel at: http://localhost:81
+   - Default Email: admin@example.com
+   - Default Password: changeme
+
+2. You'll be prompted to change your password on first login.
 
 ## Running Artisan Commands
 
