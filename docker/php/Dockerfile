@@ -31,7 +31,13 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | b
     && nvm alias default 23.11.0
 ENV PATH="$NVM_DIR/versions/node/v23.11.0/bin:$PATH"
 
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
 WORKDIR /var/www/html
+
+# Mark the working directory as safe for git operations
+RUN git config --global --add safe.directory /var/www/html
 
 # Fix permissions for Laravel storage and bootstrap cache
 RUN chown -R root:root /var/www/html
