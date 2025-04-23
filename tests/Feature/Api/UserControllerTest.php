@@ -4,8 +4,6 @@ namespace Tests\Feature\Api;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
 use Laravel\Sanctum\Sanctum;
 
 uses(RefreshDatabase::class);
@@ -21,7 +19,7 @@ test('index endpoint returns paginated users', function() {
     User::factory()->count(20)->create();
 
     // Act - Get the first page with 10 users per page
-    $response = $this->getJson('/api/users?page=1&per_page=10');
+    $response = $this->getJson(route('users.index', ['page' => 1, 'per_page' => 10]));
 
     // Assert - Check response structure and data
     $response->assertStatus(200)
@@ -46,7 +44,7 @@ test('index endpoint returns paginated users', function() {
 
 test('index endpoint validates input parameters', function() {
     // Act - Try with invalid parameters
-    $response = $this->getJson('/api/users?page=invalid&per_page=invalid');
+    $response = $this->getJson(route('users.index', ['page' => 'invalid', 'per_page' => 'invalid']));
 
     // Assert - Check validation errors
     $response->assertStatus(422)
@@ -58,7 +56,7 @@ test('show endpoint returns the correct user', function() {
     $user = User::factory()->create();
 
     // Act - Request specific user
-    $response = $this->getJson("/api/users/{$user->id}");
+    $response = $this->getJson(route('users.show', $user->id));
 
     // Assert - Check response structure and data
     $response->assertStatus(200)
@@ -77,7 +75,7 @@ test('show endpoint returns the correct user', function() {
 
 test('show endpoint returns 404 for non-existent user', function() {
     // Act - Request non-existent user
-    $response = $this->getJson('/api/users/999999');
+    $response = $this->getJson(route('users.show', 999999));
 
     // Assert - Check 404 response
     $response->assertStatus(404);
@@ -88,7 +86,7 @@ test('destroy endpoint deletes the user', function() {
     $user = User::factory()->create();
 
     // Act - Delete the user
-    $response = $this->deleteJson("/api/users/{$user->id}");
+    $response = $this->deleteJson(route('users.destroy', $user->id));
 
     // Assert - Check response and database
     $response->assertStatus(200)
@@ -99,7 +97,7 @@ test('destroy endpoint deletes the user', function() {
 
 test('destroy endpoint returns 404 for non-existent user', function() {
     // Act - Try to delete non-existent user
-    $response = $this->deleteJson('/api/users/999999');
+    $response = $this->deleteJson(route('users.destroy', 999999));
 
     // Assert - Check 404 response
     $response->assertStatus(404);
