@@ -11,11 +11,12 @@ use OpenApi\Annotations as OA;
  *     schema="UserResource",
  *     title="User Resource",
  *     description="User resource representation",
- *     @OA\Property(property="id", type="integer", example=1),
- *     @OA\Property(property="name", type="string", example="John Doe"),
- *     @OA\Property(property="email", type="string", example="john.doe@example.com"),
- *     @OA\Property(property="created_at", type="datetime", example="2021-01-01 12:00:00"),
- *     @OA\Property(property="updated_at", type="datetime", example="2021-01-01 12:00:00")
+ *     @OA\Property(property="id", type="integer", example=1, nullable=false),
+ *     @OA\Property(property="name", type="string", example="John Doe", nullable=false),
+ *     @OA\Property(property="email", type="string", example="john.doe@example.com", nullable=false),
+ *     @OA\Property(property="created_at", type="datetime", example="2021-01-01 12:00:00", nullable=true),
+ *     @OA\Property(property="updated_at", type="datetime", example="2021-01-01 12:00:00", nullable=true),
+ *     @OA\Property(property="deleted_at", type="datetime", example="null", nullable=true)
  * )
  */
 class UserResource extends JsonResource
@@ -33,6 +34,7 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'deleted_at' => $this->deleted_at,
         ];
     }
 }

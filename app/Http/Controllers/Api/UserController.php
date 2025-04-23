@@ -7,8 +7,10 @@ use App\Http\Requests\Api\UserIndexRequest;
 use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use OpenApi\Annotations as OA;
+use Throwable;
 
 /**
  * @OA\Tag(
@@ -104,10 +106,40 @@ class UserController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @OA\Delete(
+     *     path="/api/users/{user}",
+     *     summary="Delete the specified user",
+     *     tags={"UserController"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="user",
+     *         in="path",
+     *         description="User ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="User deleted successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="User not found"
+     *     )
+     * )
      */
-    public function destroy(User $user)
+    public function destroy(User $user): JsonResponse
     {
-        //
+        try {
+            $user->delete();
+
+            return response()->json(['message' => 'User deleted successfully'], JsonResponse::HTTP_OK);
+        } catch (Throwable $e) {
+            return response()->json(['message' => 'User not found'], JsonResponse::HTTP_NOT_FOUND);
+        }
     }
 }

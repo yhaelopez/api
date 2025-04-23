@@ -96,6 +96,50 @@
                         "bearerAuth": []
                     }
                 ]
+            },
+            "delete": {
+                "tags": [
+                    "UserController"
+                ],
+                "summary": "Delete the specified user",
+                "operationId": "cf641f0b739211ff3a1c21b1ef310591",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "description": "User ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         }
     },
@@ -195,25 +239,36 @@
                 "properties": {
                     "id": {
                         "type": "integer",
-                        "example": 1
+                        "example": 1,
+                        "nullable": false
                     },
                     "name": {
                         "type": "string",
-                        "example": "John Doe"
+                        "example": "John Doe",
+                        "nullable": false
                     },
                     "email": {
                         "type": "string",
-                        "example": "john.doe@example.com"
+                        "example": "john.doe@example.com",
+                        "nullable": false
                     },
                     "created_at": {
                         "type": "string",
                         "format": "date-time",
-                        "example": "2021-01-01 12:00:00"
+                        "example": "2021-01-01 12:00:00",
+                        "nullable": true
                     },
                     "updated_at": {
                         "type": "string",
                         "format": "date-time",
-                        "example": "2021-01-01 12:00:00"
+                        "example": "2021-01-01 12:00:00",
+                        "nullable": true
+                    },
+                    "deleted_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "null",
+                        "nullable": true
                     }
                 },
                 "type": "object"
