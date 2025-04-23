@@ -24,6 +24,11 @@ const mainNavItems: NavItem[] = [
         href: '/horizon',
         icon: LayoutGrid,
     },
+    {
+        title: 'Swagger',
+        href: '/api/documentation',
+        icon: LayoutGrid,
+    },
 ];
 
 const footerNavItems: NavItem[] = [
