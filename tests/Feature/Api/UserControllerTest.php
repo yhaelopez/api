@@ -63,7 +63,7 @@ function actAsSuperadmin() {
     return $superadmin;
 }
 
-// Create a regular user for testing
+// Create a unauthorized user for testing
 function actAsUser() {
     // createPermissionsAndRoles();
     
@@ -161,7 +161,7 @@ test('superadmin can delete any user', function() {
 
 // USER WITH SPECIFIC PERMISSIONS TESTS
 
-test('user with viewAny permission can view all users', function() {
+test('authorized user can view all users', function() {
     // Act as user with viewAny permission
     actAsUserWithPermissions(['users.viewAny']);
     
@@ -180,7 +180,7 @@ test('user with viewAny permission can view all users', function() {
         ]);
 });
 
-test('user with view permission can view other user profiles', function() {
+test('authorized user can view other user profiles', function() {
     // Act as user with view permission
     actAsUserWithPermissions(['users.view']);
     
@@ -196,7 +196,7 @@ test('user with view permission can view other user profiles', function() {
 });
 
 test('user without view permission can still view own profile', function() {
-    // Act as regular user with no permissions
+    // Act as unauthorized user with no permissions
     $user = actAsUser();
     
     // Act - View own profile
@@ -207,7 +207,7 @@ test('user without view permission can still view own profile', function() {
         ->assertJsonPath('id', $user->id);
 });
 
-test('user with delete permission can delete other users', function() {
+test('authorized user can delete other users', function() {
     // Act as user with delete permission
     actAsUserWithPermissions(['users.delete']);
     
@@ -224,7 +224,7 @@ test('user with delete permission can delete other users', function() {
     $this->assertSoftDeleted($otherUser);
 });
 
-test('user with delete permission cannot delete themselves', function() {
+test('authorized user cannot delete themselves', function() {
     // Act as user with delete permission
     $user = actAsUserWithPermissions(['users.delete']);
     
@@ -235,9 +235,9 @@ test('user with delete permission cannot delete themselves', function() {
     $response->assertStatus(403);
 });
 
-// REGULAR USER ACCESS TESTS
+// unauthorized user ACCESS TESTS
 
-test('regular user cannot view all users', function() {
+test('unauthorized user cannot view all users', function() {
     // Act as regular user
     actAsUser();
     
@@ -251,7 +251,7 @@ test('regular user cannot view all users', function() {
     $response->assertStatus(403);
 });
 
-test('regular user can view their own user', function() {
+test('unauthorized user can view their own user', function() {
     // Act as regular user
     $user = actAsUser();
     
@@ -264,7 +264,7 @@ test('regular user can view their own user', function() {
         ->assertJsonPath('email', $user->email);
 });
 
-test('regular user cannot view other user profiles', function() {
+test('unauthorized user cannot view other user profiles', function() {
     // Act as regular user
     actAsUser();
     
@@ -278,7 +278,7 @@ test('regular user cannot view other user profiles', function() {
     $response->assertStatus(403);
 });
 
-test('regular user cannot delete any user including themselves', function() {
+test('unauthorized user cannot delete any user including themselves', function() {
     // Act as regular user
     $user = actAsUser();
     
