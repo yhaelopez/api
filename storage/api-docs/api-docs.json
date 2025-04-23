@@ -17,6 +17,28 @@
                 ],
                 "summary": "Display a listing of users",
                 "operationId": "566aed8efb436ca506e0ef51a032ecd9",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successful operation",
@@ -91,14 +113,77 @@
                     },
                     "links": {
                         "properties": {
-                            "self": {
+                            "first": {
                                 "type": "string",
-                                "example": "http://localhost/api/users"
+                                "example": "http://localhost/api/users?page=1"
+                            },
+                            "last": {
+                                "type": "string",
+                                "example": "http://localhost/api/users?page=2"
+                            },
+                            "prev": {
+                                "type": "string",
+                                "example": null,
+                                "nullable": true
+                            },
+                            "next": {
+                                "type": "string",
+                                "example": "http://localhost/api/users?page=2"
                             }
                         },
                         "type": "object"
                     },
                     "meta": {
+                        "properties": {
+                            "current_page": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "from": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "last_page": {
+                                "type": "integer",
+                                "example": 2
+                            },
+                            "links": {
+                                "type": "array",
+                                "items": {
+                                    "properties": {
+                                        "url": {
+                                            "type": "string",
+                                            "example": "http://localhost/api/users?page=1"
+                                        },
+                                        "label": {
+                                            "type": "string",
+                                            "example": "1"
+                                        },
+                                        "active": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "path": {
+                                "type": "string",
+                                "example": "http://localhost/api/users"
+                            },
+                            "per_page": {
+                                "type": "integer",
+                                "example": 15
+                            },
+                            "to": {
+                                "type": "integer",
+                                "example": 15
+                            },
+                            "total": {
+                                "type": "integer",
+                                "example": 30
+                            }
+                        },
                         "type": "object"
                     }
                 },

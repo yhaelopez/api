@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\UserIndexRequest;
 use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use OpenApi\Annotations as OA;
 
 /**
@@ -25,6 +24,20 @@ class UserController extends Controller
      *     summary="Display a listing of users",
      *     tags={"UserController"},
      *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Number of items per page",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=15)
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation",
@@ -32,9 +45,17 @@ class UserController extends Controller
      *     )
      * )
      */
-    public function index(): UserCollection
+    public function index(UserIndexRequest $request): UserCollection
     {
-        return new UserCollection(User::all());
+        $perPage = $request->validated('per_page', 15);
+        $page = $request->validated('page', 1);
+
+        $users = User::paginate(
+            perPage: $perPage,
+            page: $page
+        );
+
+        return new UserCollection($users);
     }
 
     /**
