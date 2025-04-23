@@ -9,6 +9,7 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use OpenApi\Annotations as OA;
 
 /**
@@ -43,11 +44,17 @@ class UserController extends Controller
      *         response=200,
      *         description="Successful operation",
      *         @OA\JsonContent(ref="#/components/schemas/UserCollection")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden"
      *     )
      * )
      */
     public function index(UserIndexRequest $request): UserCollection
     {
+        Gate::authorize('viewAny', User::class);
+
         $perPage = $request->validated('per_page', 15);
         $page = $request->validated('page', 1);
 
@@ -86,6 +93,10 @@ class UserController extends Controller
      *         @OA\JsonContent(ref="#/components/schemas/UserResource")
      *     ),
      *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden"
+     *     ),
+     *     @OA\Response(
      *         response=404,
      *         description="User not found"
      *     )
@@ -93,6 +104,8 @@ class UserController extends Controller
      */
     public function show(User $user): UserResource
     {
+        Gate::authorize('view', $user);
+        
         return new UserResource($user);
     }
 
@@ -126,6 +139,10 @@ class UserController extends Controller
      *         )
      *     ),
      *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden"
+     *     ),
+     *     @OA\Response(
      *         response=404,
      *         description="User not found"
      *     )
@@ -133,6 +150,8 @@ class UserController extends Controller
      */
     public function destroy(User $user): JsonResponse
     {
+        Gate::authorize('delete', $user);
+        
         $user->delete();
         
         return response()->json(['message' => 'User deleted successfully'], JsonResponse::HTTP_OK);
