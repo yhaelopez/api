@@ -2,105 +2,16 @@
 
 namespace Tests\Feature\Api;
 
+use App\Helpers\TestHelper;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 uses(RefreshDatabase::class);
 
-// Helper function to create permissions and roles
-function createPermissionsAndRoles() {
-    // Create permissions
-    $permissions = [
-        'users.viewAny',
-        'users.view',
-        'users.create',
-        'users.update',
-        'users.delete',
-        'users.restore',
-        'users.forceDelete',
-    ];
-
-    foreach ($permissions as $permission) {
-        Permission::create([
-            'name' => $permission,
-            'guard_name' => 'sanctum'
-        ]);
-    }
-
-    // Create roles
-    $superadminRole = Role::create([
-        'name' => 'superadmin',
-        'guard_name' => 'sanctum'
-    ]);
-    $userRole = Role::create([
-        'name' => 'user',
-        'guard_name' => 'sanctum'
-    ]);
-
-    // Assign permissions to roles
-    $superadminRole->givePermissionTo(Permission::all());
-    
-    $userRole->givePermissionTo([]);
-    
-    return [$superadminRole, $userRole];
-}
-
-// Create a superadmin user for testing
-function actAsSuperadmin() {
-    // createPermissionsAndRoles();
-    
-    $superadmin = User::factory()->create([
-        'name' => 'Super Admin',
-        'email' => 'superadmin@example.com',
-    ]);
-    $superadmin->assignRole('superadmin');
-    
-    Sanctum::actingAs($superadmin);
-    
-    return $superadmin;
-}
-
-// Create a unauthorized user for testing
-function actAsUser() {
-    // createPermissionsAndRoles();
-    
-    $user = User::factory()->create([
-        'name' => 'Regular User',
-        'email' => 'user@example.com',
-    ]);
-    $user->assignRole('user');
-    
-    Sanctum::actingAs($user);
-    
-    return $user;
-}
-
-// Create a user with specific permissions for testing
-function actAsUserWithPermissions(array $permissions = []) {
-    // createPermissionsAndRoles();
-    
-    $user = User::factory()->create([
-        'name' => 'User With Permissions',
-        'email' => 'user.with.permissions@example.com',
-    ]);
-    $user->assignRole('user');
-    
-    foreach ($permissions as $permission) {
-        $user->givePermissionTo($permission);
-    }
-    
-    Sanctum::actingAs($user);
-    
-    return $user;
-}
-
 beforeEach(function() {
     // By default, run as superadmin
-    createPermissionsAndRoles();
-    actAsSuperadmin();
+    TestHelper::createPermissionsAndRoles();
+    TestHelper::actAsSuperadmin();
 });
 
 // SUPERADMIN ACCESS TESTS
@@ -163,7 +74,7 @@ test('superadmin can delete any user', function() {
 
 test('authorized user can view all users', function() {
     // Act as user with viewAny permission
-    actAsUserWithPermissions(['users.viewAny']);
+    TestHelper::actAsUserWithPermissions(['users.viewAny']);
     
     // Create test users
     User::factory()->count(5)->create();
@@ -182,7 +93,7 @@ test('authorized user can view all users', function() {
 
 test('authorized user can view other user profiles', function() {
     // Act as user with view permission
-    actAsUserWithPermissions(['users.view']);
+    TestHelper::actAsUserWithPermissions(['users.view']);
     
     // Create another user
     $otherUser = User::factory()->create();
@@ -197,7 +108,7 @@ test('authorized user can view other user profiles', function() {
 
 test('user without view permission can still view own profile', function() {
     // Act as unauthorized user with no permissions
-    $user = actAsUser();
+    $user = TestHelper::actAsUser();
     
     // Act - View own profile
     $response = $this->getJson(route('users.show', $user->id));
@@ -209,7 +120,7 @@ test('user without view permission can still view own profile', function() {
 
 test('authorized user can delete other users', function() {
     // Act as user with delete permission
-    actAsUserWithPermissions(['users.delete']);
+    TestHelper::actAsUserWithPermissions(['users.delete']);
     
     // Create another user
     $otherUser = User::factory()->create();
@@ -226,7 +137,7 @@ test('authorized user can delete other users', function() {
 
 test('authorized user cannot delete themselves', function() {
     // Act as user with delete permission
-    $user = actAsUserWithPermissions(['users.delete']);
+    $user = TestHelper::actAsUserWithPermissions(['users.delete']);
     
     // Act - Try to delete self
     $response = $this->deleteJson(route('users.destroy', $user->id));
@@ -239,7 +150,7 @@ test('authorized user cannot delete themselves', function() {
 
 test('unauthorized user cannot view all users', function() {
     // Act as regular user
-    actAsUser();
+    TestHelper::actAsUser();
     
     // Create test users
     User::factory()->count(5)->create();
@@ -253,7 +164,7 @@ test('unauthorized user cannot view all users', function() {
 
 test('unauthorized user can view their own user', function() {
     // Act as regular user
-    $user = actAsUser();
+    $user = TestHelper::actAsUser();
     
     // Act - Request own user
     $response = $this->getJson(route('users.show', $user->id));
@@ -266,7 +177,7 @@ test('unauthorized user can view their own user', function() {
 
 test('unauthorized user cannot view other user profiles', function() {
     // Act as regular user
-    actAsUser();
+    TestHelper::actAsUser();
     
     // Create another user
     $otherUser = User::factory()->create();
@@ -280,7 +191,7 @@ test('unauthorized user cannot view other user profiles', function() {
 
 test('unauthorized user cannot delete any user including themselves', function() {
     // Act as regular user
-    $user = actAsUser();
+    $user = TestHelper::actAsUser();
     
     // Create another user
     $otherUser = User::factory()->create();
