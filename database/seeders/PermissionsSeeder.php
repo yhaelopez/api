@@ -2,11 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 class PermissionsSeeder extends Seeder
 {
@@ -16,50 +13,62 @@ class PermissionsSeeder extends Seeder
     public function run(): void
     {
         // Reset cached roles and permissions
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        $this->resetPermissionsCache();
 
-        // Create permissions for users
+        // Create all permissions
+        $this->createPermissions();
+    }
+
+    /**
+     * Reset the permissions cache
+     */
+    private function resetPermissionsCache(): void
+    {
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+    }
+
+    /**
+     * Create all permissions
+     */
+    private function createPermissions(): void
+    {
+        // User module permissions
+        $this->createUserPermissions();
+
+        // Add other modules' permissions here as needed
+        // $this->createArticlePermissions();
+        // $this->createCommentPermissions();
+        // etc.
+    }
+
+    /**
+     * Create user management permissions
+     */
+    private function createUserPermissions(): void
+    {
         $userPermissions = [
-            'users.viewAny',
-            'users.view',
-            'users.create',
-            'users.update',
-            'users.delete',
-            'users.restore',
-            'users.forceDelete',
+            'users.viewAny',   // Can view the user list
+            'users.view',      // Can view user details
+            'users.create',    // Can create new users
+            'users.update',    // Can update existing users
+            'users.delete',    // Can soft delete users
+            'users.restore',   // Can restore soft-deleted users
+            'users.forceDelete', // Can permanently delete users
         ];
 
-        foreach ($userPermissions as $permission) {
-            Permission::create(['name' => $permission]);
-        }
+        $this->createPermissionGroup($userPermissions);
+    }
 
-        // Create roles
-        $adminRole = Role::create(['name' => 'admin']);
-        $managerRole = Role::create(['name' => 'manager']);
-        $userRole = Role::create(['name' => 'user']);
-
-        // Assign permissions to roles
-        $adminRole->givePermissionTo(Permission::all());
-        
-        $managerRole->givePermissionTo([
-            'users.viewAny',
-            'users.view',
-            'users.create',
-            'users.update',
-        ]);
-        
-        $userRole->givePermissionTo([]);
-
-        // Create an admin user
-        $admin = User::where('email', 'admin@example.com')->first();
-        
-        if (!$admin) {
-            $admin = User::factory()->create([
-                'name' => 'Admin User',
-                'email' => 'admin@example.com',
+    /**
+     * Create a group of permissions
+     */
+    private function createPermissionGroup(array $permissions): void
+    {
+        foreach ($permissions as $permission) {
+            Permission::create([
+                'name' => $permission,
+                'guard_name' => 'sanctum'
             ]);
         }
-        
-        $admin->assignRole('admin');
     }
 }

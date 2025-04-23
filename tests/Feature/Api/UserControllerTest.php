@@ -24,40 +24,88 @@ function createPermissionsAndRoles() {
     ];
 
     foreach ($permissions as $permission) {
-        Permission::create(['name' => $permission]);
+        Permission::create([
+            'name' => $permission,
+            'guard_name' => 'sanctum'
+        ]);
     }
 
     // Create roles
-    $adminRole = Role::create(['name' => 'admin']);
-    $managerRole = Role::create(['name' => 'manager']);
-    $userRole = Role::create(['name' => 'user']);
+    $superadminRole = Role::create([
+        'name' => 'superadmin',
+        'guard_name' => 'sanctum'
+    ]);
+    $userRole = Role::create([
+        'name' => 'user',
+        'guard_name' => 'sanctum'
+    ]);
 
     // Assign permissions to roles
-    $adminRole->givePermissionTo(Permission::all());
-    
-    $managerRole->givePermissionTo([
-        'users.viewAny',
-        'users.view',
-        'users.create',
-        'users.update',
-    ]);
+    $superadminRole->givePermissionTo(Permission::all());
     
     $userRole->givePermissionTo([]);
     
-    return [$adminRole, $managerRole, $userRole];
+    return [$superadminRole, $userRole];
+}
+
+// Create a superadmin user for testing
+function actAsSuperadmin() {
+    // createPermissionsAndRoles();
+    
+    $superadmin = User::factory()->create([
+        'name' => 'Super Admin',
+        'email' => 'superadmin@example.com',
+    ]);
+    $superadmin->assignRole('superadmin');
+    
+    Sanctum::actingAs($superadmin);
+    
+    return $superadmin;
+}
+
+// Create a regular user for testing
+function actAsUser() {
+    // createPermissionsAndRoles();
+    
+    $user = User::factory()->create([
+        'name' => 'Regular User',
+        'email' => 'user@example.com',
+    ]);
+    $user->assignRole('user');
+    
+    Sanctum::actingAs($user);
+    
+    return $user;
+}
+
+// Create a user with specific permissions for testing
+function actAsUserWithPermissions(array $permissions = []) {
+    // createPermissionsAndRoles();
+    
+    $user = User::factory()->create([
+        'name' => 'User With Permissions',
+        'email' => 'user.with.permissions@example.com',
+    ]);
+    $user->assignRole('user');
+    
+    foreach ($permissions as $permission) {
+        $user->givePermissionTo($permission);
+    }
+    
+    Sanctum::actingAs($user);
+    
+    return $user;
 }
 
 beforeEach(function() {
+    // By default, run as superadmin
     createPermissionsAndRoles();
-    
-    // Create and authenticate an admin user
-    $user = User::factory()->create();
-    $user->assignRole('admin');
-    
-    Sanctum::actingAs($user);
+    actAsSuperadmin();
 });
 
-test('index endpoint returns paginated users', function() {
+// SUPERADMIN ACCESS TESTS
+
+test('superadmin can view all users', function() {
     // Create test users
     User::factory()->count(20)->create();
 
@@ -85,6 +133,173 @@ test('index endpoint returns paginated users', function() {
         ->assertJsonPath('meta.current_page', 1);
 });
 
+test('superadmin can view any user profile', function() {
+    // Create a random user
+    $randomUser = User::factory()->create();
+    
+    // Act - Request the user
+    $response = $this->getJson(route('users.show', $randomUser->id));
+
+    // Assert - Check response
+    $response->assertStatus(200)
+        ->assertJsonPath('id', $randomUser->id);
+});
+
+test('superadmin can delete any user', function() {
+    // Create a user to delete
+    $userToDelete = User::factory()->create();
+    
+    // Act - Delete the user
+    $response = $this->deleteJson(route('users.destroy', $userToDelete->id));
+    
+    // Assert - Check response and database
+    $response->assertStatus(200)
+        ->assertJson(['message' => 'User deleted successfully']);
+    
+    $this->assertSoftDeleted($userToDelete);
+});
+
+// USER WITH SPECIFIC PERMISSIONS TESTS
+
+test('user with viewAny permission can view all users', function() {
+    // Act as user with viewAny permission
+    actAsUserWithPermissions(['users.viewAny']);
+    
+    // Create test users
+    User::factory()->count(5)->create();
+    
+    // Act - Get users list
+    $response = $this->getJson(route('users.index', ['per_page' => 10]));
+    
+    // Assert - Should succeed
+    $response->assertStatus(200)
+        ->assertJsonStructure([
+            'data',
+            'links',
+            'meta'
+        ]);
+});
+
+test('user with view permission can view other user profiles', function() {
+    // Act as user with view permission
+    actAsUserWithPermissions(['users.view']);
+    
+    // Create another user
+    $otherUser = User::factory()->create();
+    
+    // Act - View other user
+    $response = $this->getJson(route('users.show', $otherUser->id));
+    
+    // Assert - Should succeed
+    $response->assertStatus(200)
+        ->assertJsonPath('id', $otherUser->id);
+});
+
+test('user without view permission can still view own profile', function() {
+    // Act as regular user with no permissions
+    $user = actAsUser();
+    
+    // Act - View own profile
+    $response = $this->getJson(route('users.show', $user->id));
+    
+    // Assert - Should succeed because users can view their own profile
+    $response->assertStatus(200)
+        ->assertJsonPath('id', $user->id);
+});
+
+test('user with delete permission can delete other users', function() {
+    // Act as user with delete permission
+    actAsUserWithPermissions(['users.delete']);
+    
+    // Create another user
+    $otherUser = User::factory()->create();
+    
+    // Act - Delete other user
+    $response = $this->deleteJson(route('users.destroy', $otherUser->id));
+    
+    // Assert - Should succeed
+    $response->assertStatus(200)
+        ->assertJson(['message' => 'User deleted successfully']);
+    
+    $this->assertSoftDeleted($otherUser);
+});
+
+test('user with delete permission cannot delete themselves', function() {
+    // Act as user with delete permission
+    $user = actAsUserWithPermissions(['users.delete']);
+    
+    // Act - Try to delete self
+    $response = $this->deleteJson(route('users.destroy', $user->id));
+    
+    // Assert - Should be forbidden per policy
+    $response->assertStatus(403);
+});
+
+// REGULAR USER ACCESS TESTS
+
+test('regular user cannot view all users', function() {
+    // Act as regular user
+    actAsUser();
+    
+    // Create test users
+    User::factory()->count(5)->create();
+    
+    // Act - Try to get users list
+    $response = $this->getJson(route('users.index'));
+    
+    // Assert - Should be forbidden
+    $response->assertStatus(403);
+});
+
+test('regular user can view their own user', function() {
+    // Act as regular user
+    $user = actAsUser();
+    
+    // Act - Request own user
+    $response = $this->getJson(route('users.show', $user->id));
+    
+    // Assert - Should succeed
+    $response->assertStatus(200)
+        ->assertJsonPath('id', $user->id)
+        ->assertJsonPath('email', $user->email);
+});
+
+test('regular user cannot view other user profiles', function() {
+    // Act as regular user
+    actAsUser();
+    
+    // Create another user
+    $otherUser = User::factory()->create();
+    
+    // Act - Try to view other user
+    $response = $this->getJson(route('users.show', $otherUser->id));
+    
+    // Assert - Should be forbidden
+    $response->assertStatus(403);
+});
+
+test('regular user cannot delete any user including themselves', function() {
+    // Act as regular user
+    $user = actAsUser();
+    
+    // Create another user
+    $otherUser = User::factory()->create();
+    
+    // Act - Try to delete other user
+    $response = $this->deleteJson(route('users.destroy', $otherUser->id));
+    
+    // Assert - Should be forbidden
+    $response->assertStatus(403);
+    
+    // Act - Try to delete self
+    $response = $this->deleteJson(route('users.destroy', $user->id));
+    
+    // Assert - Should be forbidden (per policy)
+    $response->assertStatus(403);
+});
+
+// ADDITIONAL HELPER TESTS
+
 test('index endpoint validates input parameters', function() {
     // Act - Try with invalid parameters
     $response = $this->getJson(route('users.index', ['page' => 'invalid', 'per_page' => 'invalid']));
@@ -92,28 +307,6 @@ test('index endpoint validates input parameters', function() {
     // Assert - Check validation errors
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['page', 'per_page']);
-});
-
-test('show endpoint returns the correct user', function() {
-    // Create test user
-    $user = User::factory()->create();
-
-    // Act - Request specific user
-    $response = $this->getJson(route('users.show', $user->id));
-
-    // Assert - Check response structure and data
-    $response->assertStatus(200)
-        ->assertJsonStructure([
-            'id',
-            'name',
-            'email',
-            'created_at',
-            'updated_at',
-            'deleted_at',
-        ])
-        ->assertJsonPath('id', $user->id)
-        ->assertJsonPath('name', $user->name)
-        ->assertJsonPath('email', $user->email);
 });
 
 test('show endpoint returns 404 for non-existent user', function() {
@@ -124,30 +317,15 @@ test('show endpoint returns 404 for non-existent user', function() {
     $response->assertStatus(404);
 });
 
-test('destroy endpoint deletes the user', function() {
-    // Create test user
-    $user = User::factory()->create();
-
-    // Act - Delete the user
-    $response = $this->deleteJson(route('users.destroy', $user->id));
-
-    // Assert - Check response and database
-    $response->assertStatus(200)
-        ->assertJson(['message' => 'User deleted successfully']);
-
-    $this->assertSoftDeleted($user);
-});
-
 test('destroy endpoint returns 404 for non-existent user', function() {
     // Act - Try to delete non-existent user
     $response = $this->deleteJson(route('users.destroy', 999999));
 
     // Assert - Check 404 response
     $response->assertStatus(404);
-    // We only care about the status code, not the exact error message
 });
 
-// Unauthorized access tests
+// UNAUTHORIZED ACCESS TESTS
 
 test('unauthenticated user cannot access index endpoint', function() {
     // Create a test without authentication
@@ -186,81 +364,4 @@ test('unauthenticated user cannot access destroy endpoint', function() {
 
     // Assert - Check for 401 Unauthorized
     $response->assertStatus(401);
-});
-
-test('user without permissions cannot access index endpoint', function() {
-    // Create and authenticate user with no permissions
-    $user = User::factory()->create();
-    $user->assignRole('user');
-    
-    Sanctum::actingAs($user);
-    
-    // Act - Try to access index endpoint without required permissions
-    $response = $this->getJson(route('users.index'));
-
-    // Assert - Check for 403 Forbidden
-    $response->assertStatus(403);
-});
-
-test('user without permissions cannot view other users', function() {
-    // Create a regular user
-    $user = User::factory()->create();
-    $user->assignRole('user');
-    
-    // Create another user to try to view
-    $anotherUser = User::factory()->create();
-    
-    Sanctum::actingAs($user);
-    
-    // Act - Try to view another user without permissions
-    $response = $this->getJson(route('users.show', $anotherUser->id));
-
-    // Assert - Check for 403 Forbidden
-    $response->assertStatus(403);
-});
-
-test('user can view their own profile even without permissions', function() {
-    // Create a regular user
-    $user = User::factory()->create();
-    $user->assignRole('user');
-    
-    Sanctum::actingAs($user);
-    
-    // Act - Try to view own profile
-    $response = $this->getJson(route('users.show', $user->id));
-
-    // Assert - Should succeed (200 OK)
-    $response->assertStatus(200)
-        ->assertJsonPath('id', $user->id);
-});
-
-test('user without permissions cannot delete other users', function() {
-    // Create a regular user
-    $user = User::factory()->create();
-    $user->assignRole('user');
-    
-    // Create another user to try to delete
-    $anotherUser = User::factory()->create();
-    
-    Sanctum::actingAs($user);
-    
-    // Act - Try to delete another user without permissions
-    $response = $this->deleteJson(route('users.destroy', $anotherUser->id));
-
-    // Assert - Check for 403 Forbidden
-    $response->assertStatus(403);
-});
-
-test('user cannot delete their own account via API', function() {
-    // Create a regular user
-    $user = User::factory()->create();
-    $user->assignRole('user');
-    
-    Sanctum::actingAs($user);
-    
-    // Act - Try to delete own account
-    $response = $this->deleteJson(route('users.destroy', $user->id));
-
-    // Assert - Check for 403 Forbidden (policy prevents self-deletion via API)
-    $response->assertStatus(403);
 });

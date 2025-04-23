@@ -97,6 +97,11 @@ return [
     ],
 
     /*
+     * List of guards that should be checked for permissions.
+     */
+    'guards' => ['web', 'sanctum'],
+
+    /*
      * When set to true, the method for checking permissions will be registered on the gate.
      * Set this to false if you want to implement custom logic for checking permissions.
      */
