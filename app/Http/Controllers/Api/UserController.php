@@ -10,7 +10,6 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use OpenApi\Annotations as OA;
-use Throwable;
 
 /**
  * @OA\Tag(
@@ -134,12 +133,8 @@ class UserController extends Controller
      */
     public function destroy(User $user): JsonResponse
     {
-        try {
-            $user->delete();
-
-            return response()->json(['message' => 'User deleted successfully'], JsonResponse::HTTP_OK);
-        } catch (Throwable $e) {
-            return response()->json(['message' => 'User not found'], JsonResponse::HTTP_NOT_FOUND);
-        }
+        $user->delete();
+        
+        return response()->json(['message' => 'User deleted successfully'], JsonResponse::HTTP_OK);
     }
 }
