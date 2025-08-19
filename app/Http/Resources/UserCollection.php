@@ -20,7 +20,7 @@ use OpenApi\Annotations as OA;
  *         type="object",
  *         @OA\Property(property="first", type="string", example="http://localhost/api/users?page=1"),
  *         @OA\Property(property="last", type="string", example="http://localhost/api/users?page=2"),
- *         @OA\Property(property="prev", type="string", nullable=true, example=null),
+ *         @OA\Property(property="prev", type="string", example="http://localhost/api/users?page=1"),
  *         @OA\Property(property="next", type="string", example="http://localhost/api/users?page=2")
  *     ),
  *     @OA\Property(
