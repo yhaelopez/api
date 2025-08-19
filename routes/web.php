@@ -15,7 +15,7 @@ Route::get('users', function () {
     return Inertia::render('users/index', [
         'users' => [], // Empty array for client-side loading
     ]);
-})->middleware(['auth', 'verified'])->name('users.index');
+})->middleware(['auth', 'verified']);
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
