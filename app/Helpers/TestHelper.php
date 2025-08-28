@@ -3,160 +3,76 @@
 namespace App\Helpers;
 
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
-use Laravel\Sanctum\Sanctum;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
+use Database\Seeders\PermissionsSeeder;
+use Database\Seeders\RolesSeeder;
+use Faker\Factory;
 
 class TestHelper
 {
+    private static $faker;
+
+    /**
+     * Get or create faker instance
+     */
+    private static function getFaker()
+    {
+        if (!self::$faker) {
+            self::$faker = Factory::create();
+        }
+        return self::$faker;
+    }
+
     /**
      * Create permissions and roles for testing
      * 
-     * @return array Array containing the created roles
+     * @return void
      */
-    public static function createPermissionsAndRoles(): array
+    public static function createPermissionsAndRoles(): void
     {
-        // Create permissions
-        $permissions = [
-            'users.viewAny',
-            'users.view',
-            'users.create',
-            'users.update',
-            'users.delete',
-            'users.restore',
-            'users.forceDelete',
-        ];
-
-        foreach ($permissions as $permission) {
-            Permission::create([
-                'name' => $permission,
-                'guard_name' => 'sanctum'
-            ]);
-        }
-
-        // Create roles
-        $superadminRole = Role::create([
-            'name' => 'superadmin',
-            'guard_name' => 'sanctum'
-        ]);
+        // Use the seeders to create permissions and roles
+        $permissionsSeeder = new PermissionsSeeder();
+        $permissionsSeeder->run();
         
-        $userRole = Role::create([
-            'name' => 'user',
-            'guard_name' => 'sanctum'
-        ]);
-
-        // Assign permissions to roles
-        $superadminRole->givePermissionTo(Permission::all());
-        
-        $userRole->givePermissionTo([]);
-        
-        return [$superadminRole, $userRole];
+        $rolesSeeder = new RolesSeeder();
+        $rolesSeeder->run();
     }
 
     /**
-     * Create and act as a superadmin user for testing
+     * Create a superadmin user for testing
      * 
      * @return User The created superadmin user
      */
-    public static function actAsSuperadmin(): User
+    public static function createTestSuperAdmin(): User
     {
-        $superadmin = User::factory()->create([
+        return User::factory()->superadmin()->create([
             'name' => 'Super Admin',
-            'email' => 'superadmin@example.com',
+            'email' => 'admin@' . self::getFaker()->domainName(),
         ]);
-        
-        $role = Role::where('name', 'superadmin')
-            ->where('guard_name', 'sanctum')
-            ->first();
-            
-        if ($role) {
-            // Insert directly into the pivot table
-            DB::table('model_has_roles')->insert([
-                'role_id' => $role->id,
-                'model_type' => User::class,
-                'model_id' => $superadmin->id
-            ]);
-        }
-        
-        Sanctum::actingAs($superadmin);
-        
-        return $superadmin;
     }
 
     /**
-     * Create and act as a regular user for testing
+     * Create a regular user for testing
      * 
      * @return User The created regular user
      */
-    public static function actAsUser(): User
+    public static function createTestUser(): User
     {
-        $user = User::factory()->create([
+        return User::factory()->regularUser()->create([
             'name' => 'Regular User',
-            'email' => 'user@example.com',
+            'email' => 'user@' . self::getFaker()->domainName(),
         ]);
-        
-        $role = Role::where('name', 'user')
-            ->where('guard_name', 'sanctum')
-            ->first();
-            
-        if ($role) {
-            // Insert directly into the pivot table
-            DB::table('model_has_roles')->insert([
-                'role_id' => $role->id,
-                'model_type' => User::class,
-                'model_id' => $user->id
-            ]);
-        }
-        
-        Sanctum::actingAs($user);
-        
-        return $user;
     }
 
     /**
-     * Create and act as a user with specific permissions for testing
+     * Create an unauthorized user for testing (user with no permissions)
      * 
-     * @param array $permissions Array of permission names to assign
-     * @return User The created user with the specified permissions
+     * @return User The created unauthorized user
      */
-    public static function actAsUserWithPermissions(array $permissions = []): User
+    public static function createTestUnauthorizedUser(): User
     {
-        $user = User::factory()->create([
-            'name' => 'User With Permissions',
-            'email' => 'user.with.permissions@example.com',
+        return User::factory()->unauthorized()->create([
+            'name' => 'Unauthorized User',
+            'email' => 'unauthorized@' . self::getFaker()->domainName(),
         ]);
-        
-        $role = Role::where('name', 'user')
-            ->where('guard_name', 'sanctum')
-            ->first();
-            
-        if ($role) {
-            // Insert directly into the pivot table
-            DB::table('model_has_roles')->insert([
-                'role_id' => $role->id,
-                'model_type' => User::class,
-                'model_id' => $user->id
-            ]);
-        }
-        
-        // Add specific permissions
-        foreach ($permissions as $permissionName) {
-            $permission = Permission::where('name', $permissionName)
-                ->where('guard_name', 'sanctum')
-                ->first();
-                
-            if ($permission) {
-                DB::table('model_has_permissions')->insert([
-                    'permission_id' => $permission->id,
-                    'model_type' => User::class,
-                    'model_id' => $user->id
-                ]);
-            }
-        }
-        
-        Sanctum::actingAs($user);
-        
-        return $user;
     }
-} 
+}

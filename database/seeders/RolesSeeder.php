@@ -2,10 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Enums\GuardEnum;
+use App\Enums\PermissionsEnum;
+use App\Enums\RoleEnum;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\DB;
 
@@ -18,9 +19,6 @@ class RolesSeeder extends Seeder
     {
         // First, create all roles
         $this->createRoles();
-
-        // Then, create admin users that need these roles
-        $this->createAdminUsers();
     }
 
     /**
@@ -29,36 +27,26 @@ class RolesSeeder extends Seeder
     private function createRoles(): void
     {
         // Create the superadmin role
-        $this->createSuperadminRole();
+        $this->createTestSuperAdminRole();
         
         // Create the basic user role
         $this->createUserRole();
         
         // Add additional roles as needed
-        // $this->createEditorRole();
-        // $this->createModeratorRole();
     }
 
     /**
      * Create superadmin role with all permissions
      */
-    private function createSuperadminRole(): void
+    private function createTestSuperAdminRole(): void
     {
         $role = Role::create([
-            'name' => 'superadmin',
-            'guard_name' => 'sanctum'
+            'name' => RoleEnum::SUPERADMIN->value,
+            'guard_name' => GuardEnum::WEB->value
         ]);
         
         // Assign all permissions to superadmin
-        $role->givePermissionTo([
-            'users.viewAny',
-            'users.view',
-            'users.create',
-            'users.update',
-            'users.delete',
-            'users.restore',
-            'users.forceDelete',
-        ]);
+        $role->givePermissionTo(PermissionsEnum::getAllPermissions());
     }
 
     /**
@@ -67,41 +55,11 @@ class RolesSeeder extends Seeder
     private function createUserRole(): void
     {
         $role = Role::create([
-            'name' => 'user',
-            'guard_name' => 'sanctum'
+            'name' => RoleEnum::USER->value,
+            'guard_name' => GuardEnum::WEB->value
         ]);
         
         // Regular users can only view their own profile
-        $role->givePermissionTo([
-            'users.view',  // Can view their own profile
-        ]);
-    }
-
-    /**
-     * Create admin users
-     */
-    private function createAdminUsers(): void
-    {
-        // Create a superadmin user for testing
-        $superAdmin = User::factory()->create([
-            'name' => 'Super Admin',
-            'email' => 'admin@example.com',
-        ]);
-
-        // Get the superadmin role ID
-        $role = Role::where('name', 'superadmin')
-              ->where('guard_name', 'sanctum')
-              ->first();
-              
-        if ($role) {
-            // Insert directly into the pivot table
-            DB::table('model_has_roles')->insert([
-                'role_id' => $role->id,
-                'model_type' => User::class,
-                'model_id' => $superAdmin->id
-            ]);
-        } else {
-            throw new \Exception("Superadmin role with sanctum guard not found");
-        }
+        $role->givePermissionTo(PermissionsEnum::getUserPermissions());
     }
 }

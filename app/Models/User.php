@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\GuardEnum;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -19,7 +20,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * The guard used for authentication
      */
-    protected $guard_name = 'sanctum';
+    protected $guard_name = GuardEnum::WEB->value;
 
     /**
      * The attributes that are mass assignable.

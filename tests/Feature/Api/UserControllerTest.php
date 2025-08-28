@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use App\Enums\GuardEnum;
 use App\Helpers\TestHelper;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -9,14 +10,17 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 uses(RefreshDatabase::class);
 
 beforeEach(function() {
-    // By default, run as superadmin
+    // Create permissions and roles for all tests
     TestHelper::createPermissionsAndRoles();
-    TestHelper::actAsSuperadmin();
 });
 
 // SUPERADMIN ACCESS TESTS
 
 test('superadmin can view all users', function() {
+    // Act as superadmin
+    $superadmin = TestHelper::createTestSuperAdmin();
+    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    
     // Create test users
     User::factory()->count(20)->create();
 
@@ -45,6 +49,10 @@ test('superadmin can view all users', function() {
 });
 
 test('superadmin can view any user profile', function() {
+    // Act as superadmin
+    $superadmin = TestHelper::createTestSuperAdmin();
+    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    
     // Create a random user
     $randomUser = User::factory()->create();
     
@@ -57,6 +65,10 @@ test('superadmin can view any user profile', function() {
 });
 
 test('superadmin can delete any user', function() {
+    // Act as superadmin
+    $superadmin = TestHelper::createTestSuperAdmin();
+    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    
     // Create a user to delete
     $userToDelete = User::factory()->create();
     
@@ -73,8 +85,10 @@ test('superadmin can delete any user', function() {
 // USER WITH SPECIFIC PERMISSIONS TESTS
 
 test('authorized user can view all users', function() {
-    // Act as user with viewAny permission
-    TestHelper::actAsUserWithPermissions(['users.viewAny']);
+    // Act as user with view permission
+    $user = TestHelper::createTestUser();
+    $user->givePermissionTo('users.viewAny');
+    $this->actingAs($user, GuardEnum::WEB->value);
     
     // Create test users
     User::factory()->count(5)->create();
@@ -93,7 +107,9 @@ test('authorized user can view all users', function() {
 
 test('authorized user can view other user profiles', function() {
     // Act as user with view permission
-    TestHelper::actAsUserWithPermissions(['users.view']);
+    $user = TestHelper::createTestUser();
+    $user->givePermissionTo('users.view');
+    $this->actingAs($user, GuardEnum::WEB->value);
     
     // Create another user
     $otherUser = User::factory()->create();
@@ -108,7 +124,8 @@ test('authorized user can view other user profiles', function() {
 
 test('user without view permission can still view own profile', function() {
     // Act as unauthorized user with no permissions
-    $user = TestHelper::actAsUser();
+    $user = TestHelper::createTestUser();
+    $this->actingAs($user, GuardEnum::WEB->value);
     
     // Act - View own profile
     $response = $this->getJson(route('users.show', $user->id));
@@ -120,7 +137,9 @@ test('user without view permission can still view own profile', function() {
 
 test('authorized user can delete other users', function() {
     // Act as user with delete permission
-    TestHelper::actAsUserWithPermissions(['users.delete']);
+    $user = TestHelper::createTestUser();
+    $user->givePermissionTo('users.delete');
+    $this->actingAs($user, GuardEnum::WEB->value);
     
     // Create another user
     $otherUser = User::factory()->create();
@@ -137,7 +156,9 @@ test('authorized user can delete other users', function() {
 
 test('authorized user cannot delete themselves', function() {
     // Act as user with delete permission
-    $user = TestHelper::actAsUserWithPermissions(['users.delete']);
+    $user = TestHelper::createTestUser();
+    $user->givePermissionTo('users.delete');
+    $this->actingAs($user, GuardEnum::WEB->value);
     
     // Act - Try to delete self
     $response = $this->deleteJson(route('users.destroy', $user->id));
@@ -149,8 +170,9 @@ test('authorized user cannot delete themselves', function() {
 // unauthorized user ACCESS TESTS
 
 test('unauthorized user cannot view all users', function() {
-    // Act as regular user
-    TestHelper::actAsUser();
+    // Act as unauthorized user
+    $user = TestHelper::createTestUnauthorizedUser();
+    $this->actingAs($user, GuardEnum::WEB->value);
     
     // Create test users
     User::factory()->count(5)->create();
@@ -163,8 +185,9 @@ test('unauthorized user cannot view all users', function() {
 });
 
 test('unauthorized user can view their own user', function() {
-    // Act as regular user
-    $user = TestHelper::actAsUser();
+    // Act as unauthorized user
+    $user = TestHelper::createTestUnauthorizedUser();
+    $this->actingAs($user, GuardEnum::WEB->value);
     
     // Act - Request own user
     $response = $this->getJson(route('users.show', $user->id));
@@ -176,8 +199,9 @@ test('unauthorized user can view their own user', function() {
 });
 
 test('unauthorized user cannot view other user profiles', function() {
-    // Act as regular user
-    TestHelper::actAsUser();
+    // Act as unauthorized user
+    $user = TestHelper::createTestUnauthorizedUser();
+    $this->actingAs($user, GuardEnum::WEB->value);
     
     // Create another user
     $otherUser = User::factory()->create();
@@ -190,8 +214,9 @@ test('unauthorized user cannot view other user profiles', function() {
 });
 
 test('unauthorized user cannot delete any user including themselves', function() {
-    // Act as regular user
-    $user = TestHelper::actAsUser();
+    // Act as unauthorized user
+    $user = TestHelper::createTestUnauthorizedUser();
+    $this->actingAs($user, GuardEnum::WEB->value);
     
     // Create another user
     $otherUser = User::factory()->create();
@@ -212,6 +237,10 @@ test('unauthorized user cannot delete any user including themselves', function()
 // ADDITIONAL HELPER TESTS
 
 test('index endpoint validates input parameters', function() {
+    // Act as superadmin for this test
+    $superadmin = TestHelper::createTestSuperAdmin();
+    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    
     // Act - Try with invalid parameters
     $response = $this->getJson(route('users.index', ['page' => 'invalid', 'per_page' => 'invalid']));
 
@@ -221,6 +250,10 @@ test('index endpoint validates input parameters', function() {
 });
 
 test('show endpoint returns 404 for non-existent user', function() {
+    // Act as superadmin for this test
+    $superadmin = TestHelper::createTestSuperAdmin();
+    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    
     // Act - Request non-existent user
     $response = $this->getJson(route('users.show', 999999));
 
@@ -229,6 +262,10 @@ test('show endpoint returns 404 for non-existent user', function() {
 });
 
 test('destroy endpoint returns 404 for non-existent user', function() {
+    // Act as superadmin for this test
+    $superadmin = TestHelper::createTestSuperAdmin();
+    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    
     // Act - Try to delete non-existent user
     $response = $this->deleteJson(route('users.destroy', 999999));
 

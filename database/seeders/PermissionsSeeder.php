@@ -2,8 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Enums\PermissionsEnum;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\PermissionRegistrar;
 
 class PermissionsSeeder extends Seeder
 {
@@ -24,7 +26,7 @@ class PermissionsSeeder extends Seeder
      */
     private function resetPermissionsCache(): void
     {
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
     }
 
     /**
@@ -36,9 +38,6 @@ class PermissionsSeeder extends Seeder
         $this->createUserPermissions();
 
         // Add other modules' permissions here as needed
-        // $this->createArticlePermissions();
-        // $this->createCommentPermissions();
-        // etc.
     }
 
     /**
@@ -46,15 +45,7 @@ class PermissionsSeeder extends Seeder
      */
     private function createUserPermissions(): void
     {
-        $userPermissions = [
-            'users.viewAny',   // Can view the user list
-            'users.view',      // Can view user details
-            'users.create',    // Can create new users
-            'users.update',    // Can update existing users
-            'users.delete',    // Can soft delete users
-            'users.restore',   // Can restore soft-deleted users
-            'users.forceDelete', // Can permanently delete users
-        ];
+        $userPermissions = PermissionsEnum::getUserPermissions();
 
         $this->createPermissionGroup($userPermissions);
     }
@@ -67,7 +58,7 @@ class PermissionsSeeder extends Seeder
         foreach ($permissions as $permission) {
             Permission::create([
                 'name' => $permission,
-                'guard_name' => 'sanctum'
+                'guard_name' => 'web'
             ]);
         }
     }
