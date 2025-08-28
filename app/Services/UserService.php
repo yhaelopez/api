@@ -4,12 +4,14 @@ namespace App\Services;
 
 use App\Cache\UserCache;
 use App\Models\User;
+use App\Repositories\UserRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class UserService
 {
     public function __construct(
-        private UserCache $userCache
+        private UserCache $userCache,
+        private UserRepository $userRepository
     ) {}
 
     /**
@@ -18,7 +20,7 @@ class UserService
     public function getUsersList(int $page = 1, int $perPage = 15): LengthAwarePaginator
     {
         return $this->userCache->rememberList($page, $perPage, function () use ($page, $perPage) {
-            return User::paginate($perPage, ['*'], 'page', $page);
+            return $this->userRepository->paginate($page, $perPage);
         });
     }
 
@@ -28,7 +30,7 @@ class UserService
     public function getUser(int $id): User
     {
         return $this->userCache->remember($id, function () use ($id) {
-            return User::findOrFail($id);
+            return $this->userRepository->findWithRoles($id);
         });
     }
 }
