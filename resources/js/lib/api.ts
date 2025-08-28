@@ -25,22 +25,26 @@ class ApiClient {
     this.baseUrl = '/api';
   }
 
+  private getCsrfToken(): string | null {
+    // Get CSRF token from meta tag
+    const metaTag = document.querySelector('meta[name="csrf-token"]');
+    return metaTag ? metaTag.getAttribute('content') : null;
+  }
+
   private async request<T>(
     url: string,
     options: RequestInit = {}
   ): Promise<T> {
-    // Get the API token from localStorage
-    const token = localStorage.getItem('api_token') || sessionStorage.getItem('api_token');
-    
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'X-Requested-With': 'XMLHttpRequest',
     };
 
-    // Add Authorization header if token exists
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
+    // Add CSRF token for session authentication
+    const csrfToken = this.getCsrfToken();
+    if (csrfToken) {
+      headers['X-CSRF-TOKEN'] = csrfToken;
     }
 
     const config: RequestInit = {
@@ -48,6 +52,7 @@ class ApiClient {
         ...headers,
         ...options.headers,
       },
+      credentials: 'same-origin', // Include cookies for session authentication
       ...options,
     };
 
