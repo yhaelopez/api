@@ -400,3 +400,33 @@ test('cached response returns old data when database changes manually', function
     $actualDbCount = User::count();
     $this->assertGreaterThan($initialCount, $actualDbCount, 'New user should be added to database');
 });
+
+test('cache is invalidated when user is deleted via API', function () {
+    // Act as superadmin
+    $superadmin = TestHelper::createTestSuperAdmin();
+    $this->actingAs($superadmin, GuardEnum::WEB->value);
+
+    // Create a user to delete
+    $userToDelete = User::factory()->create();
+
+    // First request - should hit database
+    $response1 = $this->getJson(route('users.index'));
+    $response1->assertStatus(200);
+    $initialCount = $response1->json('meta.total');
+
+    // Second request - should hit cache
+    $response2 = $this->getJson(route('users.index'));
+    $response2->assertStatus(200);
+
+    // Delete the user via API (this should invalidate cache)
+    $response = $this->deleteJson(route('users.destroy', $userToDelete->id));
+    $response->assertStatus(200);
+
+    // Third request - should hit database again due to cache invalidation
+    $response3 = $this->getJson(route('users.index'));
+    $response3->assertStatus(200);
+    $newCount = $response3->json('meta.total');
+
+    // Count should have decreased by 1
+    $this->assertEquals($initialCount - 1, $newCount);
+});
