@@ -11,6 +11,7 @@ use App\Http\Resources\V1\User\UserCollection;
 use App\Http\Resources\V1\User\UserResource;
 use App\Models\User;
 use App\Services\UserService;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
@@ -368,7 +369,7 @@ class UserController extends Controller
             $this->userService->forceDeleteUser($user);
 
             return response()->json(['message' => 'User permanently deleted successfully'], JsonResponse::HTTP_OK);
-        } catch (ForceDeleteActiveRecordException $e) {
+        } catch (Exception|ForceDeleteActiveRecordException $e) {
             return response()->json([
                 'error' => $e->getCode(),
                 'message' => $e->getMessage(),
