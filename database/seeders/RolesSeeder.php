@@ -8,7 +8,6 @@ use App\Enums\RoleEnum;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
-use Illuminate\Support\Facades\DB;
 
 class RolesSeeder extends Seeder
 {
@@ -28,10 +27,10 @@ class RolesSeeder extends Seeder
     {
         // Create the superadmin role
         $this->createTestSuperAdminRole();
-        
+
         // Create the basic user role
         $this->createUserRole();
-        
+
         // Add additional roles as needed
     }
 
@@ -42,9 +41,9 @@ class RolesSeeder extends Seeder
     {
         $role = Role::create([
             'name' => RoleEnum::SUPERADMIN->value,
-            'guard_name' => GuardEnum::WEB->value
+            'guard_name' => GuardEnum::WEB->value,
         ]);
-        
+
         // Assign all permissions to superadmin
         $role->givePermissionTo(PermissionsEnum::getAllPermissions());
     }
@@ -56,9 +55,9 @@ class RolesSeeder extends Seeder
     {
         $role = Role::create([
             'name' => RoleEnum::USER->value,
-            'guard_name' => GuardEnum::WEB->value
+            'guard_name' => GuardEnum::WEB->value,
         ]);
-        
+
         // Regular users can only view their own profile
         $role->givePermissionTo(PermissionsEnum::getUserPermissions());
     }

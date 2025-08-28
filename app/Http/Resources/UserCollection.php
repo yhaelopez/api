@@ -10,11 +10,14 @@ use OpenApi\Annotations as OA;
  *     schema="UserCollection",
  *     title="User Collection",
  *     description="User collection resource",
+ *
  *     @OA\Property(
  *         property="data",
  *         type="array",
+ *
  *         @OA\Items(ref="#/components/schemas/UserResource")
  *     ),
+ *
  *     @OA\Property(
  *         property="links",
  *         type="object",
@@ -30,7 +33,9 @@ use OpenApi\Annotations as OA;
  *         @OA\Property(property="from", type="integer", example=1),
  *         @OA\Property(property="last_page", type="integer", example=2),
  *         @OA\Property(property="links", type="array",
+ *
  *             @OA\Items(type="object",
+ *
  *                 @OA\Property(property="url", type="string", example="http://localhost/api/users?page=1"),
  *                 @OA\Property(property="label", type="string", example="1"),
  *                 @OA\Property(property="active", type="boolean", example=true)
@@ -43,6 +48,4 @@ use OpenApi\Annotations as OA;
  *     )
  * )
  */
-class UserCollection extends ResourceCollection
-{
-}
+class UserCollection extends ResourceCollection {}

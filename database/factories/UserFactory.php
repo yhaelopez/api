@@ -55,7 +55,7 @@ class UserFactory extends Factory
             $role = Role::where('name', RoleEnum::SUPERADMIN->value)
                 ->where('guard_name', GuardEnum::WEB->value)
                 ->first();
-            
+
             $user->assignRole($role);
         });
     }
@@ -69,7 +69,7 @@ class UserFactory extends Factory
             $role = Role::where('name', RoleEnum::USER->value)
                 ->where('guard_name', GuardEnum::WEB->value)
                 ->first();
-            
+
             $user->assignRole($role);
         });
     }

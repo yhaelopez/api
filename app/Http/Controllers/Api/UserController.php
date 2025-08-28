@@ -7,6 +7,7 @@ use App\Http\Requests\Api\UserIndexRequest;
 use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -20,31 +21,42 @@ use OpenApi\Annotations as OA;
  */
 class UserController extends Controller
 {
+    public function __construct(
+        private UserService $userService
+    ) {}
+
     /**
      * @OA\Get(
      *     path="/api/users",
      *     summary="Display a listing of users",
      *     tags={"UserController"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Parameter(
      *         name="page",
      *         in="query",
      *         description="Page number",
      *         required=false,
+     *
      *         @OA\Schema(type="integer", default=1)
      *     ),
+     *
      *     @OA\Parameter(
      *         name="per_page",
      *         in="query",
      *         description="Number of items per page",
      *         required=false,
+     *
      *         @OA\Schema(type="integer", default=15)
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation",
+     *
      *         @OA\JsonContent(ref="#/components/schemas/UserCollection")
      *     ),
+     *
      *     @OA\Response(
      *         response=403,
      *         description="Forbidden"
@@ -58,10 +70,7 @@ class UserController extends Controller
         $perPage = $request->validated('per_page', 15);
         $page = $request->validated('page', 1);
 
-        $users = User::paginate(
-            perPage: $perPage,
-            page: $page
-        );
+        $users = $this->userService->getUsersList($page, $perPage);
 
         return new UserCollection($users);
     }
@@ -80,18 +89,23 @@ class UserController extends Controller
      *     summary="Display the specified user",
      *     tags={"UserController"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Parameter(
      *         name="user",
      *         in="path",
      *         description="User ID",
      *         required=true,
+     *
      *         @OA\Schema(type="integer")
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation",
+     *
      *         @OA\JsonContent(ref="#/components/schemas/UserResource")
      *     ),
+     *
      *     @OA\Response(
      *         response=403,
      *         description="Forbidden"
@@ -105,7 +119,7 @@ class UserController extends Controller
     public function show(User $user): UserResource
     {
         Gate::authorize('view', $user);
-        
+
         return new UserResource($user);
     }
 
@@ -123,21 +137,27 @@ class UserController extends Controller
      *     summary="Delete the specified user",
      *     tags={"UserController"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Parameter(
      *         name="user",
      *         in="path",
      *         description="User ID",
      *         required=true,
+     *
      *         @OA\Schema(type="integer")
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation",
+     *
      *         @OA\JsonContent(
      *             type="object",
+     *
      *             @OA\Property(property="message", type="string", example="User deleted successfully")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=403,
      *         description="Forbidden"
@@ -151,9 +171,9 @@ class UserController extends Controller
     public function destroy(User $user): JsonResponse
     {
         Gate::authorize('delete', $user);
-        
+
         $user->delete();
-        
+
         return response()->json(['message' => 'User deleted successfully'], JsonResponse::HTTP_OK);
     }
 }

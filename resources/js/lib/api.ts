@@ -52,7 +52,7 @@ class ApiClient {
         ...headers,
         ...options.headers,
       },
-      credentials: 'same-origin', // Include cookies for session authentication
+      credentials: 'include', // Include cookies for session authentication
       ...options,
     };
 

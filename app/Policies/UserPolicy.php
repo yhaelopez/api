@@ -24,7 +24,7 @@ class UserPolicy
         if ($user->id === $model->id) {
             return true;
         }
-        
+
         return $user->hasPermissionTo(PermissionsEnum::USERS_VIEW->value);
     }
 
@@ -45,7 +45,7 @@ class UserPolicy
         if ($user->id === $model->id) {
             return true;
         }
-        
+
         return $user->hasPermissionTo(PermissionsEnum::USERS_UPDATE->value);
     }
 
@@ -58,7 +58,7 @@ class UserPolicy
         if ($user->id === $model->id) {
             return false;
         }
-        
+
         return $user->hasPermissionTo(PermissionsEnum::USERS_DELETE->value);
     }
 
