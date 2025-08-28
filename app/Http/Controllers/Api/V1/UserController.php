@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Exceptions\ForceDeleteActiveRecordException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\User\UserIndexRequest;
 use App\Http\Requests\Api\V1\User\UserStoreRequest;
@@ -262,5 +263,112 @@ class UserController extends Controller
         $user->delete();
 
         return response()->json(['message' => 'User deleted successfully'], JsonResponse::HTTP_OK);
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/v1/users/{user}/restore",
+     *     summary="Restore the specified soft-deleted user",
+     *     tags={"UserController"},
+     *     security={{"bearerAuth":{}}},
+     *
+     *     @OA\Parameter(
+     *         name="user",
+     *         in="path",
+     *         description="User ID",
+     *         required=true,
+     *
+     *         @OA\Schema(type="integer")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="User restored successfully",
+     *
+     *         @OA\JsonContent(
+     *             type="object",
+     *
+     *             @OA\Property(property="message", type="string", example="User restored successfully"),
+     *             @OA\Property(property="data", ref="#/components/schemas/UserResource")
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="User not found"
+     *     )
+     * )
+     */
+    public function restore(User $user): JsonResponse
+    {
+        Gate::authorize('restore', $user);
+
+        $restoredUser = $this->userService->restoreUser($user);
+
+        return response()->json([
+            'message' => 'User restored successfully',
+            'data' => new UserResource($restoredUser)
+        ], JsonResponse::HTTP_OK);
+    }
+
+    /**
+     * @OA\Delete(
+     *     path="/api/v1/users/{user}/force",
+     *     summary="Permanently delete the specified user",
+     *     tags={"UserController"},
+     *     security={{"bearerAuth":{}}},
+     *
+     *     @OA\Parameter(
+     *         name="user",
+     *         in="path",
+     *         description="User ID",
+     *         required=true,
+     *
+     *         @OA\Schema(type="integer")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="User permanently deleted successfully",
+     *
+     *         @OA\JsonContent(
+     *             type="object",
+     *
+     *             @OA\Property(property="message", type="string", example="User permanently deleted successfully")
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="User not found"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Active record cannot be force deleted"
+     *     )
+     * )
+     */
+    public function forceDelete(User $user): JsonResponse
+    {
+        Gate::authorize('forceDelete', $user);
+
+        try {
+            $this->userService->forceDeleteUser($user);
+
+            return response()->json(['message' => 'User permanently deleted successfully'], JsonResponse::HTTP_OK);
+        } catch (ForceDeleteActiveRecordException $e) {
+            return response()->json([
+                'error' => $e->getCode(),
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 }

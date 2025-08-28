@@ -683,3 +683,316 @@ test('unauthenticated user cannot access update endpoint', function () {
     // Assert - Check for 401 Unauthorized
     $response->assertStatus(401);
 });
+
+// RESTORE METHOD TESTS
+
+test('superadmin can restore a soft-deleted user', function () {
+    // Act as superadmin
+    $superadmin = TestHelper::createTestSuperAdmin();
+    $this->actingAs($superadmin, GuardEnum::WEB->value);
+
+    // Create and soft-delete a user
+    $deletedUser = User::factory()->create();
+    $deletedUser->delete();
+
+    // Verify user is soft-deleted
+    $this->assertSoftDeleted($deletedUser);
+
+    // Act - Restore the user
+    $response = $this->postJson(route('users.restore', $deletedUser->id));
+
+    // Assert - Check response
+    $response->assertStatus(200)
+        ->assertJson([
+            'message' => 'User restored successfully',
+        ])
+        ->assertJsonStructure([
+            'message',
+            'data' => [
+                'id',
+                'name',
+                'email',
+                'created_at',
+                'updated_at',
+            ],
+        ]);
+
+    // Check database - user should no longer be soft-deleted
+    $this->assertDatabaseHas('users', [
+        'id' => $deletedUser->id,
+        'deleted_at' => null,
+    ]);
+});
+
+test('authorized user can restore other users', function () {
+    // Act as user with restore permission
+    $user = TestHelper::createTestUser();
+    $user->givePermissionTo('users.restore');
+    $this->actingAs($user, GuardEnum::WEB->value);
+
+    // Create and soft-delete another user
+    $deletedUser = User::factory()->create();
+    $deletedUser->delete();
+
+    // Act - Restore the user
+    $response = $this->postJson(route('users.restore', $deletedUser->id));
+
+    // Assert - Should succeed
+    $response->assertStatus(200)
+        ->assertJson(['message' => 'User restored successfully']);
+});
+
+test('unauthorized user cannot restore users', function () {
+    // Act as unauthorized user
+    $user = TestHelper::createTestUnauthorizedUser();
+    $this->actingAs($user, GuardEnum::WEB->value);
+
+    // Create and soft-delete another user
+    $deletedUser = User::factory()->create();
+    $deletedUser->delete();
+
+    // Act - Try to restore the user
+    $response = $this->postJson(route('users.restore', $deletedUser->id));
+
+    // Assert - Should be forbidden
+    $response->assertStatus(403);
+});
+
+test('restore endpoint returns 404 for non-existent user', function () {
+    // Act as superadmin for this test
+    $superadmin = TestHelper::createTestSuperAdmin();
+    $this->actingAs($superadmin, GuardEnum::WEB->value);
+
+    // Act - Try to restore non-existent user
+    $response = $this->postJson(route('users.restore', 999999));
+
+    // Assert - Check 404 response
+    $response->assertStatus(404);
+});
+
+// FORCE DELETE METHOD TESTS
+
+test('superadmin can permanently delete a user', function () {
+    // Act as superadmin
+    $superadmin = TestHelper::createTestSuperAdmin();
+    $this->actingAs($superadmin, GuardEnum::WEB->value);
+
+    // Create a user to permanently delete
+    $userToDelete = User::factory()->create();
+    $userToDelete->delete();
+
+    // Act - Permanently delete the user
+    $response = $this->deleteJson(route('users.force-delete', $userToDelete->id));
+
+    // Assert - Check response
+    $response->assertStatus(200)
+        ->assertJson(['message' => 'User permanently deleted successfully']);
+
+    // Check database - user should be completely removed
+    $this->assertDatabaseMissing('users', [
+        'id' => $userToDelete->id,
+    ]);
+});
+
+test('authorized user can permanently delete other users', function () {
+    // Act as user with force delete permission
+    $user = TestHelper::createTestUser();
+    $user->givePermissionTo('users.forceDelete');
+    $this->actingAs($user, GuardEnum::WEB->value);
+
+    // Create another user to permanently delete
+    $otherUser = User::factory()->create();
+    $otherUser->delete();
+
+    // Act - Permanently delete the other user
+    $response = $this->deleteJson(route('users.force-delete', $otherUser->id));
+
+    // Assert - Should succeed
+    $response->assertStatus(200)
+        ->assertJson(['message' => 'User permanently deleted successfully']);
+});
+
+test('unauthorized user cannot permanently delete users', function () {
+    // Act as unauthorized user
+    $user = TestHelper::createTestUnauthorizedUser();
+    $this->actingAs($user, GuardEnum::WEB->value);
+
+    // Create another user
+    $otherUser = User::factory()->create();
+
+    // Act - Try to permanently delete the other user
+    $response = $this->deleteJson(route('users.force-delete', $otherUser->id));
+
+    // Assert - Should be forbidden
+    $response->assertStatus(403);
+});
+
+test('force delete endpoint returns 404 for non-existent user', function () {
+    // Act as superadmin for this test
+    $superadmin = TestHelper::createTestSuperAdmin();
+    $this->actingAs($superadmin, GuardEnum::WEB->value);
+
+    // Act - Try to permanently delete non-existent user
+    $response = $this->deleteJson(route('users.force-delete', 999999));
+
+    // Assert - Check 404 response
+    $response->assertStatus(404);
+});
+
+test('force delete endpoint returns 422 for active (non-deleted) user', function () {
+    // Act as superadmin for this test
+    $superadmin = TestHelper::createTestSuperAdmin();
+    $this->actingAs($superadmin, GuardEnum::WEB->value);
+
+    // Create an active user (not soft-deleted)
+    $activeUser = User::factory()->create();
+
+    // Act - Try to permanently delete the active user
+    $response = $this->deleteJson(route('users.force-delete', $activeUser->id));
+
+    // Assert - Should return 422 because onlyTrashed() only allows soft-deleted users
+    $response->assertStatus(422);
+});
+
+test('force delete works only with soft-deleted users', function () {
+    // Act as superadmin
+    $superadmin = TestHelper::createTestSuperAdmin();
+    $this->actingAs($superadmin, GuardEnum::WEB->value);
+
+    // Create and soft-delete a user
+    $deletedUser = User::factory()->create();
+    $deletedUser->delete();
+
+    // Verify user is soft-deleted
+    $this->assertSoftDeleted($deletedUser);
+
+    // Act - Permanently delete the soft-deleted user
+    $response = $this->deleteJson(route('users.force-delete', $deletedUser->id));
+
+    // Assert - Should succeed because user is soft-deleted
+    $response->assertStatus(200)
+        ->assertJson(['message' => 'User permanently deleted successfully']);
+
+    // Check database - user should be completely removed
+    $this->assertDatabaseMissing('users', [
+        'id' => $deletedUser->id,
+    ]);
+});
+
+test('force delete workflow: delete then force delete', function () {
+    // Act as superadmin
+    $superadmin = TestHelper::createTestSuperAdmin();
+    $this->actingAs($superadmin, GuardEnum::WEB->value);
+
+    // Create a user
+    $user = User::factory()->create();
+    
+    // First, soft-delete the user
+    $response = $this->deleteJson(route('users.destroy', $user->id));
+    $response->assertStatus(200);
+    
+    // Verify user is soft-deleted
+    $this->assertSoftDeleted($user);
+
+    // Now try to force delete the soft-deleted user
+    $response = $this->deleteJson(route('users.force-delete', $user->id));
+    
+    // Assert - Should succeed
+    $response->assertStatus(200)
+        ->assertJson(['message' => 'User permanently deleted successfully']);
+
+    // Check database - user should be completely removed
+    $this->assertDatabaseMissing('users', [
+        'id' => $user->id,
+    ]);
+});
+
+test('force delete with onlyTrashed prevents deletion of active users', function () {
+    // Act as superadmin
+    $superadmin = TestHelper::createTestSuperAdmin();
+    $this->actingAs($superadmin, GuardEnum::WEB->value);
+
+    // Create multiple users
+    $activeUser1 = User::factory()->create();
+    $activeUser2 = User::factory()->create();
+    
+    // Create and soft-delete one user
+    $deletedUser = User::factory()->create();
+    $deletedUser->delete();
+
+    // Try to force delete active users - should fail
+    $response1 = $this->deleteJson(route('users.force-delete', $activeUser1->id));
+    $response2 = $this->deleteJson(route('users.force-delete', $activeUser2->id));
+    
+    // Assert - Both should return 422
+    $response1->assertStatus(422);
+    $response2->assertStatus(422);
+
+    // Verify active users still exist
+    $this->assertDatabaseHas('users', ['id' => $activeUser1->id]);
+    $this->assertDatabaseHas('users', ['id' => $activeUser2->id]);
+
+    // Now force delete the soft-deleted user - should succeed
+    $response3 = $this->deleteJson(route('users.force-delete', $deletedUser->id));
+    $response3->assertStatus(200);
+
+    // Verify soft-deleted user is completely removed
+    $this->assertDatabaseMissing('users', ['id' => $deletedUser->id]);
+});
+
+test('force delete triggers ForceDeleteActiveRecordException for active users', function () {
+    // Act as superadmin
+    $superadmin = TestHelper::createTestSuperAdmin();
+    $this->actingAs($superadmin, GuardEnum::WEB->value);
+
+    // Create an active user (not soft-deleted)
+    $activeUser = User::factory()->create();
+
+    // Act - Try to force delete the active user
+    $response = $this->deleteJson(route('users.force-delete', $activeUser->id));
+
+    // Assert - Should return 422 with exception details
+    $response->assertStatus(422)
+        ->assertJsonStructure([
+            'error',
+            'message',
+        ])
+        ->assertJson([
+            'error' => 422,
+            'message' => 'Cannot force delete active User with ID ' . $activeUser->id . '. The record must be soft-deleted first.',
+        ]);
+
+    // Verify the active user still exists in database
+    $this->assertDatabaseHas('users', [
+        'id' => $activeUser->id,
+        'deleted_at' => null
+    ]);
+});
+
+test('unauthenticated user cannot access restore endpoint', function () {
+    // Create a test without authentication
+    $this->refreshApplication();
+
+    // Create a user to try to restore
+    $user = User::factory()->create();
+
+    // Act - Try to access restore endpoint without authentication
+    $response = $this->postJson(route('users.restore', $user->id));
+
+    // Assert - Check for 401 Unauthorized
+    $response->assertStatus(401);
+});
+
+test('unauthenticated user cannot access force delete endpoint', function () {
+    // Create a test without authentication
+    $this->refreshApplication();
+
+    // Create a user to try to permanently delete
+    $user = User::factory()->create();
+
+    // Act - Try to access force delete endpoint without authentication
+    $response = $this->deleteJson(route('users.force-delete', $user->id));
+
+    // Assert - Check for 401 Unauthorized
+    $response->assertStatus(401);
+});
