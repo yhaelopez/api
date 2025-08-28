@@ -12,7 +12,7 @@ export interface UsersListParams {
 export interface UsersListResponse extends PaginatedResponse<User> {}
 
 class UsersApi {
-  private endpoint = '/users';
+  private endpoint = '/v1/users';
 
   async list(params?: UsersListParams): Promise<UsersListResponse> {
     return apiClient.get<UsersListResponse>(this.endpoint, params);

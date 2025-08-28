@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\UserIndexRequest;
-use App\Http\Resources\UserCollection;
-use App\Http\Resources\UserResource;
+use App\Http\Requests\Api\V1\UserIndexRequest;
+use App\Http\Resources\V1\UserCollection;
+use App\Http\Resources\V1\UserResource;
 use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
@@ -27,7 +27,7 @@ class UserController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/users",
+     *     path="/api/v1/users",
      *     summary="Display a listing of users",
      *     tags={"UserController"},
      *     security={{"bearerAuth":{}}},
@@ -85,7 +85,7 @@ class UserController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/users/{user}",
+     *     path="/api/v1/users/{user}",
      *     summary="Display the specified user",
      *     tags={"UserController"},
      *     security={{"bearerAuth":{}}},
@@ -133,7 +133,7 @@ class UserController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/api/users/{user}",
+     *     path="/api/v1/users/{user}",
      *     summary="Delete the specified user",
      *     tags={"UserController"},
      *     security={{"bearerAuth":{}}},

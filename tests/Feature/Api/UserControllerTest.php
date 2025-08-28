@@ -15,7 +15,7 @@ beforeEach(function () {
     TestHelper::createPermissionsAndRoles();
 });
 
-// SUPERADMIN ACCESS TESTS
+// V1 API TESTS
 
 test('superadmin can view all users', function () {
     // Act as superadmin
