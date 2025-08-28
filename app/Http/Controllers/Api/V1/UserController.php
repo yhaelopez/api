@@ -4,13 +4,15 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\UserIndexRequest;
+use App\Http\Requests\Api\V1\UserStoreRequest;
+use App\Http\Requests\Api\V1\UserUpdateRequest;
 use App\Http\Resources\V1\UserCollection;
 use App\Http\Resources\V1\UserResource;
 use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Hash;
 use OpenApi\Annotations as OA;
 
 /**
@@ -76,11 +78,49 @@ class UserController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     *     path="/api/v1/users",
+     *     summary="Store a newly created user",
+     *     tags={"UserController"},
+     *     security={{"bearerAuth":{}}},
+     *
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name","email","password"},
+     *             @OA\Property(property="name", type="string", example="John Doe"),
+     *             @OA\Property(property="email", type="string", example="john.doe@example.com"),
+     *             @OA\Property(property="password", type="string", example="password123")
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=201,
+     *         description="User created successfully",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/UserResource")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     )
+     * )
      */
-    public function store(Request $request)
+    public function store(UserStoreRequest $request): UserResource
     {
-        //
+        Gate::authorize('create', User::class);
+
+        $data = $request->validated();
+        $data['password'] = Hash::make($data['password']);
+
+        $user = $this->userService->createUser($data);
+
+        return new UserResource($user);
     }
 
     /**
@@ -124,11 +164,58 @@ class UserController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @OA\Put(
+     *     path="/api/v1/users/{user}",
+     *     summary="Update the specified user",
+     *     tags={"UserController"},
+     *     security={{"bearerAuth":{}}},
+     *
+     *     @OA\Parameter(
+     *         name="user",
+     *         in="path",
+     *         description="User ID",
+     *         required=true,
+     *
+     *         @OA\Schema(type="integer")
+     *     ),
+     *
+     *     @OA\RequestBody(
+     *         required=false,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="name", type="string", example="John Doe"),
+     *             @OA\Property(property="email", type="string", example="john.doe@example.com")
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="User updated successfully",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/UserResource")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="User not found"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     )
+     * )
      */
-    public function update(Request $request, User $user)
+    public function update(UserUpdateRequest $request, User $user): UserResource
     {
-        //
+        Gate::authorize('update', $user);
+
+        $data = $request->validated();
+        $updatedUser = $this->userService->updateUser($user, $data);
+
+        return new UserResource($updatedUser);
     }
 
     /**

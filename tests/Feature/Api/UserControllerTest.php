@@ -6,9 +6,10 @@ use App\Enums\GuardEnum;
 use App\Helpers\TestHelper;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
 
-uses(RefreshDatabase::class);
+uses(RefreshDatabase::class, WithFaker::class);
 
 beforeEach(function () {
     // Create permissions and roles for all tests
@@ -429,4 +430,256 @@ test('cache is invalidated when user is deleted via API', function () {
 
     // Count should have decreased by 1
     $this->assertEquals($initialCount - 1, $newCount);
+});
+
+test('update method validates email uniqueness when changing email', function () {
+    // Act as superadmin for this test
+    $superadmin = TestHelper::createTestSuperAdmin();
+    $this->actingAs($superadmin, GuardEnum::WEB->value);
+
+    // Create two users
+    $user1 = User::factory()->create(['email' => 'user1@example.com']);
+    // User with a taken email
+    User::factory()->create(['email' => 'user2@example.com']);
+
+    // Act - Try to update user1 with user2's email
+    $response = $this->putJson(route('users.update', $user1->id), [
+        'email' => 'user2@example.com',
+    ]);
+
+    // Assert - Check validation errors
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors(['email']);
+});
+
+// STORE METHOD TESTS
+
+test('superadmin can create a new user', function () {
+    // Act as superadmin
+    $superadmin = TestHelper::createTestSuperAdmin();
+    $this->actingAs($superadmin, GuardEnum::WEB->value);
+
+    $userData = [
+        'name' => 'New User',
+        'email' => 'newuser@example.com',
+        'password' => 'password123',
+    ];
+
+    // Act - Create new user
+    $response = $this->postJson(route('users.store'), $userData);
+
+    // Assert - Check response
+    $response->assertStatus(201)
+        ->assertJsonStructure([
+            'id',
+            'name',
+            'email',
+            'created_at',
+            'updated_at',
+        ])
+        ->assertJsonPath('name', $userData['name'])
+        ->assertJsonPath('email', $userData['email']);
+
+    // Check database
+    $this->assertDatabaseHas('users', [
+        'name' => $userData['name'],
+        'email' => $userData['email'],
+    ]);
+});
+
+test('authorized user can create a new user', function () {
+    // Act as user with create permission
+    $user = TestHelper::createTestUser();
+    $user->givePermissionTo('users.create');
+    $this->actingAs($user, GuardEnum::WEB->value);
+
+    $userData = [
+        'name' => 'Another User',
+        'email' => 'anotheruser@example.com',
+        'password' => 'password123',
+    ];
+
+    // Act - Create new user
+    $response = $this->postJson(route('users.store'), $userData);
+
+    // Assert - Should succeed
+    $response->assertStatus(201)
+        ->assertJsonPath('name', $userData['name'])
+        ->assertJsonPath('email', $userData['email']);
+});
+
+test('unauthorized user cannot create a new user', function () {
+    // Act as unauthorized user
+    $user = TestHelper::createTestUnauthorizedUser();
+    $this->actingAs($user, GuardEnum::WEB->value);
+
+    $userData = [
+        'name' => 'Unauthorized User',
+        'email' => 'unauthorized@example.com',
+        'password' => 'password123',
+    ];
+
+    // Act - Try to create new user
+    $response = $this->postJson(route('users.store'), $userData);
+
+    // Assert - Should be forbidden
+    $response->assertStatus(403);
+});
+
+test('store method validates required fields', function () {
+    // Act as superadmin for this test
+    $superadmin = TestHelper::createTestSuperAdmin();
+    $this->actingAs($superadmin, GuardEnum::WEB->value);
+
+    // Act - Try with missing required fields
+    $response = $this->postJson(route('users.store'), []);
+
+    // Assert - Check validation errors
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors(['name', 'email', 'password']);
+});
+
+test('store method validates email format and uniqueness', function () {
+    // Act as superadmin for this test
+    $superadmin = TestHelper::createTestSuperAdmin();
+    $this->actingAs($superadmin, GuardEnum::WEB->value);
+
+    // Create existing user
+    User::factory()->create(['email' => 'existing@example.com']);
+
+    // Act - Try with invalid email and duplicate email
+    $response = $this->postJson(route('users.store'), [
+        'name' => 'Test User',
+        'email' => 'existing@example.com',
+        'password' => 'password123',
+    ]);
+
+    // Assert - Check validation errors
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors(['email']);
+});
+
+// UPDATE METHOD TESTS
+
+test('superadmin can update any user', function () {
+    // Act as superadmin
+    $superadmin = TestHelper::createTestSuperAdmin();
+    $this->actingAs($superadmin, GuardEnum::WEB->value);
+
+    // Create a user to update
+    $userToUpdate = TestHelper::createTestUser();
+
+    $updateData = [
+        'name' => 'Updated Name',
+        'email' => 'updated@example.com',
+    ];
+
+    // Act - Update the user
+    $response = $this->putJson(route('users.update', $userToUpdate->id), $updateData);
+
+    // Assert - Check response
+    $response->assertStatus(200)
+        ->assertJsonPath('name', $updateData['name'])
+        ->assertJsonPath('email', $updateData['email']);
+
+    // Check database
+    $this->assertDatabaseHas('users', [
+        'id' => $userToUpdate->id,
+        'name' => $updateData['name'],
+        'email' => $updateData['email'],
+    ]);
+});
+
+test('authorized user can update other users', function () {
+    // Act as user with update permission
+    $user = TestHelper::createTestUser();
+    $user->givePermissionTo('users.update');
+    $this->actingAs($user, GuardEnum::WEB->value);
+
+    // Create another user to update
+    $otherUser = User::factory()->create();
+
+    $updateData = [
+        'name' => 'Updated by Authorized User',
+    ];
+
+    // Act - Update the other user
+    $response = $this->putJson(route('users.update', $otherUser->id), $updateData);
+
+    // Assert - Should succeed
+    $response->assertStatus(200)
+        ->assertJsonPath('name', $updateData['name']);
+});
+
+test('user can update their own profile', function () {
+    // Act as regular user
+    $user = TestHelper::createTestUser();
+    $this->actingAs($user, GuardEnum::WEB->value);
+
+    $updateData = [
+        'name' => 'My Updated Name',
+        'email' => 'myupdated@'. $this->faker->domainName(),
+    ];
+
+    // Act - Update own profile
+    $response = $this->putJson(route('users.update', $user->id), $updateData);
+
+    // Assert - Should succeed
+    $response->assertStatus(200)
+        ->assertJsonPath('name', $updateData['name'])
+        ->assertJsonPath('email', $updateData['email']);
+});
+
+test('unauthorized user cannot update other users', function () {
+    // Act as unauthorized user
+    $user = TestHelper::createTestUnauthorizedUser();
+    $this->actingAs($user, GuardEnum::WEB->value);
+
+    // Create another user
+    $otherUser = TestHelper::createTestUser();
+
+    $updateData = [
+        'name' => 'Unauthorized Update',
+    ];
+
+    // Act - Try to update other user
+    $response = $this->putJson(route('users.update', $otherUser->id), $updateData);
+
+    // Assert - Should be forbidden
+    $response->assertStatus(403);
+});
+
+test('unauthenticated user cannot access store endpoint', function () {
+    // Create a test without authentication
+    $this->refreshApplication();
+
+    $userData = [
+        'name' => 'Test User',
+        'email' => 'test@'. $this->faker->domainName(),
+        'password' => 'password123',
+    ];
+
+    // Act - Try to access store endpoint without authentication
+    $response = $this->postJson(route('users.store'), $userData);
+
+    // Assert - Check for 401 Unauthorized
+    $response->assertStatus(401);
+});
+
+test('unauthenticated user cannot access update endpoint', function () {
+    // Create a test without authentication
+    $this->refreshApplication();
+
+    // Create a user to try to update
+    $user = TestHelper::createTestUser();
+
+    $updateData = [
+        'name' => 'Updated Name',
+    ];
+
+    // Act - Try to access update endpoint without authentication
+    $response = $this->putJson(route('users.update', $user->id), $updateData);
+
+    // Assert - Check for 401 Unauthorized
+    $response->assertStatus(401);
 });

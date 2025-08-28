@@ -33,4 +33,20 @@ class UserService
             return $this->userRepository->findWithRoles($id);
         });
     }
+
+    /**
+     * Create a new user
+     */
+    public function createUser(array $data): User
+    {
+        return $this->userRepository->create($data);
+    }
+
+    /**
+     * Update an existing user
+     */
+    public function updateUser(User $user, array $data): User
+    {
+        return $this->userRepository->update($user, $data);
+    }
 }
