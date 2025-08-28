@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Requests\Api\V1;
+namespace App\Http\Requests\Api\V1\User;
 
 use App\Models\User;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
-class UserUpdateRequest extends FormRequest
+class UserStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,21 +24,24 @@ class UserUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        $userId = $this->route('user');
-        
         return [
             'name' => [
-                'sometimes',
+                'required',
                 'string',
                 'max:255',
             ],
             'email' => [
-                'sometimes',
+                'required',
                 'string',
                 'lowercase',
                 'email',
                 'max:255',
-                Rule::unique(User::class)->ignore($userId),
+                'unique:' . User::class,
+            ],
+            'password' => [
+                'required',
+                'string',
+                Password::defaults(),
             ],
         ];
     }
@@ -51,9 +54,12 @@ class UserUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'name.required' => 'The name field is required.',
             'name.max' => 'The name may not be greater than 255 characters.',
+            'email.required' => 'The email field is required.',
             'email.email' => 'The email must be a valid email address.',
             'email.unique' => 'The email has already been taken.',
+            'password.required' => 'The password field is required.',
         ];
     }
 }

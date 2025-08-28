@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\V1\UserIndexRequest;
-use App\Http\Requests\Api\V1\UserStoreRequest;
-use App\Http\Requests\Api\V1\UserUpdateRequest;
-use App\Http\Resources\V1\UserCollection;
-use App\Http\Resources\V1\UserResource;
+use App\Http\Requests\Api\V1\User\UserIndexRequest;
+use App\Http\Requests\Api\V1\User\UserStoreRequest;
+use App\Http\Requests\Api\V1\User\UserUpdateRequest;
+use App\Http\Resources\V1\User\UserCollection;
+use App\Http\Resources\V1\User\UserResource;
 use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
