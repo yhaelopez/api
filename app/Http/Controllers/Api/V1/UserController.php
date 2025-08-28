@@ -87,8 +87,10 @@ class UserController extends Controller
      *
      *     @OA\RequestBody(
      *         required=true,
+     *
      *         @OA\JsonContent(
      *             required={"name","email","password"},
+     *
      *             @OA\Property(property="name", type="string", example="John Doe"),
      *             @OA\Property(property="email", type="string", example="john.doe@example.com"),
      *             @OA\Property(property="password", type="string", example="password123")
@@ -182,7 +184,9 @@ class UserController extends Controller
      *
      *     @OA\RequestBody(
      *         required=false,
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="name", type="string", example="John Doe"),
      *             @OA\Property(property="email", type="string", example="john.doe@example.com")
      *         )
@@ -311,13 +315,13 @@ class UserController extends Controller
 
         return response()->json([
             'message' => 'User restored successfully',
-            'data' => new UserResource($restoredUser)
+            'data' => new UserResource($restoredUser),
         ], JsonResponse::HTTP_OK);
     }
 
     /**
      * @OA\Delete(
-     *     path="/api/v1/users/{user}/force",
+     *     path="/api/v1/users/{user}/force-delete",
      *     summary="Permanently delete the specified user",
      *     tags={"UserController"},
      *     security={{"bearerAuth":{}}},

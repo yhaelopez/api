@@ -7,7 +7,7 @@ use Throwable;
 
 /**
  * Exception thrown when attempting to force delete an active (non-deleted) record.
- * 
+ *
  * This exception is used to prevent accidental permanent deletion of active records
  * that should only be soft-deleted first, then force deleted if needed.
  */
@@ -25,12 +25,6 @@ class ForceDeleteActiveRecordException extends Exception
 
     /**
      * Create a new exception instance.
-     *
-     * @param string $message
-     * @param int $code
-     * @param string|null $modelClass
-     * @param int|null $modelId
-     * @param Throwable|null $previous
      */
     public function __construct(
         ?string $message = '',
@@ -67,8 +61,6 @@ class ForceDeleteActiveRecordException extends Exception
 
     /**
      * Get the model class name.
-     * 
-     * @return string|null
      */
     public function getModelClass(): ?string
     {
@@ -77,8 +69,6 @@ class ForceDeleteActiveRecordException extends Exception
 
     /**
      * Get the model ID.
-     * 
-     * @return int|null
      */
     public function getModelId(): ?int
     {

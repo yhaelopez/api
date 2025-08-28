@@ -618,7 +618,7 @@ test('user can update their own profile', function () {
 
     $updateData = [
         'name' => 'My Updated Name',
-        'email' => 'myupdated@'. $this->faker->domainName(),
+        'email' => 'myupdated@'.$this->faker->domainName(),
     ];
 
     // Act - Update own profile
@@ -655,7 +655,7 @@ test('unauthenticated user cannot access store endpoint', function () {
 
     $userData = [
         'name' => 'Test User',
-        'email' => 'test@'. $this->faker->domainName(),
+        'email' => 'test@'.$this->faker->domainName(),
         'password' => 'password123',
     ];
 
@@ -886,17 +886,17 @@ test('force delete workflow: delete then force delete', function () {
 
     // Create a user
     $user = User::factory()->create();
-    
+
     // First, soft-delete the user
     $response = $this->deleteJson(route('users.destroy', $user->id));
     $response->assertStatus(200);
-    
+
     // Verify user is soft-deleted
     $this->assertSoftDeleted($user);
 
     // Now try to force delete the soft-deleted user
     $response = $this->deleteJson(route('users.force-delete', $user->id));
-    
+
     // Assert - Should succeed
     $response->assertStatus(200)
         ->assertJson(['message' => 'User permanently deleted successfully']);
@@ -915,7 +915,7 @@ test('force delete with onlyTrashed prevents deletion of active users', function
     // Create multiple users
     $activeUser1 = User::factory()->create();
     $activeUser2 = User::factory()->create();
-    
+
     // Create and soft-delete one user
     $deletedUser = User::factory()->create();
     $deletedUser->delete();
@@ -923,7 +923,7 @@ test('force delete with onlyTrashed prevents deletion of active users', function
     // Try to force delete active users - should fail
     $response1 = $this->deleteJson(route('users.force-delete', $activeUser1->id));
     $response2 = $this->deleteJson(route('users.force-delete', $activeUser2->id));
-    
+
     // Assert - Both should return 422
     $response1->assertStatus(422);
     $response2->assertStatus(422);
@@ -959,13 +959,13 @@ test('force delete triggers ForceDeleteActiveRecordException for active users', 
         ])
         ->assertJson([
             'error' => 422,
-            'message' => 'Cannot force delete active User with ID ' . $activeUser->id . '. The record must be soft-deleted first.',
+            'message' => 'Cannot force delete active User with ID '.$activeUser->id.'. The record must be soft-deleted first.',
         ]);
 
     // Verify the active user still exists in database
     $this->assertDatabaseHas('users', [
         'id' => $activeUser->id,
-        'deleted_at' => null
+        'deleted_at' => null,
     ]);
 });
 

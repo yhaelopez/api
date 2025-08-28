@@ -65,18 +65,19 @@ class UserService
     public function restoreUser(User $user): User
     {
         $this->userRepository->restore($user);
+
         return $user->fresh();
     }
 
     /**
      * Force delete a user permanently
-     * 
+     *
      * @throws ForceDeleteActiveRecordException When attempting to force delete an active user
      */
     public function forceDeleteUser(User $user): bool
     {
         // Check if user is soft-deleted before force deleting
-        if (!$user->trashed()) {
+        if (! $user->trashed()) {
             throw new ForceDeleteActiveRecordException(
                 modelClass: User::class,
                 modelId: $user->id
