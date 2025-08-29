@@ -5,6 +5,15 @@ export interface User {
   email_verified_at?: string;
   created_at: string;
   updated_at: string;
+  deleted_at?: string;
+}
+
+export interface CreateUser {
+  name: string;
+  email: string;
+  password: string;
+  password_confirmation?: string;
+  role_id?: number;
 }
 
 export interface UserListState {
@@ -22,6 +31,9 @@ export interface UserTableProps {
 export interface UserTableEmits {
   (e: 'select', user: User): void;
   (e: 'sort', field: keyof User): void;
+  (e: 'delete', user: User): void;
+  (e: 'restore', user: User): void;
+  (e: 'forceDelete', user: User): void;
 }
 
 export interface UserListProps {

@@ -93,28 +93,28 @@ class ApiClient {
   }
 
   async post<T>(endpoint: string, data?: any): Promise<T> {
-    return this.request<T>(endpoint, {
+    return this.request<T>(`${this.baseUrl}${endpoint}`, {
       method: 'POST',
       body: data ? JSON.stringify(data) : undefined,
     });
   }
 
   async put<T>(endpoint: string, data?: any): Promise<T> {
-    return this.request<T>(endpoint, {
+    return this.request<T>(`${this.baseUrl}${endpoint}`, {
       method: 'PUT',
       body: data ? JSON.stringify(data) : undefined,
     });
   }
 
   async patch<T>(endpoint: string, data?: any): Promise<T> {
-    return this.request<T>(endpoint, {
+    return this.request<T>(`${this.baseUrl}${endpoint}`, {
       method: 'PATCH',
       body: data ? JSON.stringify(data) : undefined,
     });
   }
 
   async delete<T>(endpoint: string): Promise<T> {
-    return this.request<T>(endpoint, {
+    return this.request<T>(`${this.baseUrl}${endpoint}`, {
       method: 'DELETE',
     });
   }

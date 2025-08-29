@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\RoleController;
 use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -7,6 +8,9 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->middleware(['web', 'auth', 'throttle:60,1'])->group(function () {
     // User Controller - 60 requests per minute
     Route::apiResource('users', UserController::class);
+
+    // Role Controller - 60 requests per minute
+    Route::get('roles', [RoleController::class, 'index'])->name('roles.index');
 
     // Custom user routes
     Route::post('users/{user}/restore', [UserController::class, 'restore'])

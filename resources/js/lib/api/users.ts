@@ -1,5 +1,5 @@
 import { apiClient, type PaginatedResponse } from '../api';
-import type { User } from '@/types/user';
+import type { User, CreateUser } from '@/types/user';
 
 export interface UsersListParams {
   page?: number;
@@ -22,7 +22,7 @@ class UsersApi {
     return apiClient.get<{ data: User }>(`${this.endpoint}/${id}`);
   }
 
-  async create(data: Partial<User>): Promise<{ data: User }> {
+  async create(data: CreateUser): Promise<{ data: User }> {
     return apiClient.post<{ data: User }>(this.endpoint, data);
   }
 
@@ -32,6 +32,14 @@ class UsersApi {
 
   async delete(id: number): Promise<{ message: string }> {
     return apiClient.delete<{ message: string }>(`${this.endpoint}/${id}`);
+  }
+
+  async restore(id: number): Promise<{ message: string; data: User }> {
+    return apiClient.post<{ message: string; data: User }>(`${this.endpoint}/${id}/restore`);
+  }
+
+  async forceDelete(id: number): Promise<{ message: string }> {
+    return apiClient.delete<{ message: string }>(`${this.endpoint}/${id}/force-delete`);
   }
 }
 

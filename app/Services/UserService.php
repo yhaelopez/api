@@ -6,6 +6,7 @@ use App\Cache\UserCache;
 use App\Exceptions\ForceDeleteActiveRecordException;
 use App\Models\User;
 use App\Repositories\UserRepository;
+use App\Services\RoleService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class UserService
@@ -13,7 +14,8 @@ class UserService
     public function __construct(
         private UserCache $userCache,
         private UserRepository $userRepository,
-        private LoggerService $logger
+        private LoggerService $logger,
+        private RoleService $roleService
     ) {}
 
     /**
@@ -59,6 +61,21 @@ class UserService
 
         $user = $this->userRepository->create($data);
 
+        // Assign role if provided
+        if (isset($data['role_id'])) {
+            $role = $this->roleService->findRole($data['role_id']);
+            if ($role) {
+                $this->roleService->assignRole($user, $role);
+
+                $this->logger->user()->info('Role assigned to user', [
+                    'user_id' => $user->id,
+                    'role_id' => $role->id,
+                    'role_name' => $role->name,
+                    'action' => 'role_assigned'
+                ]);
+            }
+        }
+
         $this->logger->user()->info('User created successfully', [
             'user_id' => $user->id,
             'action' => 'user_created_success'
@@ -78,7 +95,26 @@ class UserService
             'updated_fields' => array_keys($data)
         ]);
 
+        // Handle role update separately
+        $roleId = $data['role_id'] ?? null;
+        unset($data['role_id']);
+
         $updatedUser = $this->userRepository->update($user, $data);
+
+        // Update role if provided
+        if (!empty($roleId)) {
+            $role = $this->roleService->findRole($roleId);
+
+            // Remove existing roles and assign new one through service
+            $this->roleService->syncRoles($updatedUser, [$role]);
+
+            $this->logger->user()->info('Role updated for user', [
+                'user_id' => $updatedUser->id,
+                'role_id' => $role->id,
+                'role_name' => $role->name,
+                'action' => 'role_updated'
+            ]);
+        }
 
         $this->logger->user()->info('User updated successfully', [
             'user_id' => $user->id,

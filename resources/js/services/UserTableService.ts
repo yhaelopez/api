@@ -3,7 +3,7 @@ import type { User } from '@/types/user';
 export interface UserTableService {
   formatDate(dateString: string): string;
   getUserInitials(user: User): string;
-  getUserStatus(user: User): { text: string; isVerified: boolean };
+  getUserStatus(user: User): { text: string; isVerified: boolean; isDeleted: boolean };
   sortUsers(users: User[], field: keyof User, direction: 'asc' | 'desc'): User[];
 }
 
@@ -16,11 +16,22 @@ export class UserTableServiceImpl implements UserTableService {
     return user.name.charAt(0).toUpperCase();
   }
 
-  getUserStatus(user: User): { text: string; isVerified: boolean } {
+  getUserStatus(user: User): { text: string; isVerified: boolean; isDeleted: boolean } {
+    const isDeleted = !!user.deleted_at;
     const isVerified = !!user.email_verified_at;
+    
+    if (isDeleted) {
+      return {
+        text: 'Deleted',
+        isVerified: false,
+        isDeleted: true,
+      };
+    }
+    
     return {
       text: isVerified ? 'Verified' : 'Pending',
       isVerified,
+      isDeleted: false,
     };
   }
 

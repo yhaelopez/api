@@ -1,5 +1,5 @@
 import { usersApi, type UsersListParams } from '@/lib/api/users';
-import type { User } from '@/types/user';
+import type { User, CreateUser } from '@/types/user';
 
 export interface UserFilters {
   search?: string;
@@ -50,7 +50,7 @@ export class UserService {
   /**
    * Create a new user
    */
-  static async createUser(userData: Partial<User>) {
+  static async createUser(userData: CreateUser) {
     return usersApi.create(userData);
   }
 
@@ -62,10 +62,24 @@ export class UserService {
   }
 
   /**
-   * Delete a user
+   * Delete a user (soft delete)
    */
   static async deleteUser(id: number) {
     return usersApi.delete(id);
+  }
+
+  /**
+   * Restore a soft-deleted user
+   */
+  static async restoreUser(id: number) {
+    return usersApi.restore(id);
+  }
+
+  /**
+   * Force delete a user permanently
+   */
+  static async forceDeleteUser(id: number) {
+    return usersApi.forceDelete(id);
   }
 
   /**
@@ -99,5 +113,12 @@ export class UserService {
     }
 
     return errors;
+  }
+
+  /**
+   * Check if user is soft deleted
+   */
+  static isUserDeleted(user: User): boolean {
+    return !!user.deleted_at;
   }
 } 

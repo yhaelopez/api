@@ -36,7 +36,8 @@ class UserRepository
      */
     public function paginate(int $page, int $perPage): LengthAwarePaginator
     {
-        return User::with(['roles'])
+        return User::withTrashed()
+            ->with(['roles'])
             ->orderBy('created_at', 'desc')
             ->paginate($perPage, ['*'], 'page', $page);
     }

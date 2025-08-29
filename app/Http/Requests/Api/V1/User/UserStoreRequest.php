@@ -43,6 +43,11 @@ class UserStoreRequest extends FormRequest
                 'string',
                 Password::defaults(),
             ],
+            'role_id' => [
+                'nullable',
+                'integer',
+                'exists:roles,id',
+            ],
         ];
     }
 

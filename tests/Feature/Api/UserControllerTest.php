@@ -559,6 +559,60 @@ test('store method validates email format and uniqueness', function () {
         ->assertJsonValidationErrors(['email']);
 });
 
+test('store method can create user with role', function () {
+    // Act as superadmin for this test
+    $superadmin = TestHelper::createTestSuperAdmin();
+    $this->actingAs($superadmin, GuardEnum::WEB->value);
+
+    // Get a role to assign
+    $role = \Spatie\Permission\Models\Role::where('name', 'user')->first();
+
+    $userData = [
+        'name' => 'User With Role',
+        'email' => 'userwithrole@example.com',
+        'password' => 'password123',
+        'role_id' => $role->id,
+    ];
+
+    // Act - Create new user with role
+    $response = $this->postJson(route('users.store'), $userData);
+
+    // Assert - Check response
+    $response->assertStatus(201)
+        ->assertJsonPath('name', $userData['name'])
+        ->assertJsonPath('email', $userData['email']);
+
+    // Check database
+    $this->assertDatabaseHas('users', [
+        'name' => $userData['name'],
+        'email' => $userData['email'],
+    ]);
+
+    // Check that role was assigned
+    $createdUser = User::where('email', $userData['email'])->first();
+    $this->assertTrue($createdUser->hasRole($role));
+});
+
+test('store method validates role_id exists', function () {
+    // Act as superadmin for this test
+    $superadmin = TestHelper::createTestSuperAdmin();
+    $this->actingAs($superadmin, GuardEnum::WEB->value);
+
+    $userData = [
+        'name' => 'User With Invalid Role',
+        'email' => 'userwithinvalidrole@example.com',
+        'password' => 'password123',
+        'role_id' => 999999, // Non-existent role ID
+    ];
+
+    // Act - Try to create user with invalid role
+    $response = $this->postJson(route('users.store'), $userData);
+
+    // Assert - Check validation errors
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors(['role_id']);
+});
+
 // UPDATE METHOD TESTS
 
 test('superadmin can update any user', function () {
@@ -682,6 +736,55 @@ test('unauthenticated user cannot access update endpoint', function () {
 
     // Assert - Check for 401 Unauthorized
     $response->assertStatus(401);
+});
+
+test('update method can update user role', function () {
+    // Act as superadmin for this test
+    $superadmin = TestHelper::createTestSuperAdmin();
+    $this->actingAs($superadmin, GuardEnum::WEB->value);
+
+    // Create a user to update
+    $userToUpdate = TestHelper::createTestUser();
+
+    // Get a different role to assign
+    $newRole = \Spatie\Permission\Models\Role::where('name', 'superadmin')->first();
+
+    $updateData = [
+        'name' => 'Updated Name',
+        'role_id' => $newRole->id,
+    ];
+
+    // Act - Update the user with new role
+    $response = $this->putJson(route('users.update', $userToUpdate->id), $updateData);
+
+    // Assert - Check response
+    $response->assertStatus(200)
+        ->assertJsonPath('name', $updateData['name']);
+
+    // Check that role was updated
+    $updatedUser = $userToUpdate->fresh();
+    $this->assertTrue($updatedUser->hasRole($newRole));
+});
+
+test('update method validates role_id exists', function () {
+    // Act as superadmin for this test
+    $superadmin = TestHelper::createTestSuperAdmin();
+    $this->actingAs($superadmin, GuardEnum::WEB->value);
+
+    // Create a user to update
+    $userToUpdate = TestHelper::createTestUser();
+
+    $updateData = [
+        'name' => 'Updated Name',
+        'role_id' => 999999, // Non-existent role ID
+    ];
+
+    // Act - Try to update user with invalid role
+    $response = $this->putJson(route('users.update', $userToUpdate->id), $updateData);
+
+    // Assert - Check validation errors
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors(['role_id']);
 });
 
 // RESTORE METHOD TESTS

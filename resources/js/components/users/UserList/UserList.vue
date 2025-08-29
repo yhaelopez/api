@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import type { UserListProps, UserListEmits, User } from '@/types/user';
 import { UserTable } from '../UserTable';
+import { CreateUserForm } from '../CreateUserForm';
 import { useUsers } from '@/composables/useUsers';
+import { Button } from '@/components/ui/button';
+import { UserPlus } from 'lucide-vue-next';
 
 const props = withDefaults(defineProps<UserListProps>(), {
   initialUsers: () => [],
@@ -11,9 +14,39 @@ const props = withDefaults(defineProps<UserListProps>(), {
 const emit = defineEmits<UserListEmits>();
 
 const { users, loading, error, fetchUsers } = useUsers();
+const showCreateForm = ref(false);
 
 const handleUserSelect = (user: User) => {
   emit('userSelected', user);
+};
+
+const handleUserDeleted = (user: User) => {
+  // Refresh the user list to show updated status
+  fetchUsers();
+};
+
+const handleUserRestored = (user: User) => {
+  // Refresh the user list to show updated status
+  fetchUsers();
+};
+
+const handleUserForceDeleted = (user: User) => {
+  // Refresh the user list to remove the permanently deleted user
+  fetchUsers();
+};
+
+const handleUserCreated = (user: User) => {
+  // Refresh the user list to show the new user
+  fetchUsers();
+  showCreateForm.value = false;
+};
+
+const handleCreateCancelled = () => {
+  showCreateForm.value = false;
+};
+
+const openCreateForm = () => {
+  showCreateForm.value = true;
 };
 
 onMounted(() => {
@@ -27,6 +60,10 @@ onMounted(() => {
   <div class="space-y-6">
     <div class="flex justify-between items-center">
       <h1 class="text-2xl font-bold text-gray-900">Users</h1>
+      <Button @click="openCreateForm" class="flex items-center gap-2">
+        <UserPlus class="h-4 w-4" />
+        Create User
+      </Button>
     </div>
     
     <div v-if="error" class="bg-red-50 border border-red-200 rounded-md p-4">
@@ -47,6 +84,23 @@ onMounted(() => {
       :users="users" 
       :loading="loading"
       @select="handleUserSelect"
+      @delete="handleUserDeleted"
+      @restore="handleUserRestored"
+      @force-delete="handleUserForceDeleted"
     />
+
+    <!-- Create User Form Modal -->
+    <div
+      v-if="showCreateForm"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      @click="handleCreateCancelled"
+    >
+      <div @click.stop>
+        <CreateUserForm
+          @user-created="handleUserCreated"
+          @cancelled="handleCreateCancelled"
+        />
+      </div>
+    </div>
   </div>
 </template>

@@ -40,6 +40,11 @@ class UserUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($userId),
             ],
+            'role_id' => [
+                'sometimes',
+                'integer',
+                'exists:roles,id',
+            ],
         ];
     }
 
