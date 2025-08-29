@@ -7,6 +7,10 @@ export interface UsersListParams {
   search?: string;
   sort_by?: string;
   sort_direction?: 'asc' | 'desc';
+  with_inactive?: boolean;
+  only_inactive?: boolean;
+  deleted_from?: string;
+  deleted_to?: string;
 }
 
 export interface UsersListResponse extends PaginatedResponse<User> {}

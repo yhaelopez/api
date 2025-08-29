@@ -35,8 +35,7 @@ class UserFilter extends BaseFilter
         $this->applyDateFilters($query);
         $this->applySortBy($query);
         $this->applyWithInactiveFilter($query);
-        $this->applyOnlyActiveFilter($query);
-        $this->applyDeletedUsersFilter($query);
+        $this->applyOnlyInactiveFilter($query);
     }
 
     /**

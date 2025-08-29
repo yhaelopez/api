@@ -23,7 +23,16 @@ export function useUsers() {
     error.value = null;
 
     try {
-      const response = await UserService.getUsers(options);
+      // Always include with_inactive: true for UserList view
+      const userOptions: UserListOptions = {
+        ...options,
+        filters: {
+          ...options?.filters,
+          withInactive: true,
+        },
+      };
+      
+      const response = await UserService.getUsers(userOptions);
       users.value = response.data;
       pagination.value = {
         current_page: response.current_page,

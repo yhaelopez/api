@@ -71,6 +71,8 @@ class UserController extends Controller
     {
         Gate::authorize('viewAny', User::class);
 
+
+
         $perPage = $request->validated('per_page', 15);
         $page = $request->validated('page', 1);
         
@@ -86,7 +88,7 @@ class UserController extends Controller
             'deleted_from',
             'deleted_to',
             'with_inactive',
-            'only_active',
+            'only_inactive',
             'sort_by',
             'sort_direction'
         ]);

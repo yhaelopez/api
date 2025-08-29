@@ -79,7 +79,7 @@ class UserIndexRequest extends FormRequest
                 'nullable',
                 'boolean',
             ],
-            'only_active' => [
+            'only_inactive' => [
                 'nullable',
                 'boolean',
             ],

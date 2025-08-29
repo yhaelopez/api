@@ -575,6 +575,47 @@ test('superadmin can filter users by updated date range', function () {
     expect($filteredCount)->toBeGreaterThan(0);
 });
 
+test('superadmin can filter users by deleted date range', function () {
+    // Act as superadmin
+    $superadmin = TestHelper::createTestSuperAdmin();
+    $this->actingAs($superadmin, GuardEnum::WEB->value);
+
+    // Create test users
+    $user1 = User::factory()->create(['name' => 'John Admin']);
+    $user2 = User::factory()->create(['name' => 'Jane User']);
+    $user3 = User::factory()->create(['name' => 'Bob Developer']);
+
+    // Get total users BEFORE deleting (should be 3 + existing users)
+    $totalBeforeDeleteResponse = $this->getJson(route('users.index'));
+    $totalBeforeDeleteResponse->assertStatus(200);
+    $totalBeforeDelete = $totalBeforeDeleteResponse->json('meta.total');
+
+    // Delete users via API
+    $this->deleteJson(route('users.destroy', $user1));
+    $this->deleteJson(route('users.destroy', $user2));
+    $this->deleteJson(route('users.destroy', $user3));
+
+    // Act - Filter deleted users by deletion date range
+    $response = $this->getJson(route('users.index', [
+        'only_inactive' => '1',
+        'deleted_from' => now()->subDays(1)->format('Y-m-d'),
+        'deleted_to' => now()->addDays(1)->format('Y-m-d')
+    ]));
+
+    $totalWithDeletedUsers = $response->json('meta.total');
+
+    // Assert - Check response
+    $response->assertStatus(200);
+    
+    // Should return fewer users than total with deleted (because we're filtering by date range)
+    expect($totalWithDeletedUsers)->toBeLessThan($totalBeforeDelete);
+    
+    // Verify we got the user deleted on 2024-01-20
+    $responseData = $response->json('data');
+    $deletedUser = collect($responseData)->firstWhere('name', 'Jane User');
+    expect($deletedUser)->not->toBeNull();    
+});
+
 test('superadmin can filter users by email search', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();

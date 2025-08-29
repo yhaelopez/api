@@ -6,6 +6,8 @@ export interface UserFilters {
   status?: 'verified' | 'pending';
   sortBy?: keyof User;
   sortDirection?: 'asc' | 'desc';
+  withInactive?: boolean;
+  onlyInactive?: boolean;
 }
 
 export interface UserListOptions {
@@ -25,6 +27,16 @@ export class UserService {
       page,
       per_page: perPage,
     };
+
+    // Add with_inactive filter if specified
+    if (filters.withInactive === true) {
+      params.with_inactive = true;
+    }
+
+    // Add only_inactive filter if specified
+    if (filters.onlyInactive === true) {
+      params.only_inactive = true;
+    }
 
     // Add search filter
     if (filters.search) {

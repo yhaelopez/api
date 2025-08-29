@@ -98,7 +98,7 @@ abstract class BaseFilter
 
         if (is_string($value)) {
             $value = strtolower(trim($value));
-            return $value === '1';
+            return in_array($value, ['1', 'true']);
         }
 
         return (bool) $value;
@@ -131,41 +131,16 @@ abstract class BaseFilter
     }
 
     /**
-     * Apply filter to show only deleted users when filtering by deletion dates
+     * Apply onlyInactive filter to show only deleted records
      *
      * @param  Builder  $query  The query builder
      */
-    protected function applyDeletedUsersFilter(Builder $query): void
+    protected function applyOnlyInactiveFilter(Builder $query): void
     {
-        Log::info('applyDeletedUsersFilter method called');
+        $onlyInactive = $this->getBoolean('only_inactive');
         
-        $deletedFrom = $this->get('deleted_from');
-        $deletedTo = $this->get('deleted_to');
-        
-        // Debug: Log what we're getting
-        if ($deletedFrom || $deletedTo) {
-            Log::info('Applying deleted users filter', [
-                'deleted_from' => $deletedFrom,
-                'deleted_to' => $deletedTo,
-                'filters' => $this->filters
-            ]);
-            
-            // If we're filtering by deletion dates, show only deleted users
-            $query->whereNotNull('deleted_at');
-        }
-    }
-
-    /**
-     * Apply onlyActive filter to show only active records
-     *
-     * @param  Builder  $query  The query builder
-     */
-    protected function applyOnlyActiveFilter(Builder $query): void
-    {
-        $onlyActive = $this->getBoolean('only_active');
-        
-        if ($onlyActive === true) {
-            $query->whereNull('deleted_at');
+        if ($onlyInactive) {
+            $query->onlyTrashed();
         }
     }
 
