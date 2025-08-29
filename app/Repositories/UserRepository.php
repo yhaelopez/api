@@ -3,10 +3,15 @@
 namespace App\Repositories;
 
 use App\Models\User;
+use App\Services\FilterService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class UserRepository
 {
+    public function __construct(
+        private FilterService $filterService
+    ) {}
+
     /**
      * Find a user by ID
      */
@@ -32,13 +37,15 @@ class UserRepository
     }
 
     /**
-     * Get paginated list of users with roles
+     * Get paginated list of users with roles and filters
      */
-    public function paginate(int $page, int $perPage): LengthAwarePaginator
+    public function paginate(int $page, int $perPage, array $filters = []): LengthAwarePaginator
     {
-        return User::withTrashed()
-            ->with(['roles'])
-            ->orderBy('created_at', 'desc')
+        $query = User::with(['roles']);
+
+        $this->filterService->applyFilters($query, $filters);
+
+        return $query->orderBy('created_at', 'desc')
             ->paginate($perPage, ['*'], 'page', $page);
     }
 

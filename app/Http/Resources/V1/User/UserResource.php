@@ -21,8 +21,10 @@ use OpenApi\Annotations as OA;
  *     @OA\Property(
  *         property="roles",
  *         type="array",
+ *
  *         @OA\Items(
  *             type="object",
+ *
  *             @OA\Property(property="id", type="integer", example=1),
  *             @OA\Property(property="name", type="string", example="user")
  *         ),

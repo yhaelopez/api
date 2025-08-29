@@ -1,0 +1,299 @@
+<?php
+
+namespace App\Filters;
+
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Log;
+
+/**
+ * Base class for all filters
+ */
+abstract class BaseFilter
+{
+    protected array $filters;
+
+    /**
+     * Constructor
+     *
+     * @param  array  $filters  The filter data from the request
+     */
+    public function __construct(array $filters)
+    {
+        $this->filters = $filters;
+    }
+
+    /**
+     * Apply all filters to the query
+     *
+     * @param  Builder  $query  The query builder
+     */
+    abstract public function apply(Builder $query): void;
+
+    /**
+     * Check if a filter key exists and has a value
+     *
+     * @param  string  $key  The filter key
+     * @return bool True if the filter exists and has a value
+     */
+    protected function has(string $key): bool
+    {
+        return ! empty($this->filters[$key]);
+    }
+
+    /**
+     * Get a filter value with optional default
+     *
+     * @param  string  $key  The filter key
+     * @param  mixed  $default  What to return if the key doesn't exist
+     * @return mixed The filter value or default
+     */
+    protected function get(string $key, mixed $default = null): mixed
+    {
+        return $this->filters[$key] ?? $default;
+    }
+
+    /**
+     * Get a filter value as a trimmed string
+     *
+     * @param  string  $key  The filter key
+     * @return string|null The trimmed string or null
+     */
+    protected function getString(string $key): ?string
+    {
+        $value = $this->get($key);
+
+        return $value ? trim($value) : null;
+    }
+
+    /**
+     * Get a filter value as an integer
+     *
+     * @param  string  $key  The filter key
+     * @return int|null The integer or null
+     */
+    protected function getInt(string $key): ?int
+    {
+        $value = $this->get($key);
+
+        return $value ? (int) $value : null;
+    }
+
+    /**
+     * Get a filter value as a boolean
+     *
+     * @param  string  $key  The filter key
+     * @return bool|null The boolean or null
+     */
+    protected function getBoolean(string $key): ?bool
+    {
+        $value = $this->get($key);
+
+        if ($value === null) {
+            return null;
+        }
+
+        if (is_bool($value)) {
+            return $value;
+        }
+
+        if (is_string($value)) {
+            $value = strtolower(trim($value));
+            return $value === '1';
+        }
+
+        return (bool) $value;
+    }
+
+    /**
+     * Apply common date range filters (created_at, updated_at, deleted_at)
+     *
+     * @param  Builder  $query  The query builder
+     */
+    protected function applyDateFilters(Builder $query): void
+    {
+        $this->applyCreatedAtFilter($query);
+        $this->applyUpdatedAtFilter($query);
+        $this->applyDeletedAtFilter($query);
+    }
+
+    /**
+     * Apply withInactive filter to include/exclude deleted records
+     *
+     * @param  Builder  $query  The query builder
+     */
+    protected function applyWithInactiveFilter(Builder $query): void
+    {
+        $withInactive = $this->getBoolean('with_inactive');
+        
+        if ($withInactive === true) {
+            $query->withTrashed();
+        }
+    }
+
+    /**
+     * Apply filter to show only deleted users when filtering by deletion dates
+     *
+     * @param  Builder  $query  The query builder
+     */
+    protected function applyDeletedUsersFilter(Builder $query): void
+    {
+        Log::info('applyDeletedUsersFilter method called');
+        
+        $deletedFrom = $this->get('deleted_from');
+        $deletedTo = $this->get('deleted_to');
+        
+        // Debug: Log what we're getting
+        if ($deletedFrom || $deletedTo) {
+            Log::info('Applying deleted users filter', [
+                'deleted_from' => $deletedFrom,
+                'deleted_to' => $deletedTo,
+                'filters' => $this->filters
+            ]);
+            
+            // If we're filtering by deletion dates, show only deleted users
+            $query->whereNotNull('deleted_at');
+        }
+    }
+
+    /**
+     * Apply onlyActive filter to show only active records
+     *
+     * @param  Builder  $query  The query builder
+     */
+    protected function applyOnlyActiveFilter(Builder $query): void
+    {
+        $onlyActive = $this->getBoolean('only_active');
+        
+        if ($onlyActive === true) {
+            $query->whereNull('deleted_at');
+        }
+    }
+
+    /**
+     * Apply created_at date range filter
+     *
+     * @param  Builder  $query  The query builder
+     */
+    protected function applyCreatedAtFilter(Builder $query): void
+    {
+        $from = $this->get('created_from');
+        $to = $this->get('created_to');
+
+        if ($from) {
+            $query->where('created_at', '>=', $from);
+        }
+
+        if ($to) {
+            $query->where('created_at', '<=', $to);
+        }
+    }
+
+    /**
+     * Apply updated_at date range filter
+     *
+     * @param  Builder  $query  The query builder
+     */
+    protected function applyUpdatedAtFilter(Builder $query): void
+    {
+        $from = $this->get('updated_from');
+        $to = $this->get('updated_to');
+
+        if ($from) {
+            $query->where('updated_at', '>=', $from);
+        }
+
+        if ($to) {
+            $query->where('updated_at', '<=', $to);
+        }
+    }
+
+    /**
+     * Apply deleted_at date range filter
+     *
+     * @param  Builder  $query  The query builder
+     */
+    protected function applyDeletedAtFilter(Builder $query): void
+    {
+        $from = $this->get('deleted_from');
+        $to = $this->get('deleted_to');
+
+        // Debug: Log what we're getting
+        if ($from || $to) {
+            Log::info('Applying deleted_at filter', [
+                'from' => $from,
+                'to' => $to,
+                'filters' => $this->filters
+            ]);
+        }
+
+        if ($from) {
+            $query->where('deleted_at', '>=', \Carbon\Carbon::parse($from)->startOfDay());
+        }
+
+        if ($to) {
+            $query->where('deleted_at', '<=', \Carbon\Carbon::parse($to)->endOfDay());
+        }
+    }
+
+    /**
+     * Apply common sorting for standard model fields
+     *
+     * @param  Builder  $query  The query builder
+     */
+    protected function applySortBy(Builder $query): void
+    {
+        $sortBy = $this->getString('sort_by') ?: 'created_at';
+        $sortDirection = $this->getString('sort_direction') ?: 'desc';
+
+        $allowedFields = $this->getAllSortableFields();
+
+        if (! in_array($sortBy, $allowedFields)) {
+            return;
+        }
+
+        $query->reorder()->orderBy($sortBy, $sortDirection);
+    }
+
+    /**
+     * Get common sortable fields that most models will have
+     *
+     * @return array List of common sortable field names
+     */
+    protected function getCommonSortableFields(): array
+    {
+        return [
+            'id',
+            'created_by',
+            'updated_by',
+            'deleted_by',
+            'created_at',
+            'updated_at',
+            'deleted_at',
+        ];
+    }
+
+    /**
+     * Get all sortable fields (common + model-specific)
+     * Override this method in child classes to add more fields
+     *
+     * @return array Combined list of all sortable fields
+     */
+    protected function getAllSortableFields(): array
+    {
+        return array_merge(
+            $this->getCommonSortableFields(),
+            $this->getModelSpecificSortableFields()
+        );
+    }
+
+    /**
+     * Get model-specific sortable fields
+     * Override this method in child classes to add more fields
+     *
+     * @return array List of model-specific sortable fields
+     */
+    protected function getModelSpecificSortableFields(): array
+    {
+        return [];
+    }
+}

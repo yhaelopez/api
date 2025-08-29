@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class GenericLogger
 {
@@ -84,7 +84,7 @@ class GenericLogger
     private function log(string $level, string $message, array $context): void
     {
         $context = $this->enrichContext($context);
-        
+
         Log::channel($this->channel)->log($level, $message, $context);
     }
 
@@ -94,7 +94,7 @@ class GenericLogger
     protected function enrichContext(array $context): array
     {
         $request = request();
-        
+
         return array_merge($context, [
             'user_id' => Auth::id(),
             'user_email' => Auth::user()?->email,

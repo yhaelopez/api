@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Tests\TestCase;
 
 class UserRepositoryTest extends TestCase
@@ -16,7 +17,7 @@ class UserRepositoryTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->userRepository = new UserRepository;
+        $this->userRepository = app(UserRepository::class);
     }
 
     public function test_can_find_user_by_id()
@@ -44,6 +45,7 @@ class UserRepositoryTest extends TestCase
     {
         User::factory()->count(25)->create();
 
+        /** @var LengthAwarePaginator */
         $paginatedUsers = $this->userRepository->paginate(1, 15);
 
         $this->assertEquals(15, $paginatedUsers->count());

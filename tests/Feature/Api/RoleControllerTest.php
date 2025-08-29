@@ -32,8 +32,8 @@ test('superadmin can view all roles', function () {
                     'guard_name',
                     'created_at',
                     'updated_at',
-                ]
-            ]
+                ],
+            ],
         ]);
 
     // Should have at least 2 roles (superadmin and user)

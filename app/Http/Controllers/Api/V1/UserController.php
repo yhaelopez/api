@@ -73,8 +73,25 @@ class UserController extends Controller
 
         $perPage = $request->validated('per_page', 15);
         $page = $request->validated('page', 1);
+        
+        // Extract filter parameters
+        $filters = $request->only([
+            'search',
+            'role',
+            'role_id',
+            'created_from',
+            'created_to',
+            'updated_from',
+            'updated_to',
+            'deleted_from',
+            'deleted_to',
+            'with_inactive',
+            'only_active',
+            'sort_by',
+            'sort_direction'
+        ]);
 
-        $users = $this->userService->getUsersList($page, $perPage);
+        $users = $this->userService->getUsersList($page, $perPage, $filters);
 
         return new UserCollection($users);
     }

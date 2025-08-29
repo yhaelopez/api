@@ -6,7 +6,6 @@ use App\Cache\UserCache;
 use App\Exceptions\ForceDeleteActiveRecordException;
 use App\Models\User;
 use App\Repositories\UserRepository;
-use App\Services\RoleService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class UserService
@@ -21,16 +20,17 @@ class UserService
     /**
      * Get paginated list of users with caching
      */
-    public function getUsersList(int $page = 1, int $perPage = 15): LengthAwarePaginator
+    public function getUsersList(int $page = 1, int $perPage = 15, array $filters = []): LengthAwarePaginator
     {
         $this->logger->user()->info('Users list retrieved', [
             'page' => $page,
             'per_page' => $perPage,
-            'action' => 'list_users'
+            'filters' => $filters,
+            'action' => 'list_users',
         ]);
 
-        return $this->userCache->rememberList($page, $perPage, function () use ($page, $perPage) {
-            return $this->userRepository->paginate($page, $perPage);
+        return $this->userCache->rememberList($page, $perPage, function () use ($page, $perPage, $filters) {
+            return $this->userRepository->paginate($page, $perPage, $filters);
         });
     }
 
@@ -41,7 +41,7 @@ class UserService
     {
         $this->logger->user()->info('User retrieved', [
             'user_id' => $id,
-            'action' => 'get_user'
+            'action' => 'get_user',
         ]);
 
         return $this->userCache->remember($id, function () use ($id) {
@@ -56,7 +56,7 @@ class UserService
     {
         $this->logger->user()->info('User created', [
             'action' => 'create_user',
-            'user_data' => array_intersect_key($data, array_flip(['name', 'email', 'role']))
+            'user_data' => array_intersect_key($data, array_flip(['name', 'email', 'role'])),
         ]);
 
         $user = $this->userRepository->create($data);
@@ -71,14 +71,14 @@ class UserService
                     'user_id' => $user->id,
                     'role_id' => $role->id,
                     'role_name' => $role->name,
-                    'action' => 'role_assigned'
+                    'action' => 'role_assigned',
                 ]);
             }
         }
 
         $this->logger->user()->info('User created successfully', [
             'user_id' => $user->id,
-            'action' => 'user_created_success'
+            'action' => 'user_created_success',
         ]);
 
         return $user;
@@ -92,7 +92,7 @@ class UserService
         $this->logger->user()->info('User updated', [
             'user_id' => $user->id,
             'action' => 'update_user',
-            'updated_fields' => array_keys($data)
+            'updated_fields' => array_keys($data),
         ]);
 
         // Handle role update separately
@@ -102,7 +102,7 @@ class UserService
         $updatedUser = $this->userRepository->update($user, $data);
 
         // Update role if provided
-        if (!empty($roleId)) {
+        if (! empty($roleId)) {
             $role = $this->roleService->findRole($roleId);
 
             // Remove existing roles and assign new one through service
@@ -112,13 +112,13 @@ class UserService
                 'user_id' => $updatedUser->id,
                 'role_id' => $role->id,
                 'role_name' => $role->name,
-                'action' => 'role_updated'
+                'action' => 'role_updated',
             ]);
         }
 
         $this->logger->user()->info('User updated successfully', [
             'user_id' => $user->id,
-            'action' => 'user_updated_success'
+            'action' => 'user_updated_success',
         ]);
 
         return $updatedUser;
@@ -132,7 +132,7 @@ class UserService
         $this->logger->user()->warning('User deleted (soft delete)', [
             'user_id' => $user->id,
             'user_email' => $user->email,
-            'action' => 'delete_user'
+            'action' => 'delete_user',
         ]);
 
         $deleted = $this->userRepository->delete($user);
@@ -140,12 +140,12 @@ class UserService
         if ($deleted) {
             $this->logger->user()->info('User soft deleted successfully', [
                 'user_id' => $user->id,
-                'action' => 'user_soft_deleted_success'
+                'action' => 'user_soft_deleted_success',
             ]);
         } else {
             $this->logger->user()->error('Failed to soft delete user', [
                 'user_id' => $user->id,
-                'action' => 'user_soft_delete_failed'
+                'action' => 'user_soft_delete_failed',
             ]);
         }
 
@@ -160,14 +160,14 @@ class UserService
         $this->logger->user()->info('User restored', [
             'user_id' => $user->id,
             'user_email' => $user->email,
-            'action' => 'restore_user'
+            'action' => 'restore_user',
         ]);
 
         $this->userRepository->restore($user);
 
         $this->logger->user()->info('User restored successfully', [
             'user_id' => $user->id,
-            'action' => 'user_restored_success'
+            'action' => 'user_restored_success',
         ]);
 
         return $user->fresh();
@@ -181,11 +181,11 @@ class UserService
     public function forceDeleteUser(User $user): bool
     {
         // Check if user is soft-deleted before force deleting
-        if (!$user->trashed()) {
+        if (! $user->trashed()) {
             $this->logger->user()->error('Attempted to force delete active user', [
                 'user_id' => $user->id,
                 'user_email' => $user->email,
-                'action' => 'force_delete_active_user_attempt'
+                'action' => 'force_delete_active_user_attempt',
             ]);
 
             throw new ForceDeleteActiveRecordException(
@@ -197,7 +197,7 @@ class UserService
         $this->logger->user()->warning('User force deleted permanently', [
             'user_id' => $user->id,
             'user_email' => $user->email,
-            'action' => 'force_delete_user'
+            'action' => 'force_delete_user',
         ]);
 
         $deleted = $this->userRepository->forceDelete($user);
@@ -205,12 +205,12 @@ class UserService
         if ($deleted) {
             $this->logger->user()->info('User permanently deleted successfully', [
                 'user_id' => $user->id,
-                'action' => 'user_permanently_deleted_success'
+                'action' => 'user_permanently_deleted_success',
             ]);
         } else {
             $this->logger->user()->error('Failed to permanently delete user', [
                 'user_id' => $user->id,
-                'action' => 'user_permanent_delete_failed'
+                'action' => 'user_permanent_delete_failed',
             ]);
         }
 

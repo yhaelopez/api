@@ -13,7 +13,7 @@ class LoggingServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(LoggerService::class, function ($app) {
-            return new LoggerService();
+            return new LoggerService;
         });
 
         // Register as 'logger' alias for easier access
