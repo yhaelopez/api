@@ -32,8 +32,7 @@ const isRestoring = ref(false);
 const isForceDeleting = ref(false);
 const showDeleteDialog = ref(false);
 const showForceDeleteDialog = ref(false);
-const passwordInput = ref<HTMLInputElement | null>(null);
-const forceDeletePassword = ref('');
+const forceDeleteConfirmation = ref('');
 
 const isUserDeleted = UserService.isUserDeleted(props.user);
 
@@ -67,14 +66,14 @@ const handleRestore = async () => {
 };
 
 const handleForceDelete = async () => {
-  if (isForceDeleting.value || !forceDeletePassword.value) return;
+  if (isForceDeleting.value || forceDeleteConfirmation.value !== 'Delete') return;
   
   isForceDeleting.value = true;
   try {
     await UserService.forceDeleteUser(props.user.id);
     emit('userForceDeleted', props.user);
     showForceDeleteDialog.value = false;
-    forceDeletePassword.value = '';
+    forceDeleteConfirmation.value = '';
   } catch (error) {
     console.error('Failed to force delete user:', error);
   } finally {
@@ -160,13 +159,12 @@ const openForceDeleteDialog = () => {
         </DialogHeader>
         
         <div class="grid gap-2">
-          <Label for="force-delete-password">Enter your password to confirm</Label>
+          <Label for="force-delete-confirmation">To confirm, type <span class="font-mono text-red-600">Delete</span> in the box below:</Label>
           <Input
-            id="force-delete-password"
-            type="password"
-            v-model="forceDeletePassword"
-            ref="passwordInput"
-            placeholder="Your password"
+            id="force-delete-confirmation"
+            type="text"
+            v-model="forceDeleteConfirmation"
+            placeholder="Type 'Delete' to confirm"
             @keyup.enter="handleForceDelete"
           />
         </div>
@@ -177,7 +175,7 @@ const openForceDeleteDialog = () => {
           </DialogClose>
           <Button 
             variant="destructive" 
-            :disabled="isForceDeleting || !forceDeletePassword"
+            :disabled="isForceDeleting || forceDeleteConfirmation !== 'Delete'"
             @click="handleForceDelete"
           >
             Permanently Delete

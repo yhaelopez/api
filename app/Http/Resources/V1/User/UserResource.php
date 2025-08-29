@@ -17,7 +17,17 @@ use OpenApi\Annotations as OA;
  *     @OA\Property(property="email", type="string", example="john.doe@example.com"),
  *     @OA\Property(property="created_at", type="datetime", example="2021-01-01 12:00:00", nullable=true),
  *     @OA\Property(property="updated_at", type="datetime", example="2021-01-01 12:00:00", nullable=true),
- *     @OA\Property(property="deleted_at", type="datetime", example="null", nullable=true)
+ *     @OA\Property(property="deleted_at", type="datetime", example="null", nullable=true),
+ *     @OA\Property(
+ *         property="roles",
+ *         type="array",
+ *         @OA\Items(
+ *             type="object",
+ *             @OA\Property(property="id", type="integer", example=1),
+ *             @OA\Property(property="name", type="string", example="user")
+ *         ),
+ *         nullable=true
+ *     )
  * )
  */
 class UserResource extends JsonResource
@@ -36,6 +46,14 @@ class UserResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'deleted_at' => $this->deleted_at,
+            'roles' => $this->whenLoaded('roles', function () {
+                return $this->roles->map(function ($role) {
+                    return [
+                        'id' => $role->id,
+                        'name' => $role->name,
+                    ];
+                });
+            }),
         ];
     }
 }

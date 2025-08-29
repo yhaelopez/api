@@ -47,6 +47,9 @@ const handleUserForceDeleted = (user: User) => {
               Email
             </th>
             <th class="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              Role
+            </th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
               Status
             </th>
             <th class="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
@@ -78,6 +81,14 @@ const handleUserForceDeleted = (user: User) => {
             </td>
             <td class="px-4 py-4 whitespace-nowrap cursor-pointer" @click="handleUserClick(user)">
               <div class="text-sm text-muted-foreground">{{ user.email }}</div>
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap cursor-pointer" @click="handleUserClick(user)">
+              <div class="text-sm text-muted-foreground">
+                <span v-if="user.roles && user.roles.length > 0" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
+                  {{ user.roles[0].name }}
+                </span>
+                <span v-else class="text-gray-400">No role</span>
+              </div>
             </td>
             <td class="px-4 py-4 whitespace-nowrap cursor-pointer" @click="handleUserClick(user)">
               <span 

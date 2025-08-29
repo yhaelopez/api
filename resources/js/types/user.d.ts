@@ -6,14 +6,14 @@ export interface User {
   created_at: string;
   updated_at: string;
   deleted_at?: string;
+  roles?: Array<{ id: number; name: string }>;
 }
 
 export interface CreateUser {
   name: string;
   email: string;
   password: string;
-  password_confirmation?: string;
-  role_id?: number;
+  role_id?: number | null;
 }
 
 export interface UserListState {

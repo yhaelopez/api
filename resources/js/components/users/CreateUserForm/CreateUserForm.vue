@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import type { User, CreateUser } from '@/types/user';
 import { UserService } from '@/services/UserService';
@@ -35,18 +35,30 @@ const form = useForm<CreateUser>({
   name: '',
   email: '',
   password: '',
-  password_confirmation: '',
-  role_id: '',
+  role_id: null,
 });
 
 const showPassword = ref(false);
-const showPasswordConfirmation = ref(false);
+const roles = ref<Array<{ id: number; name: string }>>([]);
+const loadingRoles = ref(false);
 
-// Role options based on the backend RoleEnum
-const roleOptions = [
-  { value: 'user', label: 'User' },
-  { value: 'superadmin', label: 'Super Admin' },
-];
+// Load roles from API
+const loadRoles = async () => {
+  try {
+    loadingRoles.value = true;
+    const response = await fetch('/api/v1/roles');
+    const data = await response.json();
+    roles.value = data.data;
+  } catch (error) {
+    console.error('Failed to load roles:', error);
+  } finally {
+    loadingRoles.value = false;
+  }
+};
+
+onMounted(() => {
+  loadRoles();
+});
 
 const submit = async () => {
   try {
@@ -54,7 +66,7 @@ const submit = async () => {
       name: form.name,
       email: form.email,
       password: form.password,
-      role: form.role
+      role_id: form.role_id
     });
 
     // Emit success event
@@ -80,9 +92,7 @@ const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
 };
 
-const togglePasswordConfirmationVisibility = () => {
-  showPasswordConfirmation.value = !showPasswordConfirmation.value;
-};
+
 </script>
 
 <template>
@@ -131,16 +141,17 @@ const togglePasswordConfirmationVisibility = () => {
 
         <!-- Role Field -->
         <div class="space-y-2">
-          <Label for="role">Role</Label>
+          <Label for="role_id">Role</Label>
           <Select
-            id="role"
-            v-model="form.role"
-            :options="roleOptions"
+            id="role_id"
+            v-model="form.role_id"
+            :options="roles.map(role => ({ value: role.id, label: role.name }))"
             placeholder="Select a role"
             required
-            :class="{ 'border-red-500': form.errors.role }"
+            :disabled="loadingRoles"
+            :class="{ 'border-red-500': form.errors.role_id }"
           />
-          <InputError :message="form.errors.role" />
+          <InputError :message="form.errors.role_id" />
         </div>
 
         <!-- Password Field -->
@@ -202,64 +213,7 @@ const togglePasswordConfirmationVisibility = () => {
           <InputError :message="form.errors.password" />
         </div>
 
-        <!-- Password Confirmation Field -->
-        <div class="space-y-2">
-          <Label for="password_confirmation">Confirm Password</Label>
-          <div class="relative">
-            <Input
-              id="password_confirmation"
-              v-model="form.password_confirmation"
-              :type="showPasswordConfirmation ? 'text' : 'password'"
-              placeholder="Confirm password"
-              required
-              autocomplete="new-password"
-              :class="{ 'border-red-500': form.errors.password_confirmation }"
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              class="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-              @click="togglePasswordConfirmationVisibility"
-            >
-              <svg
-                v-if="showPasswordConfirmation"
-                class="h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
-                />
-              </svg>
-              <svg
-                v-else
-                class="h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                />
-              </svg>
-            </Button>
-          </div>
-          <InputError :message="form.errors.password_confirmation" />
-        </div>
+
       </CardContent>
 
       <CardFooter class="flex gap-3">
