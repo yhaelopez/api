@@ -359,6 +359,10 @@ class UserController extends Controller
      *         response=422,
      *         description="Active record cannot be force deleted"
      *     )
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error"
+     *     )
      * )
      */
     public function forceDelete(User $user): JsonResponse
