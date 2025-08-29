@@ -369,11 +369,17 @@ class UserController extends Controller
             $this->userService->forceDeleteUser($user);
 
             return response()->json(['message' => 'User permanently deleted successfully'], JsonResponse::HTTP_OK);
-        } catch (Exception|ForceDeleteActiveRecordException $e) {
+        } catch (ForceDeleteActiveRecordException $e) {
             return response()->json([
                 'error' => $e->getCode(),
                 'message' => $e->getMessage(),
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        } catch (Exception $e) {
+            // SQL errors for example...
+            return response()->json([
+                'error' => $e->getCode(),
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
