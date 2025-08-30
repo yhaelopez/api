@@ -1,5 +1,5 @@
 import { ref, computed } from 'vue';
-import { UserService, type UserListOptions, type UserFilters } from '@/services/UserService';
+import { UserService, type UserListOptions } from '@/services/UserService';
 import type { User } from '@/types/user';
 
 export function useUsers() {

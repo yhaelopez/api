@@ -23,22 +23,22 @@ const handleUserSelect = (user: User) => {
   emit('userSelected', user);
 };
 
-const handleUserDeleted = (user: User) => {
+const handleUserDeleted = () => {
   // Refresh the user list to show updated status
   fetchUsers();
 };
 
-const handleUserRestored = (user: User) => {
+const handleUserRestored = () => {
   // Refresh the user list to show updated status
   fetchUsers();
 };
 
-const handleUserForceDeleted = (user: User) => {
+const handleUserForceDeleted = () => {
   // Refresh the user list to remove the permanently deleted user
   fetchUsers();
 };
 
-const handleUserCreated = (user: User) => {
+const handleUserCreated = () => {
   // Refresh the user list to show the new user
   fetchUsers();
   showCreateForm.value = false;
@@ -57,7 +57,7 @@ const handleUserEdit = (user: User) => {
   showEditForm.value = true;
 };
 
-const handleUserUpdated = (user: User) => {
+const handleUserUpdated = () => {
   fetchUsers();
   showEditForm.value = false;
   editingUser.value = null;

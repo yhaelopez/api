@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { UserTableProps, UserTableEmits, User } from '@/types/user';
 import { userTableService } from '@/services/UserTableService';
-import UserActions from '@/components/users/UserActions.vue';
+import UserActions from '@/components/users/UserActions/UserActions.vue';
 
 const props = withDefaults(defineProps<UserTableProps>(), {
   loading: false,
@@ -32,11 +32,11 @@ const handleUserEdit = (user: User) => {
 
 <template>
   <div class="w-full">
-    <div v-if="loading" class="flex justify-center items-center py-12">
+    <div v-if="props.loading" class="flex justify-center items-center py-12">
       <div class="animate-spin rounded-full h-6 w-6 border-2 border-gray-300 border-t-gray-600"></div>
     </div>
     
-    <div v-else-if="users.length === 0" class="text-center py-12">
+    <div v-else-if="props.users.length === 0" class="text-center py-12">
       <div class="text-gray-500 text-sm">No users found</div>
     </div>
     
@@ -66,7 +66,7 @@ const handleUserEdit = (user: User) => {
         </thead>
         <tbody class="bg-background divide-y divide-border">
           <tr 
-            v-for="user in users" 
+            v-for="user in props.users" 
             :key="user.id"
             class="hover:bg-muted/50 transition-colors"
             :class="userTableService.getUserStatus(user).isDeleted ? 'opacity-60' : ''"

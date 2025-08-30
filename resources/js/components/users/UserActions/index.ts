@@ -1,1 +1,1 @@
-export { default as UserActions } from './UserActions.vue';
+export { default as UserActions } from './UserActions.vue'	;

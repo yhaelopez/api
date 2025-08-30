@@ -13,7 +13,7 @@ export interface UsersListParams {
   deleted_to?: string;
 }
 
-export interface UsersListResponse extends PaginatedResponse<User> {}
+export type UsersListResponse = PaginatedResponse<User>;
 
 class UsersApi {
   private endpoint = '/v1/users';
