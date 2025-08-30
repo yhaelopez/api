@@ -71,11 +71,9 @@ class UserController extends Controller
     {
         Gate::authorize('viewAny', User::class);
 
-
-
         $perPage = $request->validated('per_page', 15);
         $page = $request->validated('page', 1);
-        
+
         // Extract filter parameters
         $filters = $request->only([
             'search',
@@ -90,7 +88,7 @@ class UserController extends Controller
             'with_inactive',
             'only_inactive',
             'sort_by',
-            'sort_direction'
+            'sort_direction',
         ]);
 
         $users = $this->userService->getUsersList($page, $perPage, $filters);

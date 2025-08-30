@@ -1113,7 +1113,7 @@ test('superadmin can create user with profile photo file', function () {
 
     $userData = [
         'name' => 'User With Photo',
-        'email' => 'userwithphoto@' . $this->faker->domainName(),
+        'email' => 'userwithphoto@'.$this->faker->domainName(),
         'password' => 'password123',
         'profile_photo' => $profilePhoto,
     ];
@@ -1139,7 +1139,7 @@ test('superadmin can update user with profile photo file', function () {
     $initialPhoto = File::image('initial.jpg', 100, 100);
     $userData = [
         'name' => 'User With Initial Photo',
-        'email' => 'userwithinitialphoto@' . $this->faker->domainName(),
+        'email' => 'userwithinitialphoto@'.$this->faker->domainName(),
         'password' => 'password123',
         'profile_photo' => $initialPhoto,
     ];
@@ -1149,7 +1149,7 @@ test('superadmin can update user with profile photo file', function () {
 
     $createdUser = User::where('email', $userData['email'])->first();
     $this->assertTrue($createdUser->hasMedia('profile_photos'));
-    
+
     // Store the initial media ID for comparison
     $initialMedia = $createdUser->getFirstMedia('profile_photos');
     $initialMediaId = $initialMedia->id;
@@ -1170,11 +1170,11 @@ test('superadmin can update user with profile photo file', function () {
     // Check that new profile photo was uploaded (replacing the old one)
     $updatedUser = $createdUser->fresh();
     $this->assertTrue($updatedUser->hasMedia('profile_photos'));
-    
+
     // Verify only one photo exists (old one was replaced)
     $mediaCount = $updatedUser->getMedia('profile_photos')->count();
     $this->assertEquals(1, $mediaCount, 'Should have exactly one profile photo after update');
-    
+
     // Verify it's actually a different file by comparing the media IDs
     $newMedia = $updatedUser->getFirstMedia('profile_photos');
     $this->assertNotEquals($initialMediaId, $newMedia->id, 'Should have a different media record after update');

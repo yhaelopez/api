@@ -100,7 +100,7 @@ class UserService
         $updatedUser = $this->userRepository->update($user, $data);
 
         // Update role if provided
-        if (!empty($data['role_id'])) {
+        if (! empty($data['role_id'])) {
             $role = $this->roleService->findRole($data['role_id']);
 
             // Remove existing roles and assign new one through service
@@ -153,8 +153,8 @@ class UserService
 
         // Add new profile photo
         $user->addMedia(
-                file: $profilePhoto
-            )
+            file: $profilePhoto
+        )
             ->usingFileName(
                 fileName: $this->storageService->generateProfilePhotoFilename($profilePhoto)
             )
@@ -199,7 +199,7 @@ class UserService
     public function forceDeleteUser(User $user): bool
     {
         // Check if user is soft-deleted before force deleting
-        if (!$user->trashed()) {
+        if (! $user->trashed()) {
             $this->logger->user()->error('Attempted to force delete active user', [
                 'user_id' => $user->id,
                 'user_email' => $user->email,
