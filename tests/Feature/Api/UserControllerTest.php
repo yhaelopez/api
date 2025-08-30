@@ -1113,7 +1113,7 @@ test('superadmin can create user with profile photo file', function () {
 
     $userData = [
         'name' => 'User With Photo',
-        'email' => 'userwithphoto@example.com',
+        'email' => 'userwithphoto@' . $this->faker->domainName(),
         'password' => 'password123',
         'profile_photo' => $profilePhoto,
     ];
@@ -1128,4 +1128,54 @@ test('superadmin can create user with profile photo file', function () {
     // Check that profile photo was uploaded
     $createdUser = User::where('email', $userData['email'])->first();
     $this->assertTrue($createdUser->hasMedia('profile_photos'));
+});
+
+test('superadmin can update user with profile photo file', function () {
+    // Act as superadmin
+    $superadmin = TestHelper::createTestSuperAdmin();
+    $this->actingAs($superadmin, GuardEnum::WEB->value);
+
+    // First, create a user with initial profile photo
+    $initialPhoto = File::image('initial.jpg', 100, 100);
+    $userData = [
+        'name' => 'User With Initial Photo',
+        'email' => 'userwithinitialphoto@' . $this->faker->domainName(),
+        'password' => 'password123',
+        'profile_photo' => $initialPhoto,
+    ];
+
+    $createResponse = $this->postJson(route('users.store'), $userData);
+    $createResponse->assertStatus(201);
+
+    $createdUser = User::where('email', $userData['email'])->first();
+    $this->assertTrue($createdUser->hasMedia('profile_photos'));
+    
+    // Store the initial media ID for comparison
+    $initialMedia = $createdUser->getFirstMedia('profile_photos');
+    $initialMediaId = $initialMedia->id;
+
+    // Now update the user with a new profile photo
+    $newPhoto = File::image('new_profile.jpg', 150, 150);
+    $updateData = [
+        'name' => 'Updated Name With New Photo',
+        'profile_photo' => $newPhoto,
+    ];
+
+    $updateResponse = $this->putJson(route('users.update', $createdUser->id), $updateData);
+
+    // Assert - Check response
+    $updateResponse->assertStatus(200)
+        ->assertJsonPath('name', $updateData['name']);
+
+    // Check that new profile photo was uploaded (replacing the old one)
+    $updatedUser = $createdUser->fresh();
+    $this->assertTrue($updatedUser->hasMedia('profile_photos'));
+    
+    // Verify only one photo exists (old one was replaced)
+    $mediaCount = $updatedUser->getMedia('profile_photos')->count();
+    $this->assertEquals(1, $mediaCount, 'Should have exactly one profile photo after update');
+    
+    // Verify it's actually a different file by comparing the media IDs
+    $newMedia = $updatedUser->getFirstMedia('profile_photos');
+    $this->assertNotEquals($initialMediaId, $newMedia->id, 'Should have a different media record after update');
 });

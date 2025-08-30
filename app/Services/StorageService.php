@@ -29,4 +29,12 @@ class StorageService
     {
         return 'public';
     }
+
+    /**
+     * Get custom media collection path for profile photos
+     */
+    public function getProfilePhotoPath(): string
+    {
+        return 'users/{id}/profile_photo';
+    }
 }

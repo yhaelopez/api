@@ -1,5 +1,8 @@
 <?php
 
+use App\Media\UserPathGenerator;
+use App\Models\User;
+
 return [
 
     /*
@@ -92,9 +95,8 @@ return [
      * Here you can specify which path generator should be used for the given class.
      */
     'custom_path_generators' => [
-        // Model::class => PathGenerator::class
-        // or
-        // 'model_morph_alias' => PathGenerator::class
+        // Use custom path generator for User model
+        User::class => UserPathGenerator::class,
     ],
 
     /*

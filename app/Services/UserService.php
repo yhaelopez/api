@@ -97,15 +97,11 @@ class UserService
             'updated_fields' => array_keys($data),
         ]);
 
-        // Handle role update separately
-        $roleId = $data['role_id'] ?? null;
-        unset($data['role_id']);
-
         $updatedUser = $this->userRepository->update($user, $data);
 
         // Update role if provided
-        if (! empty($roleId)) {
-            $role = $this->roleService->findRole($roleId);
+        if (!empty($data['role_id'])) {
+            $role = $this->roleService->findRole($data['role_id']);
 
             // Remove existing roles and assign new one through service
             $this->roleService->syncRoles($updatedUser, [$role]);
@@ -137,21 +133,14 @@ class UserService
             'action' => 'delete_user',
         ]);
 
-        $deleted = $this->userRepository->delete($user);
+        $this->userRepository->delete($user);
 
-        if ($deleted) {
-            $this->logger->user()->info('User soft deleted successfully', [
-                'user_id' => $user->id,
-                'action' => 'user_soft_deleted_success',
-            ]);
-        } else {
-            $this->logger->user()->error('Failed to soft delete user', [
-                'user_id' => $user->id,
-                'action' => 'user_soft_delete_failed',
-            ]);
-        }
+        $this->logger->user()->info('User soft deleted successfully', [
+            'user_id' => $user->id,
+            'action' => 'user_soft_deleted_success',
+        ]);
 
-        return $deleted;
+        return true;
     }
 
     /**
@@ -163,9 +152,16 @@ class UserService
         $user->clearMediaCollection('profile_photos');
 
         // Add new profile photo
-        $user->addMedia($profilePhoto)
-            ->usingFileName($this->storageService->generateProfilePhotoFilename($profilePhoto))
-            ->toMediaCollection('profile_photos', $this->storageService->getProfilePhotoDisk());
+        $user->addMedia(
+                file: $profilePhoto
+            )
+            ->usingFileName(
+                fileName: $this->storageService->generateProfilePhotoFilename($profilePhoto)
+            )
+            ->toMediaCollection(
+                collectionName: 'profile_photos',
+                diskName: $this->storageService->getProfilePhotoDisk()
+            );
 
         $this->logger->user()->info('Profile photo added to user', [
             'user_id' => $user->id,
@@ -203,7 +199,7 @@ class UserService
     public function forceDeleteUser(User $user): bool
     {
         // Check if user is soft-deleted before force deleting
-        if (! $user->trashed()) {
+        if (!$user->trashed()) {
             $this->logger->user()->error('Attempted to force delete active user', [
                 'user_id' => $user->id,
                 'user_email' => $user->email,
@@ -222,20 +218,13 @@ class UserService
             'action' => 'force_delete_user',
         ]);
 
-        $deleted = $this->userRepository->forceDelete($user);
+        $this->userRepository->forceDelete($user);
 
-        if ($deleted) {
-            $this->logger->user()->info('User permanently deleted successfully', [
-                'user_id' => $user->id,
-                'action' => 'user_permanently_deleted_success',
-            ]);
-        } else {
-            $this->logger->user()->error('Failed to permanently delete user', [
-                'user_id' => $user->id,
-                'action' => 'user_permanent_delete_failed',
-            ]);
-        }
+        $this->logger->user()->info('User permanently deleted successfully', [
+            'user_id' => $user->id,
+            'action' => 'user_permanently_deleted_success',
+        ]);
 
-        return $deleted;
+        return true;
     }
 }

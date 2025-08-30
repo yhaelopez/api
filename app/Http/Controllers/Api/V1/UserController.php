@@ -153,9 +153,6 @@ class UserController extends Controller
         return new UserResource($user);
     }
 
-
-
-
     /**
      * @OA\Get(
      *     path="/api/v1/users/{user}",
@@ -250,6 +247,11 @@ class UserController extends Controller
 
         $data = $request->validated();
         $updatedUser = $this->userService->updateUser($user, $data);
+
+        // Handle profile photo update if provided
+        if ($request->hasFile('profile_photo')) {
+            $this->userService->addProfilePhoto($updatedUser, $request->file('profile_photo'));
+        }
 
         return new UserResource($updatedUser);
     }
