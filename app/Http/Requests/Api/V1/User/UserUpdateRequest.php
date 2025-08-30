@@ -45,6 +45,13 @@ class UserUpdateRequest extends FormRequest
                 'integer',
                 'exists:roles,id',
             ],
+            'profile_photo' => [
+                'sometimes',
+                'file',
+                'image',
+                'mimes:jpeg,png,webp',
+                'max:5120', // 5MB
+            ],
         ];
     }
 

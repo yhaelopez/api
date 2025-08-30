@@ -48,6 +48,13 @@ class UserStoreRequest extends FormRequest
                 'integer',
                 'exists:roles,id',
             ],
+            'profile_photo' => [
+                'nullable',
+                'file',
+                'image',
+                'mimes:jpeg,png,webp',
+                'max:5120', // 5MB
+            ],
         ];
     }
 
@@ -65,6 +72,10 @@ class UserStoreRequest extends FormRequest
             'email.email' => 'The email must be a valid email address.',
             'email.unique' => 'The email has already been taken.',
             'password.required' => 'The password field is required.',
+            'profile_photo.file' => 'The profile photo must be a valid file.',
+            'profile_photo.image' => 'The profile photo must be an image.',
+            'profile_photo.mimes' => 'The profile photo must be a JPEG, PNG, or WebP file.',
+            'profile_photo.max' => 'The profile photo may not be greater than 5MB.',
         ];
     }
 }

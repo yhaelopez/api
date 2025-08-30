@@ -7,6 +7,7 @@ use App\Helpers\TestHelper;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Http\Testing\File;
 use Illuminate\Support\Facades\DB;
 
 uses(RefreshDatabase::class, WithFaker::class);
@@ -1098,4 +1099,33 @@ test('unauthenticated user cannot access force delete endpoint', function () {
 
     // Assert - Check for 401 Unauthorized
     $response->assertStatus(401);
+});
+
+// PROFILE PHOTO UPLOAD TEST
+
+test('superadmin can create user with profile photo file', function () {
+    // Act as superadmin
+    $superadmin = TestHelper::createTestSuperAdmin();
+    $this->actingAs($superadmin, GuardEnum::WEB->value);
+
+    // Create a fake image file
+    $profilePhoto = File::image('profile.jpg', 100, 100);
+
+    $userData = [
+        'name' => 'User With Photo',
+        'email' => 'userwithphoto@example.com',
+        'password' => 'password123',
+        'profile_photo' => $profilePhoto,
+    ];
+
+    $response = $this->postJson(route('users.store'), $userData);
+
+    // Assert - Check response
+    $response->assertStatus(201)
+        ->assertJsonPath('name', $userData['name'])
+        ->assertJsonPath('email', $userData['email']);
+
+    // Check that profile photo was uploaded
+    $createdUser = User::where('email', $userData['email'])->first();
+    $this->assertTrue($createdUser->hasMedia('profile_photos'));
 });

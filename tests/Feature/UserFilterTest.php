@@ -37,16 +37,16 @@ test('superadmin can filter users by search term', function () {
 
     // Assert - Check response
     $response->assertStatus(200);
-    
+
     // Count filtered results
     $filteredCount = count($response->json('data'));
-    
+
     // Should return fewer users than total when filtering
     expect($filteredCount)->toBeLessThan($totalUsers);
-    
+
     // Verify the filtered results contain the expected user
     $responseData = $response->json('data');
-    $johnUsers = collect($responseData)->filter(fn($user) => str_contains(strtolower($user['name']), 'john'));
+    $johnUsers = collect($responseData)->filter(fn ($user) => str_contains(strtolower($user['name']), 'john'));
     expect($johnUsers->count())->toBeGreaterThan(0);
 });
 
@@ -61,7 +61,7 @@ test('superadmin can filter users by role name', function () {
     // Create test users with different roles
     $adminUser = User::factory()->create(['name' => 'John Admin']);
     $adminUser->assignRole('superadmin');
-    
+
     $regularUser = User::factory()->create(['name' => 'Jane User']);
     $regularUser->assignRole('user');
 
@@ -74,13 +74,13 @@ test('superadmin can filter users by role name', function () {
 
     // Assert - Check response
     $response->assertStatus(200);
-    
+
     // Count filtered results
     $filteredCount = count($response->json('data'));
-    
+
     // Should return fewer users than total when filtering
     expect($filteredCount)->toBeLessThan($totalUsers);
-    
+
     // Verify we get some results
     expect($filteredCount)->toBeGreaterThan(0);
 });
@@ -99,10 +99,10 @@ test('superadmin can filter users by role id', function () {
     // Create test users with different roles
     $adminUser = User::factory()->create(['name' => 'John Admin']);
     $adminUser->assignRole('superadmin');
-    
+
     $regularUser1 = User::factory()->create(['name' => 'Jane User']);
     $regularUser1->assignRole('user');
-    
+
     $regularUser2 = User::factory()->create(['name' => 'Bob Developer']);
     $regularUser2->assignRole('user');
 
@@ -115,13 +115,13 @@ test('superadmin can filter users by role id', function () {
 
     // Assert - Check response
     $response->assertStatus(200);
-    
+
     // Count filtered results
     $filteredCount = count($response->json('data'));
-    
+
     // Should return fewer users than total when filtering
     expect($filteredCount)->toBeLessThan($totalUsers);
-    
+
     // Should return at least 2 users (the ones with 'user' role)
     expect($filteredCount)->toBeGreaterThanOrEqual(2);
 });
@@ -137,17 +137,17 @@ test('superadmin can filter users by date range', function () {
     // Create test users with different creation dates
     User::factory()->create([
         'name' => 'John Admin',
-        'created_at' => '2024-01-15 10:00:00'
+        'created_at' => '2024-01-15 10:00:00',
     ]);
-    
+
     User::factory()->create([
         'name' => 'Jane User',
-        'created_at' => '2024-01-20 11:00:00'
+        'created_at' => '2024-01-20 11:00:00',
     ]);
-    
+
     User::factory()->create([
         'name' => 'Bob Developer',
-        'created_at' => '2024-02-01 09:00:00'
+        'created_at' => '2024-02-01 09:00:00',
     ]);
 
     // Count total users after creation
@@ -157,18 +157,18 @@ test('superadmin can filter users by date range', function () {
     // Act - Filter by date range
     $response = $this->getJson(route('users.index', [
         'created_from' => '2024-01-20',
-        'created_to' => '2024-01-25'
+        'created_to' => '2024-01-25',
     ]));
 
     // Assert - Check response
     $response->assertStatus(200);
-    
+
     // Count filtered results
     $filteredCount = count($response->json('data'));
-    
+
     // Should return fewer users than total when filtering
     expect($filteredCount)->toBeLessThan($totalUsers);
-    
+
     // Should return at least 1 user in the date range
     expect($filteredCount)->toBeGreaterThan(0);
 });
@@ -193,21 +193,21 @@ test('superadmin can sort users by name ascending', function () {
     // Act - Sort by name ascending
     $response = $this->getJson(route('users.index', [
         'sort_by' => 'name',
-        'sort_direction' => 'asc'
+        'sort_direction' => 'asc',
     ]));
 
     // Assert - Check response
     $response->assertStatus(200);
-    
+
     // Count sorted results (should be same as total)
     $sortedCount = count($response->json('data'));
     expect($sortedCount)->toBe($totalUsers);
-    
+
     // Verify sorting order
     $responseData = $response->json('data');
     $firstUser = $responseData[0]['name'];
     $lastUser = $responseData[count($responseData) - 1]['name'];
-    
+
     // First user should come alphabetically before last user
     expect($firstUser)->toBeLessThan($lastUser);
 });
@@ -232,21 +232,21 @@ test('superadmin can sort users by email ascending', function () {
     // Act - Sort by email ascending
     $response = $this->getJson(route('users.index', [
         'sort_by' => 'email',
-        'sort_direction' => 'asc'
+        'sort_direction' => 'asc',
     ]));
 
     // Assert - Check response
     $response->assertStatus(200);
-    
+
     // Count sorted results (should be same as total)
     $sortedCount = count($response->json('data'));
     expect($sortedCount)->toBe($totalUsers);
-    
+
     // Verify ascending sorting order
     $responseData = $response->json('data');
     $firstUser = $responseData[0]['email'];
     $lastUser = $responseData[count($responseData) - 1]['email'];
-    
+
     // First user should come alphabetically before last user
     expect($firstUser)->toBeLessThan($lastUser);
 });
@@ -271,21 +271,21 @@ test('superadmin can sort users by email descending', function () {
     // Act - Sort by email descending
     $response = $this->getJson(route('users.index', [
         'sort_by' => 'email',
-        'sort_direction' => 'desc'
+        'sort_direction' => 'desc',
     ]));
 
     // Assert - Check response
     $response->assertStatus(200);
-    
+
     // Count sorted results (should be same as total)
     $sortedCount = count($response->json('data'));
     expect($sortedCount)->toBe($totalUsers);
-    
+
     // Verify descending sorting order
     $responseData = $response->json('data');
     $firstUser = $responseData[0]['email'];
     $lastUser = $responseData[count($responseData) - 1]['email'];
-    
+
     // First user should come alphabetically after last user (descending)
     expect($firstUser)->toBeGreaterThan($lastUser);
 });
@@ -333,7 +333,7 @@ test('search filter ignores empty terms', function () {
 
     // Assert - Should return all users (search ignored)
     $response->assertStatus(200);
-    
+
     // Count results (should be same as total since empty search is ignored)
     $searchCount = count($response->json('data'));
     expect($searchCount)->toBe($totalUsers);
@@ -353,10 +353,10 @@ test('role id takes priority over role name', function () {
     // Create test users with different roles
     $adminUser = User::factory()->create(['name' => 'John Admin']);
     $adminUser->assignRole('superadmin');
-    
+
     $regularUser1 = User::factory()->create(['name' => 'Jane User']);
     $regularUser1->assignRole('user');
-    
+
     $regularUser2 = User::factory()->create(['name' => 'Bob Developer']);
     $regularUser2->assignRole('user');
 
@@ -367,18 +367,18 @@ test('role id takes priority over role name', function () {
     // Act - Filter by both role_id and role (role_id should take priority)
     $response = $this->getJson(route('users.index', [
         'role_id' => $userRole->id,
-        'role' => 'superadmin'
+        'role' => 'superadmin',
     ]));
 
     // Assert - Should filter by role_id, not role name
     $response->assertStatus(200);
-    
+
     // Count filtered results
     $filteredCount = count($response->json('data'));
-    
+
     // Should return fewer users than total when filtering
     expect($filteredCount)->toBeLessThan($totalUsers);
-    
+
     // Should return users with 'user' role (not 'superadmin')
     expect($filteredCount)->toBeGreaterThan(0);
 });
@@ -394,17 +394,17 @@ test('default sorting is by created_at descending', function () {
     // Create test users with different creation dates
     User::factory()->create([
         'name' => 'John Admin',
-        'created_at' => '2024-01-15 10:00:00'
+        'created_at' => '2024-01-15 10:00:00',
     ]);
-    
+
     User::factory()->create([
         'name' => 'Jane User',
-        'created_at' => '2024-01-20 11:00:00'
+        'created_at' => '2024-01-20 11:00:00',
     ]);
-    
+
     User::factory()->create([
         'name' => 'Bob Developer',
-        'created_at' => '2024-02-01 09:00:00'
+        'created_at' => '2024-02-01 09:00:00',
     ]);
 
     // Count total users after creation
@@ -416,16 +416,16 @@ test('default sorting is by created_at descending', function () {
 
     // Assert - Should use default sorting (created_at desc)
     $response->assertStatus(200);
-    
+
     // Count results (should be same as total)
     $defaultCount = count($response->json('data'));
     expect($defaultCount)->toBe($totalUsers);
-    
+
     // Verify default sorting order (most recent first)
     $responseData = $response->json('data');
     $firstUserCreatedAt = $responseData[0]['created_at'];
     $lastUserCreatedAt = $responseData[count($responseData) - 1]['created_at'];
-    
+
     // First user should be more recent than last user
     expect(strtotime($firstUserCreatedAt))->toBeGreaterThan(strtotime($lastUserCreatedAt));
 });
@@ -441,10 +441,10 @@ test('can combine multiple filters', function () {
     // Create test users with different roles
     $adminUser = User::factory()->create(['name' => 'John Admin']);
     $adminUser->assignRole('superadmin');
-    
+
     $regularUser1 = User::factory()->create(['name' => 'Jane User']);
     $regularUser1->assignRole('user');
-    
+
     $regularUser2 = User::factory()->create(['name' => 'Bob Developer']);
     $regularUser2->assignRole('user');
 
@@ -457,18 +457,18 @@ test('can combine multiple filters', function () {
         'search' => 'user',
         'role' => 'user',
         'sort_by' => 'name',
-        'sort_direction' => 'asc'
+        'sort_direction' => 'asc',
     ]));
 
     // Assert - Check combined filtering
     $response->assertStatus(200);
-    
+
     // Count filtered results
     $filteredCount = count($response->json('data'));
-    
+
     // Should return fewer users than total when filtering
     expect($filteredCount)->toBeLessThan($totalUsers);
-    
+
     // Should return users that match both search and role criteria
     expect($filteredCount)->toBeGreaterThan(0);
 });
@@ -493,7 +493,7 @@ test('returns empty results when no matches found', function () {
 
     // Assert - Should return empty results
     $response->assertStatus(200);
-    
+
     // Count results (should be 0 for non-existent search)
     $searchCount = count($response->json('data'));
     expect($searchCount)->toBe(0);
@@ -539,17 +539,17 @@ test('superadmin can filter users by updated date range', function () {
     // Create test users with different update dates
     User::factory()->create([
         'name' => 'John Admin',
-        'updated_at' => '2024-01-15 10:00:00'
+        'updated_at' => '2024-01-15 10:00:00',
     ]);
-    
+
     User::factory()->create([
         'name' => 'Jane User',
-        'updated_at' => '2024-01-20 11:00:00'
+        'updated_at' => '2024-01-20 11:00:00',
     ]);
-    
+
     User::factory()->create([
         'name' => 'Bob Developer',
-        'updated_at' => '2024-02-01 09:00:00'
+        'updated_at' => '2024-02-01 09:00:00',
     ]);
 
     // Count total users after creation
@@ -559,18 +559,18 @@ test('superadmin can filter users by updated date range', function () {
     // Act - Filter by updated date range
     $response = $this->getJson(route('users.index', [
         'updated_from' => '2024-01-20',
-        'updated_to' => '2024-01-25'
+        'updated_to' => '2024-01-25',
     ]));
 
     // Assert - Check response
     $response->assertStatus(200);
-    
+
     // Count filtered results
     $filteredCount = count($response->json('data'));
-    
+
     // Should return fewer users than total when filtering
     expect($filteredCount)->toBeLessThan($totalUsers);
-    
+
     // Should return at least 1 user in the date range
     expect($filteredCount)->toBeGreaterThan(0);
 });
@@ -599,21 +599,21 @@ test('superadmin can filter users by deleted date range', function () {
     $response = $this->getJson(route('users.index', [
         'only_inactive' => '1',
         'deleted_from' => now()->subDays(1)->format('Y-m-d'),
-        'deleted_to' => now()->addDays(1)->format('Y-m-d')
+        'deleted_to' => now()->addDays(1)->format('Y-m-d'),
     ]));
 
     $totalWithDeletedUsers = $response->json('meta.total');
 
     // Assert - Check response
     $response->assertStatus(200);
-    
+
     // Should return fewer users than total with deleted (because we're filtering by date range)
     expect($totalWithDeletedUsers)->toBeLessThan($totalBeforeDelete);
-    
+
     // Verify we got the user deleted on 2024-01-20
     $responseData = $response->json('data');
     $deletedUser = collect($responseData)->firstWhere('name', 'Jane User');
-    expect($deletedUser)->not->toBeNull();    
+    expect($deletedUser)->not->toBeNull();
 });
 
 test('superadmin can filter users by email search', function () {
@@ -638,16 +638,16 @@ test('superadmin can filter users by email search', function () {
 
     // Assert - Check response
     $response->assertStatus(200);
-    
+
     // Count filtered results
     $filteredCount = count($response->json('data'));
-    
+
     // Should return fewer users than total when filtering
     expect($filteredCount)->toBeLessThan($totalUsers);
-    
+
     // Verify the filtered results contain the expected email
     $responseData = $response->json('data');
-    $adminUsers = collect($responseData)->filter(fn($user) => str_contains(strtolower($user['email']), 'admin'));
+    $adminUsers = collect($responseData)->filter(fn ($user) => str_contains(strtolower($user['email']), 'admin'));
     expect($adminUsers->count())->toBeGreaterThan(0);
 });
 
@@ -665,10 +665,10 @@ test('superadmin can filter users by numeric role string', function () {
     // Create test users with different roles
     $adminUser = User::factory()->create(['name' => 'John Admin']);
     $adminUser->assignRole('superadmin');
-    
+
     $regularUser1 = User::factory()->create(['name' => 'Jane User']);
     $regularUser1->assignRole('user');
-    
+
     $regularUser2 = User::factory()->create(['name' => 'Bob Developer']);
     $regularUser2->assignRole('user');
 
@@ -681,13 +681,13 @@ test('superadmin can filter users by numeric role string', function () {
 
     // Assert - Should filter by role_id, not role name
     $response->assertStatus(200);
-    
+
     // Count filtered results
     $filteredCount = count($response->json('data'));
-    
+
     // Should return fewer users than total when filtering
     expect($filteredCount)->toBeLessThan($totalUsers);
-    
+
     // Should return users with 'user' role
     expect($filteredCount)->toBeGreaterThan(0);
 });
@@ -712,7 +712,7 @@ test('superadmin can filter users by non-existent role name', function () {
 
     // Assert - Should return all users (no filtering applied)
     $response->assertStatus(200);
-    
+
     // Count results (should be same as total since role doesn't exist)
     $filteredCount = count($response->json('data'));
     expect($filteredCount)->toBe($totalUsers);
@@ -736,21 +736,21 @@ test('superadmin can sort users by ID', function () {
     // Act - Sort by ID ascending
     $response = $this->getJson(route('users.index', [
         'sort_by' => 'id',
-        'sort_direction' => 'asc'
+        'sort_direction' => 'asc',
     ]));
 
     // Assert - Check response
     $response->assertStatus(200);
-    
+
     // Count sorted results (should be same as total)
     $sortedCount = count($response->json('data'));
     expect($sortedCount)->toBe($totalUsers);
-    
+
     // Verify sorting order (lowest ID first)
     $responseData = $response->json('data');
     $firstUserId = $responseData[0]['id'];
     $lastUserId = $responseData[count($responseData) - 1]['id'];
-    
+
     // First user should have lower ID than last user
     expect($firstUserId)->toBeLessThan($lastUserId);
 });

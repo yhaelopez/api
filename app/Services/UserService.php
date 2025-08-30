@@ -7,6 +7,7 @@ use App\Exceptions\ForceDeleteActiveRecordException;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Http\UploadedFile;
 
 class UserService
 {
@@ -14,7 +15,8 @@ class UserService
         private UserCache $userCache,
         private UserRepository $userRepository,
         private LoggerService $logger,
-        private RoleService $roleService
+        private RoleService $roleService,
+        private StorageService $storageService
     ) {}
 
     /**
@@ -150,6 +152,26 @@ class UserService
         }
 
         return $deleted;
+    }
+
+    /**
+     * Add profile photo to existing user
+     */
+    public function addProfilePhoto(User $user, UploadedFile $profilePhoto): void
+    {
+        // Clear existing profile photo (single file collection)
+        $user->clearMediaCollection('profile_photos');
+
+        // Add new profile photo
+        $user->addMedia($profilePhoto)
+            ->usingFileName($this->storageService->generateProfilePhotoFilename($profilePhoto))
+            ->toMediaCollection('profile_photos', $this->storageService->getProfilePhotoDisk());
+
+        $this->logger->user()->info('Profile photo added to user', [
+            'user_id' => $user->id,
+            'filename' => $profilePhoto->getClientOriginalName(),
+            'action' => 'profile_photo_added',
+        ]);
     }
 
     /**

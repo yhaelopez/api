@@ -142,10 +142,19 @@ class UserController extends Controller
         $data = $request->validated();
         $data['password'] = Hash::make($data['password']);
 
+        // Create user first
         $user = $this->userService->createUser($data);
+
+        // Add profile photo if provided
+        if ($request->hasFile('profile_photo')) {
+            $this->userService->addProfilePhoto($user, $request->file('profile_photo'));
+        }
 
         return new UserResource($user);
     }
+
+
+
 
     /**
      * @OA\Get(

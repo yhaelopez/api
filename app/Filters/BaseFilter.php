@@ -98,6 +98,7 @@ abstract class BaseFilter
 
         if (is_string($value)) {
             $value = strtolower(trim($value));
+
             return in_array($value, ['1', 'true']);
         }
 
@@ -124,7 +125,7 @@ abstract class BaseFilter
     protected function applyWithInactiveFilter(Builder $query): void
     {
         $withInactive = $this->getBoolean('with_inactive');
-        
+
         if ($withInactive === true) {
             $query->withTrashed();
         }
@@ -138,7 +139,7 @@ abstract class BaseFilter
     protected function applyOnlyInactiveFilter(Builder $query): void
     {
         $onlyInactive = $this->getBoolean('only_inactive');
-        
+
         if ($onlyInactive) {
             $query->onlyTrashed();
         }
@@ -197,7 +198,7 @@ abstract class BaseFilter
             Log::info('Applying deleted_at filter', [
                 'from' => $from,
                 'to' => $to,
-                'filters' => $this->filters
+                'filters' => $this->filters,
             ]);
         }
 
