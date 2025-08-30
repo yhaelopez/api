@@ -30,9 +30,23 @@ test('superadmin can view all roles', function () {
                     'id',
                     'name',
                     'guard_name',
-                    'created_at',
-                    'updated_at',
                 ],
+            ],
+            'links' => [
+                'first',
+                'last',
+                'prev',
+                'next',
+            ],
+            'meta' => [
+                'current_page',
+                'from',
+                'last_page',
+                'links',
+                'path',
+                'per_page',
+                'to',
+                'total',
             ],
         ]);
 

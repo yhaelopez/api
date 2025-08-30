@@ -33,6 +33,7 @@ const isDeleting = ref(false);
 const isRestoring = ref(false);
 const isForceDeleting = ref(false);
 const showDeleteDialog = ref(false);
+const showRestoreDialog = ref(false);
 const showForceDeleteDialog = ref(false);
 const forceDeleteConfirmation = ref('');
 
@@ -60,6 +61,7 @@ const handleRestore = async () => {
   try {
     await UserService.restoreUser(props.user.id);
     emit('userRestored', props.user);
+    showRestoreDialog.value = false;
   } catch (error) {
     console.error('Failed to restore user:', error);
   } finally {
@@ -87,6 +89,10 @@ const openDeleteDialog = () => {
   showDeleteDialog.value = true;
 };
 
+const openRestoreDialog = () => {
+  showRestoreDialog.value = true;
+};
+
 const openForceDeleteDialog = () => {
   showForceDeleteDialog.value = true;
 };
@@ -111,7 +117,7 @@ const openForceDeleteDialog = () => {
       variant="outline"
       size="sm"
       :disabled="isRestoring"
-      @click="handleRestore"
+      @click="openRestoreDialog"
     >
       <span v-if="isRestoring" class="animate-spin rounded-full h-4 w-4 border-2 border-gray-300 border-t-gray-600"></span>
       <span v-else>Restore</span>
@@ -156,6 +162,26 @@ const openForceDeleteDialog = () => {
           </DialogClose>
           <Button variant="destructive" :disabled="isDeleting" @click="handleDelete">
             Delete User
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
+    <!-- Restore Confirmation Dialog -->
+    <Dialog v-model:open="showRestoreDialog">
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Restore User</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to restore {{ user.name }}? This will reactivate the user account and they will be able to access the system again.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter class="gap-2">
+          <DialogClose as-child>
+            <Button variant="secondary">Cancel</Button>
+          </DialogClose>
+          <Button variant="default" :disabled="isRestoring" @click="handleRestore">
+            Restore User
           </Button>
         </DialogFooter>
       </DialogContent>

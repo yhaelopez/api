@@ -28,6 +28,24 @@ class RoleController extends Controller
      *     tags={"RoleController"},
      *     security={{"bearerAuth":{}}},
      *
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number",
+     *         required=false,
+     *
+     *         @OA\Schema(type="integer", default=1)
+     *     ),
+     *
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Number of items per page",
+     *         required=false,
+     *
+     *         @OA\Schema(type="integer", default=15)
+     *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation",
@@ -45,7 +63,10 @@ class RoleController extends Controller
     {
         Gate::authorize('viewAny', User::class);
 
-        $roles = $this->roleService->getAllRoles();
+        $perPage = request('per_page', 15);
+        $page = request('page', 1);
+
+        $roles = $this->roleService->getRolesList($page, $perPage);
 
         return new RoleCollection($roles);
     }

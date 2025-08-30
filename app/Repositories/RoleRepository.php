@@ -8,6 +8,14 @@ use Spatie\Permission\Models\Role;
 class RoleRepository
 {
     /**
+     * Get paginated list of roles
+     */
+    public function paginate(int $page = 1, int $perPage = 15): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    {
+        return Role::orderBy('name')->paginate($perPage, ['*'], 'page', $page);
+    }
+
+    /**
      * Get all roles
      */
     public function getAll(): Collection

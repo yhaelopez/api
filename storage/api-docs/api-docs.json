@@ -17,6 +17,28 @@
                 ],
                 "summary": "Display a listing of roles",
                 "operationId": "c1294bb85dfc016a8f9c0d3f0907293f",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successful operation",
@@ -530,18 +552,6 @@
                     "guard_name": {
                         "type": "string",
                         "example": "web"
-                    },
-                    "created_at": {
-                        "type": "string",
-                        "format": "date-time",
-                        "example": "2021-01-01 12:00:00",
-                        "nullable": true
-                    },
-                    "updated_at": {
-                        "type": "string",
-                        "format": "date-time",
-                        "example": "2021-01-01 12:00:00",
-                        "nullable": true
                     }
                 },
                 "type": "object"
@@ -654,18 +664,6 @@
                         "items": {
                             "$ref": "#/components/schemas/PermissionResource"
                         },
-                        "nullable": true
-                    },
-                    "created_at": {
-                        "type": "string",
-                        "format": "date-time",
-                        "example": "2021-01-01 12:00:00",
-                        "nullable": true
-                    },
-                    "updated_at": {
-                        "type": "string",
-                        "format": "date-time",
-                        "example": "2021-01-01 12:00:00",
                         "nullable": true
                     }
                 },

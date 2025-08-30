@@ -15,8 +15,6 @@ use OpenApi\Annotations as OA;
  *     @OA\Property(property="id", type="integer", example=1),
  *     @OA\Property(property="name", type="string", example="create-users"),
  *     @OA\Property(property="guard_name", type="string", example="web"),
- *     @OA\Property(property="created_at", type="datetime", example="2021-01-01 12:00:00", nullable=true),
- *     @OA\Property(property="updated_at", type="datetime", example="2021-01-01 12:00:00", nullable=true)
  * )
  */
 class PermissionResource extends JsonResource
@@ -32,8 +30,6 @@ class PermissionResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'guard_name' => $this->guard_name,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
         ];
     }
 }

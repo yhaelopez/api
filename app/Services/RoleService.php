@@ -14,7 +14,15 @@ class RoleService
     ) {}
 
     /**
-     * Get all available roles
+     * Get paginated list of roles
+     */
+    public function getRolesList(int $page = 1, int $perPage = 15): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    {
+        return $this->roleRepository->paginate($page, $perPage);
+    }
+
+    /**
+     * Get all available roles (for internal use)
      */
     public function getAllRoles(): Collection
     {

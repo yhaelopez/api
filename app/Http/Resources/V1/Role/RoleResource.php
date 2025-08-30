@@ -23,9 +23,6 @@ use OpenApi\Annotations as OA;
  *
  *         @OA\Items(ref="#/components/schemas/PermissionResource"),
  *     ),
- *
- *     @OA\Property(property="created_at", type="datetime", example="2021-01-01 12:00:00", nullable=true),
- *     @OA\Property(property="updated_at", type="datetime", example="2021-01-01 12:00:00", nullable=true),
  * )
  */
 class RoleResource extends JsonResource
@@ -44,8 +41,6 @@ class RoleResource extends JsonResource
             'permissions' => $this->whenLoaded('permissions', function () {
                 return PermissionResource::collection($this->permissions);
             }),
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
         ];
     }
 }
