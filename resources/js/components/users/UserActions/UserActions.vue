@@ -203,7 +203,6 @@ const openForceDeleteDialog = () => {
             type="text"
             v-model="forceDeleteConfirmation"
             placeholder="Type 'Delete' to confirm"
-            @keyup.enter="handleForceDelete"
           />
         </div>
 

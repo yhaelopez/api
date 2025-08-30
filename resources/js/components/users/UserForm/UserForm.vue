@@ -98,11 +98,6 @@ const submit = async () => {
       
       // Emit success event
       emit('userUpdated', response.data);
-      
-      // Call optional callback
-      if (props.onUserUpdated) {
-        props.onUserUpdated(response.data);
-      }
     } else {
       // Create new user - ensure all required fields are present
       if (!form.name || !form.email || !form.password) {
@@ -118,11 +113,6 @@ const submit = async () => {
 
       // Emit success event
       emit('userCreated', response.data);
-      
-      // Call optional callback
-      if (props.onUserCreated) {
-        props.onUserCreated(response.data);
-      }
     }
 
     // Reset form

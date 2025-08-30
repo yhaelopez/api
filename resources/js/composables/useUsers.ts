@@ -104,8 +104,6 @@ export function useUsers() {
 
     try {
       const response = await UserService.deleteUser(id);
-      // Remove user from local state
-      users.value = users.value.filter(user => user.id !== id);
       return response.message;
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to delete user';
@@ -122,10 +120,10 @@ export function useUsers() {
 
   return {
     // State
-    users: computed(() => users.value),
-    loading: computed(() => loading.value),
-    error: computed(() => error.value),
-    pagination: computed(() => pagination.value),
+    users,
+    loading,
+    error,
+    pagination,
     hasUsers,
     isEmpty,
 

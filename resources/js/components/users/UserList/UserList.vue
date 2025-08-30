@@ -24,22 +24,22 @@ const handleUserSelect = (user: User) => {
 };
 
 const handleUserDeleted = () => {
-  // Refresh the user list to show updated status
+  // Refresh users after deletion
   fetchUsers();
 };
 
 const handleUserRestored = () => {
-  // Refresh the user list to show updated status
+  // Refresh users after restoration
   fetchUsers();
 };
 
 const handleUserForceDeleted = () => {
-  // Refresh the user list to remove the permanently deleted user
+  // Refresh users after permanent deletion
   fetchUsers();
 };
 
 const handleUserCreated = () => {
-  // Refresh the user list to show the new user
+  // Refresh users after creation
   fetchUsers();
   showCreateForm.value = false;
 };
@@ -58,6 +58,7 @@ const handleUserEdit = (user: User) => {
 };
 
 const handleUserUpdated = () => {
+  // Refresh users after update
   fetchUsers();
   showEditForm.value = false;
   editingUser.value = null;
