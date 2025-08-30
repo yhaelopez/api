@@ -24,6 +24,10 @@ const handleUserRestored = (user: User) => {
 const handleUserForceDeleted = (user: User) => {
   emit('forceDelete', user);
 };
+
+const handleUserEdit = (user: User) => {
+  emit('edit', user);
+};
 </script>
 
 <template>
@@ -111,6 +115,7 @@ const handleUserForceDeleted = (user: User) => {
                 @user-deleted="handleUserDeleted"
                 @user-restored="handleUserRestored"
                 @user-force-deleted="handleUserForceDeleted"
+                @user-edit="handleUserEdit"
               />
             </td>
           </tr>

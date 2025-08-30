@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\User\UserUpdated;
 use App\Repositories\RoleRepository;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -42,6 +43,7 @@ class RoleService
     public function syncRoles(Model $model, array $roles): void
     {
         $model->syncRoles($roles);
+        event(new UserUpdated($model));
     }
 
     /**
@@ -50,5 +52,6 @@ class RoleService
     public function assignRole(Model $model, $role): void
     {
         $model->assignRole($role);
+        event(new UserUpdated($model));
     }
 }

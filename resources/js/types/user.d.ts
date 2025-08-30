@@ -16,6 +16,13 @@ export interface CreateUser {
   role_id?: number | null;
 }
 
+export interface UpdateUser {
+  name?: string;
+  email?: string;
+  password?: string;
+  role_id?: number | null;
+}
+
 export interface UserListState {
   users: User[];
   loading: boolean;
@@ -34,6 +41,7 @@ export interface UserTableEmits {
   (e: 'delete', user: User): void;
   (e: 'restore', user: User): void;
   (e: 'forceDelete', user: User): void;
+  (e: 'edit', user: User): void;
 }
 
 export interface UserListProps {

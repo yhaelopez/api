@@ -110,7 +110,7 @@ class UserController extends Controller
      *             required={"name","email","password"},
      *
      *             @OA\Property(property="name", type="string", example="John Doe"),
-     *             @OA\Property(property="email", type="string", example="john.doe@example.com"),
+     *             @OA\Property(property="email", type="string", example="john.doe@company.com"),
      *             @OA\Property(property="password", type="string", example="password123"),
      *             @OA\Property(property="role_id", type="integer", example=1, description="Optional role ID to assign to the user")
      *         )
@@ -138,7 +138,6 @@ class UserController extends Controller
         Gate::authorize('create', User::class);
 
         $data = $request->validated();
-        $data['password'] = Hash::make($data['password']);
 
         // Create user first
         $user = $this->userService->createUser($data);
@@ -213,7 +212,8 @@ class UserController extends Controller
      *         @OA\JsonContent(
      *
      *             @OA\Property(property="name", type="string", example="John Doe"),
-     *             @OA\Property(property="email", type="string", example="john.doe@example.com"),
+     *             @OA\Property(property="email", type="string", example="john.doe@company.com"),
+     *             @OA\Property(property="password", type="string", example="newpassword123", description="Optional new password - leave blank to keep current password"),
      *             @OA\Property(property="role_id", type="integer", example=1, description="Optional role ID to assign to the user")
      *         )
      *     ),

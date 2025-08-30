@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue';
 import type { UserListProps, UserListEmits, User } from '@/types/user';
 import { UserTable } from '../UserTable';
 import { CreateUserForm } from '../CreateUserForm';
+import { UserForm } from '../UserForm';
 import { useUsers } from '@/composables/useUsers';
 import { Button } from '@/components/ui/button';
 import { UserPlus } from 'lucide-vue-next';
@@ -15,6 +16,8 @@ const emit = defineEmits<UserListEmits>();
 
 const { users, loading, error, fetchUsers } = useUsers();
 const showCreateForm = ref(false);
+const showEditForm = ref(false);
+const editingUser = ref<User | null>(null);
 
 
 const handleUserSelect = (user: User) => {
@@ -48,6 +51,22 @@ const handleCreateCancelled = () => {
 
 const openCreateForm = () => {
   showCreateForm.value = true;
+};
+
+const handleUserEdit = (user: User) => {
+  editingUser.value = user;
+  showEditForm.value = true;
+};
+
+const handleUserUpdated = (user: User) => {
+  fetchUsers();
+  showEditForm.value = false;
+  editingUser.value = null;
+};
+
+const handleEditCancelled = () => {
+  showEditForm.value = false;
+  editingUser.value = null;
 };
 
 onMounted(() => {
@@ -88,6 +107,7 @@ onMounted(() => {
       @delete="handleUserDeleted"
       @restore="handleUserRestored"
       @force-delete="handleUserForceDeleted"
+      @edit="handleUserEdit"
     />
 
     <!-- Create User Form Modal -->
@@ -104,6 +124,21 @@ onMounted(() => {
       </div>
     </div>
 
+    <!-- Edit User Form Modal -->
+    <div
+      v-if="showEditForm && editingUser"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      @click="handleEditCancelled"
+    >
+      <div @click.stop>
+        <UserForm
+          :is-edit-mode="true"
+          :user="editingUser"
+          @user-updated="handleUserUpdated"
+          @cancelled="handleEditCancelled"
+        />
+      </div>
+    </div>
 
   </div>
 </template>

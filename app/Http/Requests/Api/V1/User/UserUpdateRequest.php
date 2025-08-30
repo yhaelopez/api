@@ -40,6 +40,12 @@ class UserUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($userId),
             ],
+            'password' => [
+                'sometimes',
+                'string',
+                'min:8',
+                'max:255',
+            ],
             'role_id' => [
                 'sometimes',
                 'integer',
@@ -66,6 +72,8 @@ class UserUpdateRequest extends FormRequest
             'name.max' => 'The name may not be greater than 255 characters.',
             'email.email' => 'The email must be a valid email address.',
             'email.unique' => 'The email has already been taken.',
+            'password.min' => 'The password must be at least 8 characters.',
+            'password.max' => 'The password may not be greater than 255 characters.',
         ];
     }
 }

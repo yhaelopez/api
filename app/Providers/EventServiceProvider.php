@@ -19,6 +19,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         UserUpdated::class => [
             ForgetUserCache::class,
+            ForgetUserListCache::class,
         ],
         UserDeleted::class => [
             ForgetUserCache::class,

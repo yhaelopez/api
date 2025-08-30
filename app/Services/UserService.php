@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Repositories\UserRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Hash;
 
 class UserService
 {
@@ -56,10 +57,7 @@ class UserService
      */
     public function createUser(array $data): User
     {
-        $this->logger->user()->info('User created', [
-            'action' => 'create_user',
-            'user_data' => array_intersect_key($data, array_flip(['name', 'email', 'role'])),
-        ]);
+        $data['password'] = Hash::make($data['password']);
 
         $user = $this->userRepository->create($data);
 
@@ -91,16 +89,18 @@ class UserService
      */
     public function updateUser(User $user, array $data): User
     {
-        $this->logger->user()->info('User updated', [
-            'user_id' => $user->id,
-            'action' => 'update_user',
-            'updated_fields' => array_keys($data),
-        ]);
+        // Handle password hashing if provided (leave blank to keep current password)
+        if (!empty($data['password'])) {
+            $data['password'] = Hash::make($data['password']);
+        } else {
+            // Remove password from data if empty to avoid updating it
+            unset($data['password']);
+        }
 
         $updatedUser = $this->userRepository->update($user, $data);
 
         // Update role if provided
-        if (! empty($data['role_id'])) {
+        if (!empty($data['role_id'])) {
             $role = $this->roleService->findRole($data['role_id']);
 
             // Remove existing roles and assign new one through service

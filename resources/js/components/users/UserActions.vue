@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Edit } from 'lucide-vue-next';
 
 interface Props {
   user: User;
@@ -25,6 +26,7 @@ const emit = defineEmits<{
   userDeleted: [user: User];
   userRestored: [user: User];
   userForceDeleted: [user: User];
+  userEdit: [user: User];
 }>();
 
 const isDeleting = ref(false);
@@ -92,6 +94,17 @@ const openForceDeleteDialog = () => {
 
 <template>
   <div class="flex items-center gap-2">
+    <!-- Edit button for active users -->
+    <Button
+      v-if="!isUserDeleted"
+      variant="outline"
+      size="sm"
+      @click="emit('userEdit', user)"
+    >
+      <Edit class="h-4 w-4 mr-1" />
+      Edit
+    </Button>
+
     <!-- Restore button for deleted users -->
     <Button
       v-if="isUserDeleted"
