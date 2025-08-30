@@ -1,30 +1,30 @@
 <?php
 
-namespace App\Http\Resources\V1\Role;
+namespace App\Http\Resources\V1\Permission;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use OpenApi\Annotations as OA;
 
 /**
  * @OA\Schema(
- *     schema="RoleCollection",
- *     title="Role Collection",
- *     description="Role collection resource",
+ *     schema="PermissionCollection",
+ *     title="Permission Collection",
+ *     description="Permission collection resource",
  *
  *     @OA\Property(
  *         property="data",
  *         type="array",
  *
- *         @OA\Items(ref="#/components/schemas/RoleResource")
+ *         @OA\Items(ref="#/components/schemas/PermissionResource")
  *     ),
  *
  *     @OA\Property(
  *         property="links",
  *         type="object",
- *         @OA\Property(property="first", type="string", example="http://localhost/api/v1/roles?page=1"),
- *         @OA\Property(property="last", type="string", example="http://localhost/api/v1/roles?page=2"),
- *         @OA\Property(property="prev", type="string", example="http://localhost/api/v1/roles?page=1"),
- *         @OA\Property(property="next", type="string", example="http://localhost/api/v1/roles?page=2")
+ *         @OA\Property(property="first", type="string", example="http://localhost/api/v1/permissions?page=1"),
+ *         @OA\Property(property="last", type="string", example="http://localhost/api/v1/permissions?page=2"),
+ *         @OA\Property(property="prev", type="string", example="http://localhost/api/v1/permissions?page=1"),
+ *         @OA\Property(property="next", type="string", example="http://localhost/api/v1/permissions?page=2")
  *     ),
  *     @OA\Property(
  *         property="meta",
@@ -36,16 +36,16 @@ use OpenApi\Annotations as OA;
  *
  *             @OA\Items(type="object",
  *
- *                 @OA\Property(property="url", type="string", example="http://localhost/api/v1/roles?page=1"),
+ *                 @OA\Property(property="url", type="string", example="http://localhost/api/v1/permissions?page=1"),
  *                 @OA\Property(property="label", type="string", example="1"),
  *                 @OA\Property(property="active", type="boolean", example=true)
  *             ),
  *         ),
- *         @OA\Property(property="path", type="string", example="http://localhost/api/v1/roles"),
+ *         @OA\Property(property="path", type="string", example="http://localhost/api/v1/permissions"),
  *         @OA\Property(property="per_page", type="integer", example=15),
  *         @OA\Property(property="to", type="integer", example=15),
  *         @OA\Property(property="total", type="integer", example=30)
  *     )
  * )
  */
-class RoleCollection extends ResourceCollection {}
+class PermissionCollection extends ResourceCollection {}

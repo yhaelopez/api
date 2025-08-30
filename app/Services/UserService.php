@@ -90,7 +90,7 @@ class UserService
     public function updateUser(User $user, array $data): User
     {
         // Handle password hashing if provided (leave blank to keep current password)
-        if (!empty($data['password'])) {
+        if (! empty($data['password'])) {
             $data['password'] = Hash::make($data['password']);
         } else {
             // Remove password from data if empty to avoid updating it
@@ -100,7 +100,7 @@ class UserService
         $updatedUser = $this->userRepository->update($user, $data);
 
         // Update role if provided
-        if (!empty($data['role_id'])) {
+        if (! empty($data['role_id'])) {
             $role = $this->roleService->findRole($data['role_id']);
 
             // Remove existing roles and assign new one through service

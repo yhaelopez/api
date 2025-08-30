@@ -2,7 +2,6 @@
 import { onMounted, ref } from 'vue';
 import type { UserListProps, UserListEmits, User } from '@/types/user';
 import { UserTable } from '../UserTable';
-import { CreateUserForm } from '../CreateUserForm';
 import { UserForm } from '../UserForm';
 import { useUsers } from '@/composables/useUsers';
 import { Button } from '@/components/ui/button';
@@ -117,7 +116,8 @@ onMounted(() => {
       @click="handleCreateCancelled"
     >
       <div @click.stop>
-        <CreateUserForm
+        <UserForm
+          :is-edit-mode="false"
           @user-created="handleUserCreated"
           @cancelled="handleCreateCancelled"
         />

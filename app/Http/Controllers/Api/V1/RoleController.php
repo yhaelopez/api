@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\Role\RoleCollection;
+use App\Models\User;
 use App\Services\RoleService;
 use Illuminate\Support\Facades\Gate;
 use OpenApi\Annotations as OA;
@@ -42,7 +43,7 @@ class RoleController extends Controller
      */
     public function index()
     {
-        Gate::authorize('viewAny', 'App\Models\User');
+        Gate::authorize('viewAny', User::class);
 
         $roles = $this->roleService->getAllRoles();
 

@@ -10,6 +10,35 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/v1/roles": {
+            "get": {
+                "tags": [
+                    "RoleController"
+                ],
+                "summary": "Display a listing of roles",
+                "operationId": "c1294bb85dfc016a8f9c0d3f0907293f",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RoleCollection"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/v1/users": {
             "get": {
                 "tags": [
@@ -83,11 +112,16 @@
                                     },
                                     "email": {
                                         "type": "string",
-                                        "example": "john.doe@example.com"
+                                        "example": "john.doe@company.com"
                                     },
                                     "password": {
                                         "type": "string",
                                         "example": "password123"
+                                    },
+                                    "role_id": {
+                                        "description": "Optional role ID to assign to the user",
+                                        "type": "integer",
+                                        "example": 1
                                     }
                                 },
                                 "type": "object"
@@ -191,7 +225,17 @@
                                     },
                                     "email": {
                                         "type": "string",
-                                        "example": "john.doe@example.com"
+                                        "example": "john.doe@company.com"
+                                    },
+                                    "password": {
+                                        "description": "Optional new password - leave blank to keep current password",
+                                        "type": "string",
+                                        "example": "newpassword123"
+                                    },
+                                    "role_id": {
+                                        "description": "Optional role ID to assign to the user",
+                                        "type": "integer",
+                                        "example": 1
                                     }
                                 },
                                 "type": "object"
@@ -369,6 +413,9 @@
                     },
                     "422": {
                         "description": "Active record cannot be force deleted"
+                    },
+                    "500": {
+                        "description": "Internal server error"
                     }
                 },
                 "security": [
@@ -381,6 +428,249 @@
     },
     "components": {
         "schemas": {
+            "PermissionCollection": {
+                "title": "Permission Collection",
+                "description": "Permission collection resource",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PermissionResource"
+                        }
+                    },
+                    "links": {
+                        "properties": {
+                            "first": {
+                                "type": "string",
+                                "example": "http://localhost/api/v1/permissions?page=1"
+                            },
+                            "last": {
+                                "type": "string",
+                                "example": "http://localhost/api/v1/permissions?page=2"
+                            },
+                            "prev": {
+                                "type": "string",
+                                "example": "http://localhost/api/v1/permissions?page=1"
+                            },
+                            "next": {
+                                "type": "string",
+                                "example": "http://localhost/api/v1/permissions?page=2"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "meta": {
+                        "properties": {
+                            "current_page": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "from": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "last_page": {
+                                "type": "integer",
+                                "example": 2
+                            },
+                            "links": {
+                                "type": "array",
+                                "items": {
+                                    "properties": {
+                                        "url": {
+                                            "type": "string",
+                                            "example": "http://localhost/api/v1/permissions?page=1"
+                                        },
+                                        "label": {
+                                            "type": "string",
+                                            "example": "1"
+                                        },
+                                        "active": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "path": {
+                                "type": "string",
+                                "example": "http://localhost/api/v1/permissions"
+                            },
+                            "per_page": {
+                                "type": "integer",
+                                "example": 15
+                            },
+                            "to": {
+                                "type": "integer",
+                                "example": 15
+                            },
+                            "total": {
+                                "type": "integer",
+                                "example": 30
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "PermissionResource": {
+                "title": "Permission Resource",
+                "description": "Permission resource representation",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "create-users"
+                    },
+                    "guard_name": {
+                        "type": "string",
+                        "example": "web"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2021-01-01 12:00:00",
+                        "nullable": true
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2021-01-01 12:00:00",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "RoleCollection": {
+                "title": "Role Collection",
+                "description": "Role collection resource",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/RoleResource"
+                        }
+                    },
+                    "links": {
+                        "properties": {
+                            "first": {
+                                "type": "string",
+                                "example": "http://localhost/api/v1/roles?page=1"
+                            },
+                            "last": {
+                                "type": "string",
+                                "example": "http://localhost/api/v1/roles?page=2"
+                            },
+                            "prev": {
+                                "type": "string",
+                                "example": "http://localhost/api/v1/roles?page=1"
+                            },
+                            "next": {
+                                "type": "string",
+                                "example": "http://localhost/api/v1/roles?page=2"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "meta": {
+                        "properties": {
+                            "current_page": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "from": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "last_page": {
+                                "type": "integer",
+                                "example": 2
+                            },
+                            "links": {
+                                "type": "array",
+                                "items": {
+                                    "properties": {
+                                        "url": {
+                                            "type": "string",
+                                            "example": "http://localhost/api/v1/roles?page=1"
+                                        },
+                                        "label": {
+                                            "type": "string",
+                                            "example": "1"
+                                        },
+                                        "active": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "path": {
+                                "type": "string",
+                                "example": "http://localhost/api/v1/roles"
+                            },
+                            "per_page": {
+                                "type": "integer",
+                                "example": 15
+                            },
+                            "to": {
+                                "type": "integer",
+                                "example": 15
+                            },
+                            "total": {
+                                "type": "integer",
+                                "example": 30
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "RoleResource": {
+                "title": "Role Resource",
+                "description": "Role resource representation",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Admin"
+                    },
+                    "guard_name": {
+                        "type": "string",
+                        "example": "web"
+                    },
+                    "permissions": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PermissionResource"
+                        },
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2021-01-01 12:00:00",
+                        "nullable": true
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2021-01-01 12:00:00",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
             "UserCollection": {
                 "title": "User Collection",
                 "description": "User collection resource",
@@ -484,6 +774,21 @@
                         "type": "string",
                         "example": "john.doe@example.com"
                     },
+                    "roles": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/RoleResource"
+                        },
+                        "nullable": true
+                    },
+                    "permissions": {
+                        "description": "All permissions the user has through their roles",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PermissionResource"
+                        },
+                        "nullable": true
+                    },
                     "created_at": {
                         "type": "string",
                         "format": "date-time",
@@ -515,6 +820,10 @@
         }
     },
     "tags": [
+        {
+            "name": "RoleController",
+            "description": "Role management"
+        },
         {
             "name": "UserController",
             "description": "User management"

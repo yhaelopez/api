@@ -42,7 +42,7 @@ const form = useForm<CreateUser | UpdateUser>({
   name: '',
   email: '',
   password: '',
-  role_id: null,
+  role_id: undefined,
 });
 
 const showPassword = ref(false);
@@ -69,7 +69,7 @@ watch(() => props.user, (newUser) => {
     form.name = newUser.name;
     form.email = newUser.email;
     // Get the first role's ID if user has roles
-    form.role_id = newUser.roles && newUser.roles.length > 0 ? newUser.roles[0].id : null;
+    form.role_id = newUser.roles && newUser.roles.length > 0 ? newUser.roles[0].id : undefined;
     // Don't populate password in edit mode
     form.password = '';
   }

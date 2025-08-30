@@ -14,7 +14,6 @@ use App\Services\UserService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Hash;
 use OpenApi\Annotations as OA;
 
 /**
@@ -388,7 +387,7 @@ class UserController extends Controller
      *     @OA\Response(
      *         response=422,
      *         description="Active record cannot be force deleted"
-     *     )
+     *     ),
      *     @OA\Response(
      *         response=500,
      *         description="Internal server error"
