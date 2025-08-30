@@ -9,13 +9,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select } from '@/components/ui/select';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { LoaderCircle, UserPlus, UserCheck } from 'lucide-vue-next';
 
 interface Props {
@@ -23,6 +23,7 @@ interface Props {
   onUserUpdated?: (user: User) => void;
   user?: User | null;
   isEditMode?: boolean;
+  open?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -30,12 +31,14 @@ const props = withDefaults(defineProps<Props>(), {
   onUserUpdated: undefined,
   user: null,
   isEditMode: false,
+  open: false,
 });
 
 const emit = defineEmits<{
   userCreated: [user: User];
   userUpdated: [user: User];
   cancelled: [];
+  'update:open': [open: boolean];
 }>();
 
 const form = useForm<CreateUser | UpdateUser>({
@@ -144,147 +147,158 @@ const passwordRequired = computed(() => !isEditMode.value);
 </script>
 
 <template>
-  <Card class="w-full max-w-md mx-auto">
-    <CardHeader>
-      <CardTitle class="flex items-center gap-2">
-        <component :is="icon" class="h-5 w-5" />
-        {{ cardTitle }}
-      </CardTitle>
-      <CardDescription>
-        {{ cardDescription }}
-      </CardDescription>
-    </CardHeader>
+  <Dialog :open="open" @update:open="$emit('update:open', $event)">
+    <DialogContent class="max-w-sm">
+      <DialogHeader>
+        <DialogTitle class="flex items-center gap-2">
+          <component :is="icon" class="h-5 w-5" />
+          {{ cardTitle }}
+        </DialogTitle>
+        <DialogDescription>
+          {{ cardDescription }}
+        </DialogDescription>
+      </DialogHeader>
 
-    <form @submit.prevent="submit">
-      <CardContent class="space-y-4">
-        <!-- Name Field -->
-        <div class="space-y-2">
-          <Label for="name">Full Name</Label>
-          <Input
-            id="name"
-            v-model="form.name"
-            type="text"
-            placeholder="Enter full name"
-            required
-            autocomplete="name"
-            :class="{ 'border-red-500': form.errors.name }"
-          />
-          <InputError :message="form.errors.name" />
-        </div>
-
-        <!-- Email Field -->
-        <div class="space-y-2">
-          <Label for="email">Email Address</Label>
-          <Input
-            id="email"
-            v-model="form.email"
-            type="email"
-            placeholder="Enter email address"
-            required
-            autocomplete="email"
-            :class="{ 'border-red-500': form.errors.email }"
-          />
-          <InputError :message="form.errors.email" />
-        </div>
-
-        <!-- Role Field -->
-        <div class="space-y-2">
-          <Label for="role_id">Role</Label>
-          <Select
-            id="role_id"
-            v-model="form.role_id"
-            :options="roles.map(role => ({ value: role.id, label: role.name }))"
-            placeholder="Select a role"
-            required
-            :disabled="loadingRoles"
-            :class="{ 'border-red-500': form.errors.role_id }"
-          />
-          <InputError :message="form.errors.role_id" />
-        </div>
-
-        <!-- Password Field -->
-        <div class="space-y-2">
-          <Label for="password">
-            Password
-            <span v-if="!isEditMode" class="text-red-500">*</span>
-            <span v-else class="text-gray-500 text-sm">(leave blank to keep current)</span>
-          </Label>
-          <div class="relative">
+      <form @submit.prevent="submit">
+        <div class="space-y-4">
+          <!-- Name Field -->
+          <div class="space-y-2">
+            <Label for="name">
+              Full Name
+              <span class="text-red-500">*</span>
+            </Label>
             <Input
-              id="password"
-              v-model="form.password"
-              :type="showPassword ? 'text' : 'password'"
-              :placeholder="isEditMode ? 'Enter new password (optional)' : 'Enter password'"
-              :required="passwordRequired"
-              autocomplete="new-password"
-              :class="{ 'border-red-500': form.errors.password }"
+              id="name"
+              v-model="form.name"
+              type="text"
+              placeholder="Enter full name"
+              required
+              autocomplete="name"
+              :class="{ 'border-red-500': form.errors.name }"
             />
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              class="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-              @click="togglePasswordVisibility"
-            >
-              <svg
-                v-if="showPassword"
-                class="h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
-                />
-              </svg>
-              <svg
-                v-else
-                class="h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                />
-              </svg>
-            </Button>
+            <InputError :message="form.errors.name" />
           </div>
-          <InputError :message="form.errors.password" />
-        </div>
-      </CardContent>
 
-      <CardFooter class="flex gap-3">
-        <Button
-          type="button"
-          variant="outline"
-          @click="cancel"
-          :disabled="form.processing"
-          class="flex-1"
-        >
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          :disabled="form.processing"
-          class="flex-1"
-        >
-          <LoaderCircle v-if="form.processing" class="mr-2 h-4 w-4 animate-spin" />
-          {{ submitButtonText }}
-        </Button>
-      </CardFooter>
-    </form>
-  </Card>
+          <!-- Email Field -->
+          <div class="space-y-2">
+            <Label for="email">
+              Email Address
+              <span class="text-red-500">*</span>
+            </Label>
+            <Input
+              id="email"
+              v-model="form.email"
+              type="email"
+              placeholder="Enter email address"
+              required
+              autocomplete="email"
+              :class="{ 'border-red-500': form.errors.email }"
+            />
+            <InputError :message="form.errors.email" />
+          </div>
+
+          <!-- Role Field -->
+          <div class="space-y-2">
+            <Label for="role_id">
+              Role
+              <span class="text-red-500">*</span>
+            </Label>
+            <Select
+              id="role_id"
+              v-model="form.role_id"
+              :options="roles.map(role => ({ value: role.id, label: role.name }))"
+              placeholder="Select a role"
+              required
+              :disabled="loadingRoles"
+              :class="{ 'border-red-500': form.errors.role_id }"
+            />
+            <InputError :message="form.errors.role_id" />
+          </div>
+
+          <!-- Password Field -->
+          <div class="space-y-2">
+            <Label for="password">
+              Password
+              <span v-if="!isEditMode" class="text-red-500">*</span>
+              <span v-else class="text-gray-500 text-sm">(leave blank to keep current)</span>
+            </Label>
+            <div class="relative">
+              <Input
+                id="password"
+                v-model="form.password"
+                :type="showPassword ? 'text' : 'password'"
+                :placeholder="isEditMode ? 'Enter new password (optional)' : 'Enter password'"
+                :required="passwordRequired"
+                autocomplete="new-password"
+                :class="{ 'border-red-500': form.errors.password }"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                class="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                @click="togglePasswordVisibility"
+              >
+                <svg
+                  v-if="showPassword"
+                  class="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
+                  />
+                </svg>
+                <svg
+                  v-else
+                  class="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                  />
+                </svg>
+              </Button>
+            </div>
+            <InputError :message="form.errors.password" />
+          </div>
+        </div>
+
+        <DialogFooter class="flex gap-3 pt-6">
+          <Button
+            type="button"
+            variant="outline"
+            @click="cancel"
+            :disabled="form.processing"
+            class="flex-1"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            :disabled="form.processing"
+            class="flex-1"
+          >
+            <LoaderCircle v-if="form.processing" class="mr-2 h-4 w-4 animate-spin" />
+            {{ submitButtonText }}
+          </Button>
+        </DialogFooter>
+      </form>
+    </DialogContent>
+  </Dialog>
 </template>

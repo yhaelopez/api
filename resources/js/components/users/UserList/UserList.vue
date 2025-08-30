@@ -111,35 +111,23 @@ onMounted(() => {
     />
 
     <!-- Create User Form Modal -->
-    <div
-      v-if="showCreateForm"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-      @click="handleCreateCancelled"
-    >
-      <div @click.stop>
-        <UserForm
-          :is-edit-mode="false"
-          @user-created="handleUserCreated"
-          @cancelled="handleCreateCancelled"
-        />
-      </div>
-    </div>
+    <UserForm
+      :is-edit-mode="false"
+      :open="showCreateForm"
+      @update:open="showCreateForm = $event"
+      @user-created="handleUserCreated"
+      @cancelled="handleCreateCancelled"
+    />
 
     <!-- Edit User Form Modal -->
-    <div
-      v-if="showEditForm && editingUser"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-      @click="handleEditCancelled"
-    >
-      <div @click.stop>
-        <UserForm
-          :is-edit-mode="true"
-          :user="editingUser"
-          @user-updated="handleUserUpdated"
-          @cancelled="handleEditCancelled"
-        />
-      </div>
-    </div>
+    <UserForm
+      :is-edit-mode="true"
+      :user="editingUser"
+      :open="showEditForm"
+      @update:open="showEditForm = $event"
+      @user-updated="handleUserUpdated"
+      @cancelled="handleEditCancelled"
+    />
 
   </div>
 </template>
