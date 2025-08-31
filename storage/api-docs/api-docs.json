@@ -13,7 +13,7 @@
         "/api/v1/roles": {
             "get": {
                 "tags": [
-                    "RoleController"
+                    "Role"
                 ],
                 "summary": "Display a listing of roles",
                 "operationId": "c1294bb85dfc016a8f9c0d3f0907293f",
@@ -64,7 +64,7 @@
         "/api/v1/upload/temp": {
             "post": {
                 "tags": [
-                    "UploadController"
+                    "Upload"
                 ],
                 "summary": "Store a temporary file",
                 "operationId": "04cc7f22328763d0af0dedb46573f9c1",
@@ -138,7 +138,7 @@
         "/api/v1/users": {
             "get": {
                 "tags": [
-                    "UserController"
+                    "User"
                 ],
                 "summary": "Display a listing of users",
                 "operationId": "12e989554c281d650dff75443acabf54",
@@ -187,7 +187,7 @@
             },
             "post": {
                 "tags": [
-                    "UserController"
+                    "User"
                 ],
                 "summary": "Store a newly created user",
                 "operationId": "64da9b5a20fa4f20e947ed61b2bbb6da",
@@ -258,7 +258,7 @@
         "/api/v1/users/{user}": {
             "get": {
                 "tags": [
-                    "UserController"
+                    "User"
                 ],
                 "summary": "Display the specified user",
                 "operationId": "919fd317e275a070bcadcf4874123e45",
@@ -299,7 +299,7 @@
             },
             "put": {
                 "tags": [
-                    "UserController"
+                    "User"
                 ],
                 "summary": "Update the specified user",
                 "operationId": "df2f483fc27e7b42e89953bad0cf1485",
@@ -378,7 +378,7 @@
             },
             "delete": {
                 "tags": [
-                    "UserController"
+                    "User"
                 ],
                 "summary": "Delete the specified user",
                 "operationId": "17c42665206652a0fd309e2f348f97ed",
@@ -427,7 +427,7 @@
         "/api/v1/users/{user}/restore": {
             "post": {
                 "tags": [
-                    "UserController"
+                    "User"
                 ],
                 "summary": "Restore the specified soft-deleted user",
                 "operationId": "630f96fb759f4ef6817270e5cf4786df",
@@ -479,7 +479,7 @@
         "/api/v1/users/{user}/force-delete": {
             "delete": {
                 "tags": [
-                    "UserController"
+                    "User"
                 ],
                 "summary": "Permanently delete the specified user",
                 "operationId": "bc693371ae39aa8b8fb8ea96d7361e6f",
@@ -967,16 +967,16 @@
     },
     "tags": [
         {
-            "name": "RoleController",
+            "name": "Role",
             "description": "Role management"
         },
         {
-            "name": "UserController",
+            "name": "User",
             "description": "User management"
         },
         {
-            "name": "UploadController",
-            "description": "UploadController"
+            "name": "Upload",
+            "description": "Upload"
         }
     ],
     "externalDocs": {

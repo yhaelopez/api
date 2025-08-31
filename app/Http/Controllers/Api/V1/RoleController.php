@@ -11,7 +11,7 @@ use OpenApi\Annotations as OA;
 
 /**
  * @OA\Tag(
- *     name="RoleController",
+ *     name="Role",
  *     description="Role management"
  * )
  */
@@ -25,7 +25,7 @@ class RoleController extends Controller
      * @OA\Get(
      *     path="/api/v1/roles",
      *     summary="Display a listing of roles",
-     *     tags={"RoleController"},
+     *     tags={"Role"},
      *     security={{"bearerAuth":{}}},
      *
      *     @OA\Parameter(

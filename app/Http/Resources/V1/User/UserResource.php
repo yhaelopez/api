@@ -34,11 +34,11 @@ use OpenApi\Annotations as OA;
  *         @OA\Items(ref="#/components/schemas/PermissionResource"),
  *     ),
  *
- * @OA\Property(
+ *      @OA\Property(
  *         property="profile_photo",
  *         description="User's profile photo information",
  *         ref="#/components/schemas/ProfilePhotoResource",
- *         nullable=true,
+ *         nullable=true
  *     ),
  *     @OA\Property(property="created_at", type="datetime", example="2021-01-01 12:00:00", nullable=true),
  *     @OA\Property(property="updated_at", type="datetime", example="2021-01-01 12:00:00", nullable=true),

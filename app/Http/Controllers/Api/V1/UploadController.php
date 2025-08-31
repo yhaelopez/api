@@ -20,7 +20,7 @@ class UploadController extends Controller
      * @OA\Post(
      *     path="/api/v1/upload/temp",
      *     summary="Store a temporary file",
-     *     tags={"UploadController"},
+     *     tags={"Upload"},
      *     security={{"bearerAuth":{}}},
      *
      *     @OA\RequestBody(
