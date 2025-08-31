@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select } from '@/components/ui/select';
+import FilePondUpload from '@/components/FilePondUpload.vue';
 import {
   Dialog,
   DialogContent,
@@ -45,7 +46,8 @@ const form = useForm<CreateUser | UpdateUser>({
   name: '',
   email: '',
   password: '',
-  role_id: undefined,
+  role_id: null,
+  temp_folder: '',
 });
 
 const showPassword = ref(false);
@@ -75,6 +77,8 @@ watch(() => props.user, (newUser) => {
     form.role_id = newUser.roles && newUser.roles.length > 0 ? newUser.roles[0].id : undefined;
     // Don't populate password in edit mode
     form.password = '';
+    // Reset temp_folder in edit mode
+    form.temp_folder = '';
   }
 }, { immediate: true });
 
@@ -97,6 +101,11 @@ const submit = async () => {
         updateData.password = form.password;
       }
 
+      // Include temp_folder if provided
+      if (form.temp_folder) {
+        updateData.temp_folder = form.temp_folder;
+      }
+
       const response = await UserService.updateUser(props.user.id, updateData);
       
       // Emit success event
@@ -107,12 +116,19 @@ const submit = async () => {
         throw new Error('Name, email, and password are required for creating a user');
       }
       
-      const response = await UserService.createUser({
+      const createData: CreateUser = {
         name: form.name,
         email: form.email,
         password: form.password,
         role_id: form.role_id
-      });
+      };
+
+      // Include temp_folder if provided
+      if (form.temp_folder) {
+        createData.temp_folder = form.temp_folder;
+      }
+
+      const response = await UserService.createUser(createData);
 
       // Emit success event
       emit('userCreated', response.data);
@@ -120,12 +136,14 @@ const submit = async () => {
 
     // Reset form
     form.reset();
+    form.temp_folder = '';
   } catch (error) {
     console.error(`Failed to ${props.isEditMode ? 'update' : 'create'} user:`, error);
   }
 };
 
 const cancel = () => {
+  form.temp_folder = '';
   emit('cancelled');
 };
 
@@ -133,12 +151,22 @@ const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
 };
 
+// FilePond event handlers
+const handleFileProcessed = (result: any) => {
+  console.log('File processed:', result);
+};
+
+const handleFileRemoved = (file: any) => {
+  console.log('File removed:', file);
+  form.temp_folder = '';
+};
+
 // Computed properties for dynamic UI
 const isEditMode = computed(() => props.isEditMode);
 const cardTitle = computed(() => isEditMode.value ? 'Edit User' : 'Create New User');
 const cardDescription = computed(() => 
   isEditMode.value 
-    ? 'Update user information. Password is optional - leave blank to keep current password.'
+    ? 'Update user information.'
     : 'Add a new user to the system. All fields are required.'
 );
 const submitButtonText = computed(() => isEditMode.value ? 'Update User' : 'Create User');
@@ -148,7 +176,7 @@ const passwordRequired = computed(() => !isEditMode.value);
 
 <template>
   <Dialog :open="open" @update:open="$emit('update:open', $event)">
-    <DialogContent class="max-w-sm">
+    <DialogContent class="max-w-md">
       <DialogHeader>
         <DialogTitle class="flex items-center gap-2">
           <component :is="icon" class="h-5 w-5" />
@@ -205,7 +233,8 @@ const passwordRequired = computed(() => !isEditMode.value);
             </Label>
             <Select
               id="role_id"
-              v-model="form.role_id"
+              :model-value="form.role_id || ''"
+              @update:model-value="(value) => form.role_id = value === '' ? null : Number(value)"
               :options="roles.map(role => ({ value: role.id, label: role.name }))"
               placeholder="Select a role"
               required
@@ -276,6 +305,20 @@ const passwordRequired = computed(() => !isEditMode.value);
               </Button>
             </div>
             <InputError :message="form.errors.password" />
+          </div>
+
+          <!-- Profile Photo Field -->
+          <div class="space-y-2">
+            <Label for="profile_photo">
+              Profile Photo
+              <span class="text-gray-500 text-sm">(optional)</span>
+            </Label>
+            <FilePondUpload
+              v-model="form.temp_folder"
+              @file-processed="handleFileProcessed"
+              @file-removed="handleFileRemoved"
+            />
+            <InputError :message="form.errors.temp_folder" />
           </div>
         </div>
 

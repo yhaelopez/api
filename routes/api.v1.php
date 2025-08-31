@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\RoleController;
+use App\Http\Controllers\Api\V1\UploadController;
 use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -11,6 +12,9 @@ Route::prefix('v1')->middleware(['web', 'auth', 'throttle:60,1'])->group(functio
 
     // Role Controller - 60 requests per minute
     Route::get('roles', [RoleController::class, 'index'])->name('roles.index');
+
+    // Upload Controller - Temporary file uploads
+    Route::post('upload/temp', [UploadController::class, 'storeTemp'])->name('upload.temp');
 
     // Custom user routes
     Route::post('users/{user}/restore', [UserController::class, 'restore'])

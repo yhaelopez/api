@@ -10,6 +10,7 @@ use App\Http\Requests\Api\V1\User\UserUpdateRequest;
 use App\Http\Resources\V1\User\UserCollection;
 use App\Http\Resources\V1\User\UserResource;
 use App\Models\User;
+use App\Services\TemporaryFileService;
 use App\Services\UserService;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -25,7 +26,8 @@ use OpenApi\Annotations as OA;
 class UserController extends Controller
 {
     public function __construct(
-        private UserService $userService
+        private UserService $userService,
+        private TemporaryFileService $temporaryFileService
     ) {}
 
     /**
@@ -111,7 +113,8 @@ class UserController extends Controller
      *             @OA\Property(property="name", type="string", example="John Doe"),
      *             @OA\Property(property="email", type="string", example="john.doe@company.com"),
      *             @OA\Property(property="password", type="string", example="password123"),
-     *             @OA\Property(property="role_id", type="integer", example=1, description="Optional role ID to assign to the user")
+     *             @OA\Property(property="role_id", type="integer", example=1, description="Optional role ID to assign to the user"),
+     *             @OA\Property(property="temp_folder", type="string", example="uuid-string", description="Optional temporary folder name from FilePond upload")
      *         )
      *     ),
      *
@@ -141,9 +144,13 @@ class UserController extends Controller
         // Create user first
         $user = $this->userService->createUser($data);
 
-        // Add profile photo if provided
-        if ($request->hasFile('profile_photo')) {
-            $this->userService->addProfilePhoto($user, $request->file('profile_photo'));
+        // Handle temporary profile photo if provided
+        if ($request->has('temp_folder') && $request->input('temp_folder')) {
+            $this->temporaryFileService->moveTempToMedia(
+                $request->input('temp_folder'),
+                'profile_photos',
+                $user
+            );
         }
 
         return new UserResource($user);
@@ -213,7 +220,8 @@ class UserController extends Controller
      *             @OA\Property(property="name", type="string", example="John Doe"),
      *             @OA\Property(property="email", type="string", example="john.doe@company.com"),
      *             @OA\Property(property="password", type="string", example="newpassword123", description="Optional new password - leave blank to keep current password"),
-     *             @OA\Property(property="role_id", type="integer", example=1, description="Optional role ID to assign to the user")
+     *             @OA\Property(property="role_id", type="integer", example=1, description="Optional role ID to assign to the user"),
+     *             @OA\Property(property="temp_folder", type="string", example="uuid-string", description="Optional temporary folder name from FilePond upload")
      *         )
      *     ),
      *
@@ -245,9 +253,13 @@ class UserController extends Controller
         $data = $request->validated();
         $updatedUser = $this->userService->updateUser($user, $data);
 
-        // Handle profile photo update if provided
-        if ($request->hasFile('profile_photo')) {
-            $this->userService->addProfilePhoto($updatedUser, $request->file('profile_photo'));
+        // Handle temporary profile photo update if provided
+        if ($request->has('temp_folder') && $request->input('temp_folder')) {
+            $this->temporaryFileService->moveTempToMedia(
+                $request->input('temp_folder'),
+                'profile_photos',
+                $updatedUser
+            );
         }
 
         return new UserResource($updatedUser);

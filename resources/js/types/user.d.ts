@@ -14,6 +14,7 @@ export interface CreateUser {
   email: string;
   password: string;
   role_id?: number | null;
+  temp_folder?: string;
 }
 
 export interface UpdateUser {
@@ -21,6 +22,7 @@ export interface UpdateUser {
   email?: string;
   password?: string;
   role_id?: number | null;
+  temp_folder?: string;
 }
 
 export interface UserListState {

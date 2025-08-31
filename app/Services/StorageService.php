@@ -2,13 +2,14 @@
 
 namespace App\Services;
 
+use App\Repositories\FileRepository;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Str;
 
 class StorageService
 {
     public function __construct(
-        private LoggerService $logger
+        private LoggerService $logger,
+        private FileRepository $fileRepository
     ) {}
 
     /**
@@ -16,10 +17,7 @@ class StorageService
      */
     public function generateProfilePhotoFilename(UploadedFile $file): string
     {
-        $extension = $file->getClientOriginalExtension();
-        $uniqueId = Str::uuid();
-
-        return "profile_{$uniqueId}.{$extension}";
+        return $this->fileRepository->generateProfilePhotoFilename($file);
     }
 
     /**
