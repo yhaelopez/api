@@ -144,6 +144,11 @@
                                         "description": "Optional role ID to assign to the user",
                                         "type": "integer",
                                         "example": 1
+                                    },
+                                    "temp_folder": {
+                                        "description": "Optional temporary folder name from FilePond upload",
+                                        "type": "string",
+                                        "example": "uuid-string"
                                     }
                                 },
                                 "type": "object"
@@ -258,6 +263,11 @@
                                         "description": "Optional role ID to assign to the user",
                                         "type": "integer",
                                         "example": 1
+                                    },
+                                    "temp_folder": {
+                                        "description": "Optional temporary folder name from FilePond upload",
+                                        "type": "string",
+                                        "example": "uuid-string"
                                     }
                                 },
                                 "type": "object"
@@ -669,6 +679,33 @@
                 },
                 "type": "object"
             },
+            "ProfilePhotoResource": {
+                "title": "Profile Photo Resource",
+                "description": "Profile photo information for FilePond integration",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "url": {
+                        "type": "string",
+                        "example": "/storage/users/48/profile_photo/profile_photo_1756599663.jpg"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "profile_photo_1756599663.jpg"
+                    },
+                    "size": {
+                        "type": "integer",
+                        "example": 12345
+                    },
+                    "mime_type": {
+                        "type": "string",
+                        "example": "image/jpeg"
+                    }
+                },
+                "type": "object"
+            },
             "UserCollection": {
                 "title": "User Collection",
                 "description": "User collection resource",
@@ -786,6 +823,15 @@
                             "$ref": "#/components/schemas/PermissionResource"
                         },
                         "nullable": true
+                    },
+                    "profile_photo": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/ProfilePhotoResource"
+                            }
+                        ],
+                        "nullable": true,
+                        "description": "User's profile photo information"
                     },
                     "created_at": {
                         "type": "string",

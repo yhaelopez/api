@@ -38,6 +38,163 @@ const props = defineProps({
   modelValue: {
     type: String,
     default: ''
+  },
+  existingFile: {
+    type: Object,
+    default: null
+  },
+  // FilePond configuration options
+  allowMultiple: {
+    type: Boolean,
+    default: false
+  },
+  allowReplace: {
+    type: Boolean,
+    default: true
+  },
+  allowDrop: {
+    type: Boolean,
+    default: true
+  },
+  allowPaste: {
+    type: Boolean,
+    default: true
+  },
+  allowBrowse: {
+    type: Boolean,
+    default: true
+  },
+  allowImport: {
+    type: Boolean,
+    default: true
+  },
+  allowRevert: {
+    type: Boolean,
+    default: true
+  },
+  allowRemove: {
+    type: Boolean,
+    default: true
+  },
+  allowDownload: {
+    type: Boolean,
+    default: true
+  },
+  allowZoom: {
+    type: Boolean,
+    default: true
+  },
+  allowFullscreen: {
+    type: Boolean,
+    default: true
+  },
+  allowRotate: {
+    type: Boolean,
+    default: true
+  },
+  allowCrop: {
+    type: Boolean,
+    default: true
+  },
+  allowResize: {
+    type: Boolean,
+    default: true
+  },
+  allowEdit: {
+    type: Boolean,
+    default: true
+  },
+  allowPrint: {
+    type: Boolean,
+    default: true
+  },
+  allowExport: {
+    type: Boolean,
+    default: true
+  },
+  allowShare: {
+    type: Boolean,
+    default: true
+  },
+  allowUpload: {
+    type: Boolean,
+    default: true
+  },
+  instantUpload: {
+    type: Boolean,
+    default: true
+  },
+  acceptedFileTypes: {
+    type: Array,
+    default: () => ['image/jpeg', 'image/png', 'image/webp']
+  },
+  maxFileSize: {
+    type: Number,
+    default: 10485760 // 10MB
+  },
+  maxFiles: {
+    type: Number,
+    default: null
+  },
+  maxParallelUploads: {
+    type: Number,
+    default: 2
+  },
+  imagePreview: {
+    type: Boolean,
+    default: true
+  },
+  imageResize: {
+    type: Boolean,
+    default: true
+  },
+  imageTransform: {
+    type: Boolean,
+    default: true
+  },
+  imageExifOrientation: {
+    type: Boolean,
+    default: true
+  },
+  allowFilePoster: {
+    type: Boolean,
+    default: true
+  },
+  filePosterHeight: {
+    type: Number,
+    default: 150
+  },
+  labelIdle: {
+    type: String,
+    default: 'Drop files here or click to browse'
+  },
+  labelFileProcessing: {
+    type: String,
+    default: 'Uploading'
+  },
+  labelFileProcessingComplete: {
+    type: String,
+    default: 'Upload complete'
+  },
+  labelFileProcessingAborted: {
+    type: String,
+    default: 'Upload cancelled'
+  },
+  labelFileProcessingError: {
+    type: String,
+    default: 'Error during upload'
+  },
+  labelTapToCancel: {
+    type: String,
+    default: 'tap to cancel'
+  },
+  labelTapToRetry: {
+    type: String,
+    default: 'tap to retry'
+  },
+  labelTapToUndo: {
+    type: String,
+    default: 'tap to undo'
   }
 })
 
@@ -125,33 +282,62 @@ onMounted(() => {
   
   // Initialize FilePond after component is mounted
   if (pondElement.value) {
+    // Prepare initial files array if we have an existing file
+    const initialFiles = props.existingFile ? [{
+      source: props.existingFile.url,
+      options: {
+        type: 'local',
+        file: {
+          name: props.existingFile.name,
+          size: props.existingFile.size || 0,
+          type: props.existingFile.mime_type || 'image/jpeg'
+        },
+        metadata: {
+          poster: props.existingFile.url
+        }
+      }
+    }] : [];
+
     pond.value = FilePond.create(pondElement.value, {
-      allowMultiple: false,
-      allowReplace: true,
-      allowDrop: true,
-      allowPaste: true,
-      allowBrowse: true,
-      allowImport: true,
-      allowRevert: true,
-      allowRemove: true,
-      allowDownload: true,
-      allowZoom: true,
-      allowFullscreen: true,
-      allowRotate: true,
-      allowCrop: true,
-      allowResize: true,
-      allowEdit: true,
-      allowPrint: true,
-      allowExport: true,
-      allowShare: true,
-      allowUpload: true,
-      acceptedFileTypes: ['image/jpeg', 'image/png', 'image/webp'],
-      maxFileSize: 10485760,
-      imagePreview: true,
-      imageResize: true,
-      imageTransform: true,
-      imageExifOrientation: true,
+      allowMultiple: props.allowMultiple,
+      allowReplace: props.allowReplace,
+      allowDrop: props.allowDrop,
+      allowPaste: props.allowPaste,
+      allowBrowse: props.allowBrowse,
+      allowImport: props.allowImport,
+      allowRevert: props.allowRevert,
+      allowRemove: props.allowRemove,
+      allowDownload: props.allowDownload,
+      allowZoom: props.allowZoom,
+      allowFullscreen: props.allowFullscreen,
+      allowRotate: props.allowRotate,
+      allowCrop: props.allowCrop,
+      allowResize: props.allowResize,
+      allowEdit: props.allowEdit,
+      allowPrint: props.allowPrint,
+      allowExport: props.allowExport,
+      allowUpload: props.allowUpload,
+      instantUpload: props.instantUpload,
+      acceptedFileTypes: props.acceptedFileTypes,
+      maxFileSize: props.maxFileSize,
+      maxFiles: props.maxFiles,
+      maxParallelUploads: props.maxParallelUploads,
+      imagePreview: props.imagePreview,
+      imageResize: props.imageResize,
+      imageTransform: props.imageTransform,
+      imageExifOrientation: props.imageExifOrientation,
+      allowFilePoster: props.allowFilePoster,
+      filePosterHeight: props.filePosterHeight,
+      labelIdle: props.labelIdle,
+      labelFileProcessing: props.labelFileProcessing,
+      labelFileProcessingComplete: props.labelFileProcessingComplete,
+      labelFileProcessingAborted: props.labelFileProcessingAborted,
+      labelFileProcessingError: props.labelFileProcessingError,
+      labelTapToCancel: props.labelTapToCancel,
+      labelTapToRetry: props.labelTapToRetry,
+      labelTapToUndo: props.labelTapToUndo,
       server: serverConfig,
+      files: initialFiles,
       onaddfile: handleAddFile,
       onremovefile: handleRemoveFile,
       onprocessfile: handleProcessFile,
@@ -166,41 +352,4 @@ onMounted(() => {
 @import 'filepond/dist/filepond.min.css';
 @import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
 
-.filepond-upload {
-  width: 100%;
-}
-
-.filepond--root {
-  font-family: inherit;
-}
-
-.filepond--panel-root {
-  background-color: #f8fafc;
-  border: 2px dashed #cbd5e1;
-  border-radius: 0.5rem;
-}
-
-.filepond--drop-label {
-  color: #64748b;
-}
-
-.filepond--item {
-  width: 100%;
-}
-
-.filepond--file-info {
-  color: #1e293b;
-}
-
-.filepond--progress-indicator {
-  background-color: #3b82f6;
-}
-
-.filepond--success-indicator {
-  background-color: #10b981;
-}
-
-.filepond--error-indicator {
-  background-color: #ef4444;
-}
 </style>

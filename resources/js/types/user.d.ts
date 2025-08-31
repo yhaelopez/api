@@ -7,6 +7,13 @@ export interface User {
   updated_at: string;
   deleted_at?: string;
   roles?: Array<{ id: number; name: string }>;
+  profile_photo?: {
+    id: number;
+    url: string;
+    name: string;
+    size: number;
+    mime_type: string;
+  };
 }
 
 export interface CreateUser {

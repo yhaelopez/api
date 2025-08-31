@@ -34,6 +34,12 @@ use OpenApi\Annotations as OA;
  *         @OA\Items(ref="#/components/schemas/PermissionResource"),
  *     ),
  *
+ * @OA\Property(
+ *         property="profile_photo",
+ *         description="User's profile photo information",
+ *         ref="#/components/schemas/ProfilePhotoResource",
+ *         nullable=true,
+ *     ),
  *     @OA\Property(property="created_at", type="datetime", example="2021-01-01 12:00:00", nullable=true),
  *     @OA\Property(property="updated_at", type="datetime", example="2021-01-01 12:00:00", nullable=true),
  *     @OA\Property(property="deleted_at", type="datetime", example="null", nullable=true),
@@ -62,6 +68,9 @@ class UserResource extends JsonResource
                 })->unique('id');
 
                 return PermissionResource::collection($permissions);
+            }),
+            'profile_photo' => $this->when($this->getMedia('profile_photos')->isNotEmpty(), function () {
+                return new ProfilePhotoResource($this->getMedia('profile_photos')->first());
             }),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

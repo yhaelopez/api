@@ -91,6 +91,11 @@ class TemporaryFileService
      */
     public function moveTempToMedia(string $folder, string $collectionName, Model $model): bool
     {
+        // Only clear existing media if there are items in the collection
+        if ($model->hasMedia($collectionName)) {
+            $model->clearMediaCollection($collectionName);
+        }
+
         $result = $this->moveTemporaryFilesToMedia($folder, $collectionName, $model);
 
         return ! empty($result['moved_files']);

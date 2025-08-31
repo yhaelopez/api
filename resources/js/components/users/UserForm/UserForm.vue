@@ -53,6 +53,7 @@ const form = useForm<CreateUser | UpdateUser>({
 const showPassword = ref(false);
 const roles = ref<Array<{ id: number; name: string }>>([]);
 const loadingRoles = ref(false);
+const existingProfilePhoto = ref<Record<string, any> | undefined>(undefined);
 
 // Load roles from API
 const loadRoles = async () => {
@@ -79,6 +80,8 @@ watch(() => props.user, (newUser) => {
     form.password = '';
     // Reset temp_folder in edit mode
     form.temp_folder = '';
+    // Set existing profile photo if available
+    existingProfilePhoto.value = newUser.profile_photo || undefined;
   }
 }, { immediate: true });
 
@@ -137,6 +140,7 @@ const submit = async () => {
     // Reset form
     form.reset();
     form.temp_folder = '';
+    existingProfilePhoto.value = undefined;
   } catch (error) {
     console.error(`Failed to ${props.isEditMode ? 'update' : 'create'} user:`, error);
   }
@@ -144,6 +148,7 @@ const submit = async () => {
 
 const cancel = () => {
   form.temp_folder = '';
+  existingProfilePhoto.value = undefined;
   emit('cancelled');
 };
 
@@ -315,6 +320,7 @@ const passwordRequired = computed(() => !isEditMode.value);
             </Label>
             <FilePondUpload
               v-model="form.temp_folder"
+              :existing-file="existingProfilePhoto"
               @file-processed="handleFileProcessed"
               @file-removed="handleFileRemoved"
             />
