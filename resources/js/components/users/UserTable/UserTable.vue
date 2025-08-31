@@ -3,6 +3,7 @@ import type { UserTableProps, UserTableEmits, User } from '@/types/user';
 import { userTableService } from '@/services/UserTableService';
 import UserActions from '@/components/users/UserActions/UserActions.vue';
 
+
 const props = withDefaults(defineProps<UserTableProps>(), {
   loading: false,
 });
@@ -74,8 +75,19 @@ const handleUserEdit = (user: User) => {
             <td class="px-4 py-4 whitespace-nowrap cursor-pointer" @click="handleUserClick(user)">
               <div class="flex items-center">
                 <div class="flex-shrink-0 h-8 w-8">
-                  <div class="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-medium">
-                    {{ userTableService.getUserInitials(user) }}
+                  <div class="h-8 w-8 rounded-full overflow-hidden">
+                    <img 
+                      v-if="user.profile_photo?.url" 
+                      :src="user.profile_photo.url" 
+                      :alt="user.name"
+                      class="h-full w-full object-cover"
+                    />
+                    <div 
+                      v-else 
+                      class="h-full w-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-medium"
+                    >
+                      {{ userTableService.getUserInitials(user) }}
+                    </div>
                   </div>
                 </div>
                 <div class="ml-3">
