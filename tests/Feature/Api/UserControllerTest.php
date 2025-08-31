@@ -80,7 +80,7 @@ test('superadmin can delete any user', function () {
 
     // Assert - Check response and database
     $response->assertStatus(200)
-        ->assertJson(['message' => 'User deleted successfully']);
+        ->assertJson(['message' => 'User deleted']);
 
     $this->assertSoftDeleted($userToDelete);
 });
@@ -152,7 +152,7 @@ test('authorized user can delete other users', function () {
 
     // Assert - Should succeed
     $response->assertStatus(200)
-        ->assertJson(['message' => 'User deleted successfully']);
+        ->assertJson(['message' => 'User deleted']);
 
     $this->assertSoftDeleted($otherUser);
 });
@@ -808,7 +808,7 @@ test('superadmin can restore a soft-deleted user', function () {
     // Assert - Check response
     $response->assertStatus(200)
         ->assertJson([
-            'message' => 'User restored successfully',
+            'message' => 'User restored',
         ])
         ->assertJsonStructure([
             'message',
@@ -843,7 +843,7 @@ test('authorized user can restore other users', function () {
 
     // Assert - Should succeed
     $response->assertStatus(200)
-        ->assertJson(['message' => 'User restored successfully']);
+        ->assertJson(['message' => 'User restored']);
 });
 
 test('unauthorized user cannot restore users', function () {
@@ -890,7 +890,7 @@ test('superadmin can permanently delete a user', function () {
 
     // Assert - Check response
     $response->assertStatus(200)
-        ->assertJson(['message' => 'User permanently deleted successfully']);
+        ->assertJson(['message' => 'User permanently deleted']);
 
     // Check database - user should be completely removed
     $this->assertDatabaseMissing('users', [
@@ -913,7 +913,7 @@ test('authorized user can permanently delete other users', function () {
 
     // Assert - Should succeed
     $response->assertStatus(200)
-        ->assertJson(['message' => 'User permanently deleted successfully']);
+        ->assertJson(['message' => 'User permanently deleted']);
 });
 
 test('unauthorized user cannot permanently delete users', function () {
@@ -975,7 +975,7 @@ test('force delete works only with soft-deleted users', function () {
 
     // Assert - Should succeed because user is soft-deleted
     $response->assertStatus(200)
-        ->assertJson(['message' => 'User permanently deleted successfully']);
+        ->assertJson(['message' => 'User permanently deleted']);
 
     // Check database - user should be completely removed
     $this->assertDatabaseMissing('users', [
@@ -1003,7 +1003,7 @@ test('force delete workflow: delete then force delete', function () {
 
     // Assert - Should succeed
     $response->assertStatus(200)
-        ->assertJson(['message' => 'User permanently deleted successfully']);
+        ->assertJson(['message' => 'User permanently deleted']);
 
     // Check database - user should be completely removed
     $this->assertDatabaseMissing('users', [

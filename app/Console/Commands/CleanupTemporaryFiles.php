@@ -38,6 +38,6 @@ class CleanupTemporaryFiles extends Command
             $this->info("Removed {$removedFolders} empty tmp folders");
         }
 
-        $this->info('Temporary files cleanup completed successfully!');
+        $this->info('Temporary files cleanup completed!');
     }
 }

@@ -2,8 +2,8 @@
 
 namespace App\Filters;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Base class for all filters
@@ -193,21 +193,12 @@ abstract class BaseFilter
         $from = $this->get('deleted_from');
         $to = $this->get('deleted_to');
 
-        // Debug: Log what we're getting
-        if ($from || $to) {
-            Log::info('Applying deleted_at filter', [
-                'from' => $from,
-                'to' => $to,
-                'filters' => $this->filters,
-            ]);
-        }
-
         if ($from) {
-            $query->where('deleted_at', '>=', \Carbon\Carbon::parse($from)->startOfDay());
+            $query->where('deleted_at', '>=', Carbon::parse($from)->startOfDay());
         }
 
         if ($to) {
-            $query->where('deleted_at', '<=', \Carbon\Carbon::parse($to)->endOfDay());
+            $query->where('deleted_at', '<=', Carbon::parse($to)->endOfDay());
         }
     }
 

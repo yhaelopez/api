@@ -25,13 +25,6 @@ class UserService
      */
     public function getUsersList(int $page = 1, int $perPage = 15, array $filters = []): LengthAwarePaginator
     {
-        $this->logger->user()->info('Users list retrieved', [
-            'page' => $page,
-            'per_page' => $perPage,
-            'filters' => $filters,
-            'action' => 'list_users',
-        ]);
-
         return $this->userCache->rememberList($page, $perPage, function () use ($page, $perPage, $filters) {
             return $this->userRepository->paginate($page, $perPage, $filters);
         });
@@ -42,11 +35,6 @@ class UserService
      */
     public function getUser(int $id): User
     {
-        $this->logger->user()->info('User retrieved', [
-            'user_id' => $id,
-            'action' => 'get_user',
-        ]);
-
         return $this->userCache->remember($id, function () use ($id) {
             return $this->userRepository->findWithRoles($id);
         });
@@ -66,17 +54,10 @@ class UserService
             $role = $this->roleService->findRole($data['role_id']);
             if ($role) {
                 $this->roleService->assignRole($user, $role);
-
-                $this->logger->user()->info('Role assigned to user', [
-                    'user_id' => $user->id,
-                    'role_id' => $role->id,
-                    'role_name' => $role->name,
-                    'action' => 'role_assigned',
-                ]);
             }
         }
 
-        $this->logger->user()->info('User created successfully', [
+        $this->logger->user()->info('User created', [
             'user_id' => $user->id,
             'action' => 'user_created_success',
         ]);
@@ -105,16 +86,9 @@ class UserService
 
             // Remove existing roles and assign new one through service
             $this->roleService->syncRoles($updatedUser, [$role]);
-
-            $this->logger->user()->info('Role updated for user', [
-                'user_id' => $updatedUser->id,
-                'role_id' => $role->id,
-                'role_name' => $role->name,
-                'action' => 'role_updated',
-            ]);
         }
 
-        $this->logger->user()->info('User updated successfully', [
+        $this->logger->user()->info('User updated', [
             'user_id' => $user->id,
             'action' => 'user_updated_success',
         ]);
@@ -127,15 +101,10 @@ class UserService
      */
     public function deleteUser(User $user): bool
     {
-        $this->logger->user()->warning('User deleted (soft delete)', [
-            'user_id' => $user->id,
-            'user_email' => $user->email,
-            'action' => 'delete_user',
-        ]);
 
         $this->userRepository->delete($user);
 
-        $this->logger->user()->info('User soft deleted successfully', [
+        $this->logger->user()->info('User soft deleted', [
             'user_id' => $user->id,
             'action' => 'user_soft_deleted_success',
         ]);
@@ -175,15 +144,9 @@ class UserService
      */
     public function restoreUser(User $user): User
     {
-        $this->logger->user()->info('User restored', [
-            'user_id' => $user->id,
-            'user_email' => $user->email,
-            'action' => 'restore_user',
-        ]);
-
         $this->userRepository->restore($user);
 
-        $this->logger->user()->info('User restored successfully', [
+        $this->logger->user()->info('User restored', [
             'user_id' => $user->id,
             'action' => 'user_restored_success',
         ]);
@@ -212,15 +175,9 @@ class UserService
             );
         }
 
-        $this->logger->user()->warning('User force deleted permanently', [
-            'user_id' => $user->id,
-            'user_email' => $user->email,
-            'action' => 'force_delete_user',
-        ]);
-
         $this->userRepository->forceDelete($user);
 
-        $this->logger->user()->info('User permanently deleted successfully', [
+        $this->logger->user()->info('User permanently deleted', [
             'user_id' => $user->id,
             'action' => 'user_permanently_deleted_success',
         ]);

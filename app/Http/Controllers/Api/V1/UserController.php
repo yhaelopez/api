@@ -120,7 +120,7 @@ class UserController extends Controller
      *
      *     @OA\Response(
      *         response=201,
-     *         description="User created successfully",
+     *         description="User created",
      *
      *         @OA\JsonContent(ref="#/components/schemas/UserResource")
      *     ),
@@ -227,7 +227,7 @@ class UserController extends Controller
      *
      *     @OA\Response(
      *         response=200,
-     *         description="User updated successfully",
+     *         description="User updated",
      *
      *         @OA\JsonContent(ref="#/components/schemas/UserResource")
      *     ),
@@ -288,7 +288,7 @@ class UserController extends Controller
      *         @OA\JsonContent(
      *             type="object",
      *
-     *             @OA\Property(property="message", type="string", example="User deleted successfully")
+     *             @OA\Property(property="message", type="string", example="User deleted")
      *         )
      *     ),
      *
@@ -308,7 +308,7 @@ class UserController extends Controller
 
         $this->userService->deleteUser($user);
 
-        return response()->json(['message' => 'User deleted successfully'], JsonResponse::HTTP_OK);
+        return response()->json(['message' => 'User deleted'], JsonResponse::HTTP_OK);
     }
 
     /**
@@ -329,12 +329,12 @@ class UserController extends Controller
      *
      *     @OA\Response(
      *         response=200,
-     *         description="User restored successfully",
+     *         description="User restored",
      *
      *         @OA\JsonContent(
      *             type="object",
      *
-     *             @OA\Property(property="message", type="string", example="User restored successfully"),
+     *             @OA\Property(property="message", type="string", example="User restored"),
      *             @OA\Property(property="data", ref="#/components/schemas/UserResource")
      *         )
      *     ),
@@ -356,7 +356,7 @@ class UserController extends Controller
         $restoredUser = $this->userService->restoreUser($user);
 
         return response()->json([
-            'message' => 'User restored successfully',
+            'message' => 'User restored',
             'data' => new UserResource($restoredUser),
         ], JsonResponse::HTTP_OK);
     }
@@ -379,12 +379,12 @@ class UserController extends Controller
      *
      *     @OA\Response(
      *         response=200,
-     *         description="User permanently deleted successfully",
+     *         description="User permanently deleted",
      *
      *         @OA\JsonContent(
      *             type="object",
      *
-     *             @OA\Property(property="message", type="string", example="User permanently deleted successfully")
+     *             @OA\Property(property="message", type="string", example="User permanently deleted")
      *         )
      *     ),
      *
@@ -413,7 +413,7 @@ class UserController extends Controller
         try {
             $this->userService->forceDeleteUser($user);
 
-            return response()->json(['message' => 'User permanently deleted successfully'], JsonResponse::HTTP_OK);
+            return response()->json(['message' => 'User permanently deleted'], JsonResponse::HTTP_OK);
         } catch (ForceDeleteActiveRecordException $e) {
             return response()->json([
                 'error' => $e->getCode(),
