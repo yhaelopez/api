@@ -61,6 +61,80 @@
                 ]
             }
         },
+        "/api/v1/upload/temp": {
+            "post": {
+                "tags": [
+                    "UploadController"
+                ],
+                "summary": "Store a temporary file",
+                "operationId": "04cc7f22328763d0af0dedb46573f9c1",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "file"
+                                ],
+                                "properties": {
+                                    "file": {
+                                        "description": "The file to upload (jpg, jpeg, png, webp, max 10MB)",
+                                        "type": "string",
+                                        "format": "binary",
+                                        "example": "profile_photo.jpg"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "File uploaded successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TempFolderResource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "File upload failed"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Internal server error details"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/v1/users": {
             "get": {
                 "tags": [
@@ -158,7 +232,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "User created successfully",
+                        "description": "User created",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -277,7 +351,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "User updated successfully",
+                        "description": "User updated",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -328,7 +402,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "User deleted successfully"
+                                            "example": "User deleted"
                                         }
                                     },
                                     "type": "object"
@@ -370,14 +444,14 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "User restored successfully",
+                        "description": "User restored",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "User restored successfully"
+                                            "example": "User restored"
                                         },
                                         "data": {
                                             "$ref": "#/components/schemas/UserResource"
@@ -422,14 +496,14 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "User permanently deleted successfully",
+                        "description": "User permanently deleted",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "User permanently deleted successfully"
+                                            "example": "User permanently deleted"
                                         }
                                     },
                                     "type": "object"
@@ -460,6 +534,34 @@
     },
     "components": {
         "schemas": {
+            "TempFolderResource": {
+                "title": "Temp Folder Resource",
+                "description": "Temporary file upload response",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "folder": {
+                        "type": "string",
+                        "example": "temp_1234567890"
+                    },
+                    "filename": {
+                        "type": "string",
+                        "example": "profile_photo.jpg"
+                    },
+                    "size": {
+                        "type": "integer",
+                        "example": 12345
+                    },
+                    "uploaded_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-08-31T01:52:43.000000Z"
+                    }
+                },
+                "type": "object"
+            },
             "PermissionCollection": {
                 "title": "Permission Collection",
                 "description": "Permission collection resource",
@@ -871,6 +973,10 @@
         {
             "name": "UserController",
             "description": "User management"
+        },
+        {
+            "name": "UploadController",
+            "description": "UploadController"
         }
     ],
     "externalDocs": {
