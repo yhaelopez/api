@@ -15,7 +15,5 @@ class CacheManager
     {
         $this->userCache->flush();
         // Add other model caches here as they are created
-        // $this->productCache->flush();
-        // $this->orderCache->flush();
     }
 }

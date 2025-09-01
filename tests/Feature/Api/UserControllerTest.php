@@ -7,7 +7,6 @@ use App\Helpers\TestHelper;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Http\Testing\File;
 use Illuminate\Support\Facades\DB;
 
 uses(RefreshDatabase::class, WithFaker::class);

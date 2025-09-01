@@ -5,24 +5,9 @@ namespace App\Helpers;
 use App\Models\User;
 use Database\Seeders\PermissionsSeeder;
 use Database\Seeders\RolesSeeder;
-use Faker\Factory;
 
 class TestHelper
 {
-    private static $faker;
-
-    /**
-     * Get or create faker instance
-     */
-    private static function getFaker()
-    {
-        if (! self::$faker) {
-            self::$faker = Factory::create();
-        }
-
-        return self::$faker;
-    }
-
     /**
      * Create permissions and roles for testing
      */
@@ -45,7 +30,7 @@ class TestHelper
     {
         return User::factory()->superadmin()->create([
             'name' => 'Super Admin',
-            'email' => 'admin@'.self::getFaker()->domainName(),
+            'email' => 'admin@'.fake()->domainName(),
         ]);
     }
 
@@ -58,7 +43,7 @@ class TestHelper
     {
         return User::factory()->regularUser()->create([
             'name' => 'Regular User',
-            'email' => 'user@'.self::getFaker()->domainName(),
+            'email' => 'user@'.fake()->domainName(),
         ]);
     }
 
@@ -71,7 +56,7 @@ class TestHelper
     {
         return User::factory()->unauthorized()->create([
             'name' => 'Unauthorized User',
-            'email' => 'unauthorized@'.self::getFaker()->domainName(),
+            'email' => 'unauthorized@'.fake()->domainName(),
         ]);
     }
 }

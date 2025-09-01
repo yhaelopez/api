@@ -163,7 +163,7 @@ class UserService
     {
         // Check if user is soft-deleted before force deleting
         if (! $user->trashed()) {
-            $this->logger->user()->error('Attempted to force delete active user', [
+            $this->logger->user()->alert('Attempted to force delete active user', [
                 'user_id' => $user->id,
                 'user_email' => $user->email,
                 'action' => 'force_delete_active_user_attempt',

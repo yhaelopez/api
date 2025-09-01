@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\Api\V1\Upload;
+namespace App\Http\Resources\V1\Upload;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;

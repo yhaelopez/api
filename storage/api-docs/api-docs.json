@@ -534,34 +534,6 @@
     },
     "components": {
         "schemas": {
-            "TempFolderResource": {
-                "title": "Temp Folder Resource",
-                "description": "Temporary file upload response",
-                "properties": {
-                    "success": {
-                        "type": "boolean",
-                        "example": true
-                    },
-                    "folder": {
-                        "type": "string",
-                        "example": "temp_1234567890"
-                    },
-                    "filename": {
-                        "type": "string",
-                        "example": "profile_photo.jpg"
-                    },
-                    "size": {
-                        "type": "integer",
-                        "example": 12345
-                    },
-                    "uploaded_at": {
-                        "type": "string",
-                        "format": "date-time",
-                        "example": "2025-08-31T01:52:43.000000Z"
-                    }
-                },
-                "type": "object"
-            },
             "PermissionCollection": {
                 "title": "Permission Collection",
                 "description": "Permission collection resource",
@@ -777,6 +749,34 @@
                             "$ref": "#/components/schemas/PermissionResource"
                         },
                         "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "TempFolderResource": {
+                "title": "Temp Folder Resource",
+                "description": "Temporary file upload response",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "folder": {
+                        "type": "string",
+                        "example": "temp_1234567890"
+                    },
+                    "filename": {
+                        "type": "string",
+                        "example": "profile_photo.jpg"
+                    },
+                    "size": {
+                        "type": "integer",
+                        "example": 12345
+                    },
+                    "uploaded_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-08-31T01:52:43.000000Z"
                     }
                 },
                 "type": "object"

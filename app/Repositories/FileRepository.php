@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 
@@ -13,7 +14,7 @@ class FileRepository
     public function generateUniqueFilename(UploadedFile $file, string $prefix = 'file'): string
     {
         $extension = $file->getClientOriginalExtension();
-        $uniqueId = Str::uuid();
+        $uniqueId = Str::random(8).'_'.Carbon::now()->timestamp;
 
         return "{$prefix}_{$uniqueId}.{$extension}";
     }

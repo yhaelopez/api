@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Spatie\Permission\Models\Role;
 
@@ -10,7 +11,7 @@ class RoleRepository
     /**
      * Get paginated list of roles
      */
-    public function paginate(int $page = 1, int $perPage = 15): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    public function paginate(int $page = 1, int $perPage = 15): LengthAwarePaginator
     {
         return Role::orderBy('name')->paginate($perPage, ['*'], 'page', $page);
     }

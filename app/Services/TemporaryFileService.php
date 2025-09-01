@@ -89,10 +89,10 @@ class TemporaryFileService
     /**
      * Simple method to move temporary files to media library (for UserController)
      */
-    public function moveTempToMedia(string $folder, string $collectionName, Model $model): bool
+    public function moveTempToMedia(Model $model, string $folder, string $collectionName, bool $clearExistingMedia = false): bool
     {
         // Only clear existing media if there are items in the collection
-        if ($model->hasMedia($collectionName)) {
+        if ($model->hasMedia($collectionName) && $clearExistingMedia) {
             $model->clearMediaCollection($collectionName);
         }
 

@@ -14,6 +14,7 @@ use App\Services\TemporaryFileService;
 use App\Services\UserService;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use OpenApi\Annotations as OA;
 
@@ -75,7 +76,7 @@ class UserController extends Controller
         $perPage = $request->validated('per_page', 15);
         $page = $request->validated('page', 1);
 
-        // Extract filter parameters
+        /** @var Request $request - Extract filter parameters */
         $filters = $request->only([
             'search',
             'role',
@@ -145,11 +146,12 @@ class UserController extends Controller
         $user = $this->userService->createUser($data);
 
         // Handle temporary profile photo if provided
+        /** @var Request $request */
         if ($request->has('temp_folder') && $request->input('temp_folder')) {
             $this->temporaryFileService->moveTempToMedia(
+                $user,
                 $request->input('temp_folder'),
                 'profile_photos',
-                $user
             );
         }
 
@@ -254,11 +256,12 @@ class UserController extends Controller
         $updatedUser = $this->userService->updateUser($user, $data);
 
         // Handle temporary profile photo update if provided
+        /** @var Request $request */
         if ($request->has('temp_folder') && $request->input('temp_folder')) {
             $this->temporaryFileService->moveTempToMedia(
+                $updatedUser,
                 $request->input('temp_folder'),
                 'profile_photos',
-                $updatedUser
             );
         }
 
