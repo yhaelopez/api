@@ -23,4 +23,6 @@ Route::prefix('v1')->middleware(['web', 'auth', 'throttle:60,1'])->group(functio
     Route::delete('users/{user}/force-delete', [UserController::class, 'forceDelete'])
         ->name('users.force-delete')
         ->withTrashed();
+    Route::delete('users/{user}/profile-photo', [UserController::class, 'removeProfilePhoto'])
+        ->name('users.profile-photo.delete');
 });

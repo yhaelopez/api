@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notification Debug</title>
+</head>
+<body>
+    <h1>Notification System Debug</h1>
+    <div id="output"></div>
+    
+    <script>
+        const output = document.getElementById('output');
+        
+        function log(message) {
+            output.innerHTML += '<p>' + message + '</p>';
+            console.log(message);
+        }
+        
+        // Check if the environment variables are available
+        log('=== Environment Variables Check ===');
+        log('VITE_PUSHER_APP_KEY: ' + (import.meta?.env?.VITE_PUSHER_APP_KEY || 'MISSING'));
+        log('VITE_PUSHER_APP_CLUSTER: ' + (import.meta?.env?.VITE_PUSHER_APP_CLUSTER || 'MISSING'));
+        log('VITE_PUSHER_APP_ID: ' + (import.meta?.env?.VITE_PUSHER_APP_ID || 'MISSING'));
+        
+        // Check if Echo is loaded
+        log('=== Echo Check ===');
+        log('window.Echo: ' + (window.Echo ? 'LOADED' : 'NOT LOADED'));
+        
+        if (window.Echo) {
+            log('Echo connector: ' + (window.Echo.connector?.name || 'unknown'));
+        }
+        
+        // Check authentication
+        log('=== Authentication Check ===');
+        log('Auth token: ' + (localStorage.getItem('auth_token') ? 'EXISTS' : 'MISSING'));
+        log('Auth user: ' + (localStorage.getItem('auth_user') ? 'EXISTS' : 'MISSING'));
+        log('window.authUser: ' + (window.authUser ? 'EXISTS' : 'MISSING'));
+        
+        setTimeout(() => {
+            log('=== Final Status ===');
+            log('Ready for notifications: ' + (window.Echo && localStorage.getItem('auth_token') ? 'YES' : 'NO'));
+        }, 1000);
+    </script>
+</body>
+</html>
+

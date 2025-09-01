@@ -7,6 +7,10 @@ import { createApp, h } from 'vue';
 import { ZiggyVue } from 'ziggy-js';
 import { initializeTheme } from './composables/useAppearance';
 
+// Import Echo and BroadcastService for notifications
+import './echo.js';
+import { broadcastService } from './services/BroadcastService';
+
 // Extend ImportMeta interface for Vite...
 declare module 'vite/client' {
     interface ImportMetaEnv {
@@ -38,3 +42,9 @@ createInertiaApp({
 
 // This will set light / dark mode on page load...
 initializeTheme();
+
+// Initialize broadcast service for notifications
+// Wait a bit for Echo to be fully initialized
+setTimeout(() => {
+    broadcastService.init();
+}, 100);

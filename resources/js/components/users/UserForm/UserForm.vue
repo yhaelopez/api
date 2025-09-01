@@ -321,6 +321,7 @@ const passwordRequired = computed(() => !isEditMode.value);
             <FilePondUpload
               v-model="form.temp_folder"
               :existing-file="existingProfilePhoto"
+              :user="props.user || undefined"
               @file-processed="handleFileProcessed"
               @file-removed="handleFileRemoved"
             />

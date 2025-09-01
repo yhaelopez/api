@@ -430,4 +430,73 @@ class UserController extends Controller
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     * @OA\Delete(
+     *     path="/api/v1/users/{user}/profile-photo",
+     *     summary="Remove the user's profile photo",
+     *     tags={"User"},
+     *     security={{"bearerAuth":{}}},
+     *
+     *     @OA\Parameter(
+     *         name="user",
+     *         in="path",
+     *         description="User ID",
+     *         required=true,
+     *
+     *         @OA\Schema(type="integer")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Profile photo removed successfully",
+     *
+     *         @OA\JsonContent(
+     *             type="object",
+     *
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Profile photo removed successfully")
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=404,
+     *         description="No profile photo found",
+     *
+     *         @OA\JsonContent(
+     *             type="object",
+     *
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="No profile photo found")
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden - Cannot delete profile photo"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error"
+     *     )
+     * )
+     */
+    public function removeProfilePhoto(User $user): JsonResponse
+    {
+        Gate::authorize('update', $user);
+
+        $removed = $this->userService->removeProfilePhoto($user);
+
+        if (! $removed) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No profile photo found',
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profile photo removed successfully',
+        ]);
+    }
 }

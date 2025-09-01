@@ -43,6 +43,10 @@ const props = defineProps({
     type: Object,
     default: null
   },
+  user: {
+    type: Object,
+    default: undefined
+  },
   // FilePond configuration options
   allowMultiple: {
     type: Boolean,
@@ -239,6 +243,36 @@ const serverConfig = {
     headers: {
       'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
       'Authorization': `Bearer ${localStorage.getItem('auth_token') || ''}`
+    }
+  },
+  remove: (source, load, error) => {
+    // Handle removal of already uploaded files (permanent media)
+    // Check if this is a profile photo for a specific user
+    if (props.user && props.existingFile) {
+      // This is a user profile photo, use the specific user endpoint
+      fetch(`/api/v1/users/${props.user.id}/profile-photo`, {
+        method: 'DELETE',
+        headers: {
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+          'Authorization': `Bearer ${localStorage.getItem('auth_token') || ''}`,
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(result => {
+        if (result.success) {
+          load() // Successfully deleted from server
+        } else {
+          error(result.message || 'Failed to delete profile photo')
+        }
+      })
+      .catch(err => {
+        console.error('Error deleting profile photo:', err)
+        error('Failed to delete profile photo')
+      })
+    } else {
+      // For temporary files or other cases, just remove from UI
+      load()
     }
   }
 }

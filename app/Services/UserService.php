@@ -17,7 +17,8 @@ class UserService
         private UserRepository $userRepository,
         private LoggerService $logger,
         private RoleService $roleService,
-        private StorageService $storageService
+        private StorageService $storageService,
+        private InAppNotificationService $inAppNotificationService
     ) {}
 
     /**
@@ -62,6 +63,12 @@ class UserService
             'action' => 'user_created_success',
         ]);
 
+        // Send success notification to current user
+        $this->inAppNotificationService->success(
+            'User Created',
+            "User '{$user->name}' has been created successfully."
+        );
+
         return $user;
     }
 
@@ -93,6 +100,12 @@ class UserService
             'action' => 'user_updated_success',
         ]);
 
+        // Send success notification to current user
+        $this->inAppNotificationService->success(
+            'User Updated',
+            "User '{$updatedUser->name}' has been updated successfully."
+        );
+
         return $updatedUser;
     }
 
@@ -101,6 +114,7 @@ class UserService
      */
     public function deleteUser(User $user): bool
     {
+        $userName = $user->name;
 
         $this->userRepository->delete($user);
 
@@ -108,6 +122,12 @@ class UserService
             'user_id' => $user->id,
             'action' => 'user_soft_deleted_success',
         ]);
+
+        // Send success notification to current user
+        $this->inAppNotificationService->success(
+            'User Deleted',
+            "User '{$userName}' has been moved to trash."
+        );
 
         return true;
     }
@@ -140,6 +160,38 @@ class UserService
     }
 
     /**
+     * Remove profile photo from user
+     */
+    public function removeProfilePhoto(User $user): bool
+    {
+        if (! $user->hasMedia('profile_photos')) {
+            // Send warning notification to current user
+            $this->inAppNotificationService->warning(
+                'No Profile Photo',
+                'This user does not have a profile photo to remove.'
+            );
+
+            return false;
+        }
+
+        // Clear the profile photos collection (removes files and database records)
+        $user->clearMediaCollection('profile_photos');
+
+        $this->logger->user()->info('Profile photo removed from user', [
+            'user_id' => $user->id,
+            'action' => 'profile_photo_removed',
+        ]);
+
+        // Send success notification to current user
+        $this->inAppNotificationService->success(
+            'Profile Photo Removed',
+            "Profile photo for '{$user->name}' has been removed successfully."
+        );
+
+        return true;
+    }
+
+    /**
      * Restore a soft-deleted user
      */
     public function restoreUser(User $user): User
@@ -151,7 +203,15 @@ class UserService
             'action' => 'user_restored_success',
         ]);
 
-        return $user->fresh();
+        $restoredUser = $user->fresh();
+
+        // Send success notification to current user
+        $this->inAppNotificationService->success(
+            'User Restored',
+            "User '{$restoredUser->name}' has been restored successfully."
+        );
+
+        return $restoredUser;
     }
 
     /**
@@ -175,12 +235,19 @@ class UserService
             );
         }
 
+        $userName = $user->name;
         $this->userRepository->forceDelete($user);
 
         $this->logger->user()->info('User permanently deleted', [
             'user_id' => $user->id,
             'action' => 'user_permanently_deleted_success',
         ]);
+
+        // Send warning notification to current user
+        $this->inAppNotificationService->warning(
+            'User Permanently Deleted',
+            "User '{$userName}' has been permanently deleted and cannot be recovered."
+        );
 
         return true;
     }
