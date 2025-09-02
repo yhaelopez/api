@@ -4,10 +4,10 @@ namespace App\Listeners\User;
 
 use App\Cache\UserCache;
 use App\Events\User\UserCreated;
-use App\Events\User\UserUpdated;
 use App\Events\User\UserDeleted;
-use App\Events\User\UserRestored;
 use App\Events\User\UserForceDeleted;
+use App\Events\User\UserRestored;
+use App\Events\User\UserUpdated;
 
 class ForgetUserListCache
 {

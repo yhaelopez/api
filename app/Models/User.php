@@ -22,9 +22,9 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
     use HasRoles;
     use InteractsWithMedia;
     use Notifiable;
+    use RestoreStamps;
     use SoftDeletes;
     use Userstamps;
-    use RestoreStamps;
 
     /**
      * The guard used for authentication

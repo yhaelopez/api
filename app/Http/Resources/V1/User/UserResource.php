@@ -43,6 +43,7 @@ use OpenApi\Annotations as OA;
  *     @OA\Property(property="created_at", type="datetime", example="2021-01-01 12:00:00", nullable=true),
  *     @OA\Property(property="updated_at", type="datetime", example="2021-01-01 12:00:00", nullable=true),
  *     @OA\Property(property="deleted_at", type="datetime", example="null", nullable=true),
+ *     @OA\Property(property="restored_at", type="datetime", example="null", nullable=true),
  * )
  */
 class UserResource extends JsonResource
