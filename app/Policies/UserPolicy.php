@@ -77,4 +77,18 @@ class UserPolicy
     {
         return $user->hasPermissionTo(PermissionsEnum::USERS_FORCE_DELETE->value);
     }
+
+    /**
+     * Determine whether the user can send password reset links.
+     */
+    public function sendPasswordResetLink(User $user, User $model): bool
+    {
+        // Users can send password reset links to themselves
+        if ($user->id === $model->id) {
+            return true;
+        }
+
+        // Users with update permission can send password reset links to others
+        return $user->hasPermissionTo(PermissionsEnum::USERS_UPDATE->value);
+    }
 }

@@ -9,6 +9,7 @@ use App\Repositories\UserRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 
 class UserService
 {
@@ -250,5 +251,41 @@ class UserService
         );
 
         return true;
+    }
+
+    /**
+     * Send password reset link to the user.
+     */
+    public function sendPasswordResetLink(User $user): bool
+    {
+        $status = Password::sendResetLink(['email' => $user->email]);
+
+        if ($status === Password::RESET_LINK_SENT) {
+            $this->logger->user()->info('Password reset link sent', [
+                'user_id' => $user->id,
+                'user_email' => $user->email,
+                'action' => 'password_reset_link_sent',
+            ]);
+
+            $this->inAppNotificationService->success(
+                'Password Reset Link Sent',
+                "Password reset link has been sent to {$user->email}."
+            );
+
+            return true;
+        }
+
+        $this->logger->user()->error('Failed to send password reset link', [
+            'user_id' => $user->id,
+            'user_email' => $user->email,
+            'action' => 'password_reset_link_failed',
+        ]);
+
+        $this->inAppNotificationService->error(
+            'Failed to Send Password Reset Link',
+            'Unable to send password reset link. Please try again.'
+        );
+
+        return false;
     }
 }

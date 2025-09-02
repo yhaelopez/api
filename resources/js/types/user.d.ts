@@ -51,6 +51,7 @@ export interface UserTableEmits {
   (e: 'restore', user: User): void;
   (e: 'forceDelete', user: User): void;
   (e: 'edit', user: User): void;
+  (e: 'userResetPassword', user: User): void;
 }
 
 export interface UserListProps {

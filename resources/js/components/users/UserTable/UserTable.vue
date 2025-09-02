@@ -29,6 +29,10 @@ const handleUserForceDeleted = (user: User) => {
 const handleUserEdit = (user: User) => {
   emit('edit', user);
 };
+
+const handleUserResetPassword = (user: User) => {
+  emit('userResetPassword', user);
+};
 </script>
 
 <template>
@@ -128,6 +132,7 @@ const handleUserEdit = (user: User) => {
                 @user-restored="handleUserRestored"
                 @user-force-deleted="handleUserForceDeleted"
                 @user-edit="handleUserEdit"
+                @user-reset-password="handleUserResetPassword"
               />
             </td>
           </tr>

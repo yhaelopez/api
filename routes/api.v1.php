@@ -25,4 +25,6 @@ Route::prefix('v1')->middleware(['web', 'auth', 'throttle:60,1'])->group(functio
         ->withTrashed();
     Route::delete('users/{user}/profile-photo', [UserController::class, 'removeProfilePhoto'])
         ->name('users.profile-photo.delete');
+    Route::post('users/{user}/send-password-reset', [UserController::class, 'sendPasswordResetLink'])
+        ->name('users.send-password-reset');
 });

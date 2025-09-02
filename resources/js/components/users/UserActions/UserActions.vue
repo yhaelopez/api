@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Edit } from 'lucide-vue-next';
+import { Edit, Key } from 'lucide-vue-next';
 
 interface Props {
   user: User;
@@ -26,14 +26,17 @@ const emit = defineEmits<{
   userRestored: [user: User];
   userForceDeleted: [user: User];
   userEdit: [user: User];
+  userResetPassword: [user: User];
 }>();
 
 const isDeleting = ref(false);
 const isRestoring = ref(false);
 const isForceDeleting = ref(false);
+const isResettingPassword = ref(false);
 const showDeleteDialog = ref(false);
 const showRestoreDialog = ref(false);
 const showForceDeleteDialog = ref(false);
+const showResetPasswordDialog = ref(false);
 const forceDeleteConfirmation = ref('');
 
 const isUserDeleted = UserService.isUserDeleted(props.user);
@@ -84,6 +87,33 @@ const handleForceDelete = async () => {
   }
 };
 
+const handleResetPassword = async () => {
+  if (isResettingPassword.value) return;
+  
+  isResettingPassword.value = true;
+  try {
+    // Use the new user-specific endpoint
+    const response = await fetch(`/api/v1/users/${props.user.id}/send-password-reset`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+      }
+    });
+
+    if (response.ok) {
+      emit('userResetPassword', props.user);
+      showResetPasswordDialog.value = false;
+    } else {
+      throw new Error('Failed to send password reset link');
+    }
+  } catch (error) {
+    console.error('Failed to reset password:', error);
+  } finally {
+    isResettingPassword.value = false;
+  }
+};
+
 const openDeleteDialog = () => {
   showDeleteDialog.value = true;
 };
@@ -94,6 +124,10 @@ const openRestoreDialog = () => {
 
 const openForceDeleteDialog = () => {
   showForceDeleteDialog.value = true;
+};
+
+const openResetPasswordDialog = () => {
+  showResetPasswordDialog.value = true;
 };
 </script>
 
@@ -144,6 +178,18 @@ const openForceDeleteDialog = () => {
     >
       <span v-if="isForceDeleting" class="animate-spin rounded-full h-4 w-4 border-2 border-gray-300 border-t-gray-600"></span>
       <span v-else>Permanently Delete</span>
+    </Button>
+
+    <!-- Reset Password button for active users -->
+    <Button
+      v-if="!isUserDeleted"
+      variant="outline"
+      size="sm"
+      :disabled="isResettingPassword"
+      @click="openResetPasswordDialog"
+    >
+      <Key class="h-4 w-4 mr-1" />
+      Reset Password
     </Button>
 
     <!-- Delete Confirmation Dialog -->
@@ -216,6 +262,26 @@ const openForceDeleteDialog = () => {
             @click="handleForceDelete"
           >
             Permanently Delete
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
+    <!-- Reset Password Confirmation Dialog -->
+    <Dialog v-model:open="showResetPasswordDialog">
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Reset Password</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to reset the password for {{ user.name }}? This will send a password reset link to their email address.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter class="gap-2">
+          <DialogClose as-child>
+            <Button variant="secondary">Cancel</Button>
+          </DialogClose>
+          <Button variant="default" :disabled="isResettingPassword" @click="handleResetPassword">
+            Reset Password
           </Button>
         </DialogFooter>
       </DialogContent>

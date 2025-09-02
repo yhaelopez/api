@@ -499,4 +499,61 @@ class UserController extends Controller
             'message' => 'Profile photo removed successfully',
         ]);
     }
+
+    /**
+     * @OA\Post(
+     *     path="/api/v1/users/{user}/send-password-reset",
+     *     summary="Send password reset link to user",
+     *     tags={"User"},
+     *     security={{"bearerAuth":{}}},
+     *
+     *     @OA\Parameter(
+     *         name="user",
+     *         in="path",
+     *         description="User ID",
+     *         required=true,
+     *
+     *         @OA\Schema(type="integer")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Password reset link sent successfully",
+     *
+     *         @OA\JsonContent(
+     *             type="object",
+     *
+     *             @OA\Property(property="message", type="string", example="Password reset link sent successfully"),
+     *             @OA\Property(property="status", type="string", example="success")
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden - Cannot send password reset"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error"
+     *     )
+     * )
+     */
+    public function sendPasswordResetLink(User $user): JsonResponse
+    {
+        Gate::authorize('sendPasswordResetLink', $user);
+
+        try {
+            $this->userService->sendPasswordResetLink($user);
+
+            return response()->json([
+                'message' => 'Password reset link sent successfully',
+                'status' => 'success',
+            ], JsonResponse::HTTP_OK);
+        } catch (Exception $e) {
+            return response()->json([
+                'error' => $e->getCode(),
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }

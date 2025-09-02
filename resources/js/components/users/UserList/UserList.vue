@@ -112,6 +112,12 @@ const handlePerPageChange = (perPage: number) => {
   fetchUsers({ page: 1, perPage }); // Reset to page 1 when changing per_page
 };
 
+const handleUserResetPassword = (user: User) => {
+  // Implement password reset logic here
+  console.log('Reset password for user:', user);
+  // You might want to show a confirmation modal or a success message
+};
+
 onMounted(() => {
   // Get current values from URL (with sensible defaults)
   const currentPage = getCurrentPageFromUrl();
@@ -154,6 +160,7 @@ onMounted(() => {
       @restore="handleUserRestored"
       @force-delete="handleUserForceDeleted"
       @edit="handleUserEdit"
+      @user-reset-password="handleUserResetPassword"
     />
 
     <!-- Pagination -->
