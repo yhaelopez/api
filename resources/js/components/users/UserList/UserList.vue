@@ -56,14 +56,14 @@ const handleUserDeleted = () => {
 const handleUserRestored = () => {
   // Refresh users after restoration, preserving current pagination
   const currentPage = getCurrentPageFromUrl();
-  const currentPerPage = getCurrentPageFromUrl();
+  const currentPerPage = getCurrentPerPageFromUrl();
   fetchUsers({ page: currentPage, perPage: currentPerPage });
 };
 
 const handleUserForceDeleted = () => {
   // Refresh users after permanent deletion, preserving current pagination
   const currentPage = getCurrentPageFromUrl();
-  const currentPerPage = getCurrentPageFromUrl();
+  const currentPerPage = getCurrentPerPageFromUrl();
   fetchUsers({ page: currentPage, perPage: currentPerPage });
 };
 
@@ -91,7 +91,7 @@ const handleUserEdit = (user: User) => {
 const handleUserUpdated = () => {
   // Refresh users after update, preserving current pagination
   const currentPage = getCurrentPageFromUrl();
-  const currentPerPage = getCurrentPageFromUrl();
+  const currentPerPage = getCurrentPerPageFromUrl();
   fetchUsers({ page: currentPage, perPage: currentPerPage });
   showEditForm.value = false;
   editingUser.value = null;
