@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\GuardEnum;
+use App\Traits\RestoreStamps;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -23,6 +24,7 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
     use Notifiable;
     use SoftDeletes;
     use Userstamps;
+    use RestoreStamps;
 
     /**
      * The guard used for authentication
@@ -60,6 +62,7 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'restored_at' => 'datetime',
         ];
     }
 }
