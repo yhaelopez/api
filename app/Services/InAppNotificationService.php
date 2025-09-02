@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Auth;
 
 class InAppNotificationService
 {
+    public function __construct(
+        private LoggerService $logger
+    ) {}
+
     /**
      * Dispatch a success notification to the authenticated user
      */
@@ -78,6 +82,14 @@ class InAppNotificationService
     private function dispatch(string $type, string $title, ?string $message = null, int $duration = 5000): void
     {
         $user = Auth::user();
+
+        $this->logger->user()->info('InAppNotificationService: Dispatching notification', [
+            'user_id' => $user->id,
+            'user_email' => $user->email,
+            'type' => $type,
+            'title' => $title,
+            'message' => $message,
+        ]);
 
         if (! $user) {
             return; // No authenticated user, skip notification

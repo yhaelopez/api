@@ -4,8 +4,8 @@ namespace App\Events;
 
 use App\Models\User;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
@@ -20,7 +20,7 @@ use Illuminate\Queue\SerializesModels;
  * @property string|null $message
  * @property int $duration
  */
-class InAppNotificationEvent implements ShouldBroadcast
+class InAppNotificationEvent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -49,9 +49,9 @@ class InAppNotificationEvent implements ShouldBroadcast
     /**
      * Get the channels the event should broadcast on.
      */
-    public function broadcastOn(): PrivateChannel
+    public function broadcastOn(): Channel
     {
-        return new PrivateChannel("user.{$this->user->id}");
+        return new Channel("user.{$this->user->id}");
     }
 
     /**

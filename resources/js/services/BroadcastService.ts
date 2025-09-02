@@ -1,14 +1,13 @@
 import { globalInAppNotifications } from '@/composables/useNotifications'
-import Echo from 'laravel-echo'
 
 export class BroadcastService {
-  private echo: Echo | null = null
+  private echo: any = null
 
   /**
    * Initialize the broadcast service
    */
-  init(echo?: Echo) {
-    this.echo = echo || window.Echo
+  init(echo?: any) {
+    this.echo = echo || (window as any).Echo
     if (this.echo) {
       this.setupNotificationListener()
     }
@@ -20,20 +19,36 @@ export class BroadcastService {
   private setupNotificationListener() {
     if (!this.echo) return
 
-    // Get the authenticated user ID (you'll need to pass this from your auth system)
-    const userId = this.getAuthenticatedUserId()
-    
-    if (!userId) return
+    // Get user ID from Inertia page props
+    const pageElement = document.querySelector('[data-page]')
+    if (!pageElement) return
 
-    // Listen to the private channel for the authenticated user
-    this.echo.private(`user.${userId}`)
-      .listen('.in_app_notification', (data: {
-        type: 'success' | 'error' | 'warning' | 'info'
-        title: string
-        message?: string
-        duration?: number
-      }) => {
-        // Add the notification to the global notification system
+    try {
+      const pageData = JSON.parse(pageElement.getAttribute('data-page') || '{}')
+      const userId = pageData.props?.auth?.user?.id
+      
+      if (!userId) {
+        console.log('BroadcastService: No user ID found')
+        return
+      }
+
+      console.log('BroadcastService: Setting up listener for user:', userId)
+
+      // Listen to the public channel for testing (no authentication needed)
+      const channel = this.echo.channel(`user.${userId}`)
+      
+      console.log('BroadcastService: Channel created:', channel)
+      
+      // Use the Pusher instance directly to bind events
+      const pusher = channel.pusher
+      const channelName = `user.${userId}`
+      
+      console.log('BroadcastService: Using Pusher instance:', pusher)
+      console.log('BroadcastService: Binding to channel:', channelName)
+      
+      // Bind events directly to the Pusher channel
+      pusher.subscribe(channelName).bind('in_app_notification', (data: any) => {
+        console.log('BroadcastService: Received notification via Pusher:', data)
         globalInAppNotifications.addNotification({
           type: data.type,
           title: data.title,
@@ -41,33 +56,43 @@ export class BroadcastService {
           duration: data.duration || 5000,
         })
       })
-  }
+      
+      // Also try the Echo channel method as backup
+      channel.listen('in_app_notification', (data: any) => {
+        console.log('BroadcastService: Received notification via Echo:', data)
+        globalInAppNotifications.addNotification({
+          type: data.type,
+          title: data.title,
+          message: data.message,
+          duration: data.duration || 5000,
+        })
+      })
+      
+      channel.listen('*', (eventName: string, data: any) => {
+        console.log('BroadcastService: Received ANY event via Echo:', eventName, data)
+      })
+      
+      channel.error((error: any) => {
+        console.error('BroadcastService: Channel error:', error)
+      })
+      
+      channel.subscribed(() => {
+        console.log('BroadcastService: Successfully subscribed to channel user.' + userId)
+        console.log('BroadcastService: Channel object after subscription:', channel)
+        console.log('BroadcastService: Channel listeners:', channel.listeners)
+      })
 
-  /**
-   * Get the authenticated user ID
-   * You'll need to implement this based on your authentication system
-   */
-  private getAuthenticatedUserId(): number | null {
-    // This could come from localStorage, a store, or an API call
-    // Example implementations:
-    
-    // From localStorage
-    const authData = localStorage.getItem('auth_user')
-    if (authData) {
-      try {
-        const user = JSON.parse(authData)
-        return user.id
-      } catch (e) {
-        console.error('Failed to parse auth user data:', e)
-      }
+      // Additional debugging
+      console.log('BroadcastService: Channel object:', channel)
+      console.log('BroadcastService: Channel name:', channel.name)
+      console.log('BroadcastService: Channel options:', channel.options)
+      console.log('BroadcastService: Channel subscription:', channel.subscription)
+
+      console.log('BroadcastService: Listener setup completed for channel user.' + userId)
+
+    } catch (error) {
+      console.error('BroadcastService: Setup error:', error)
     }
-
-    // From a global window object (if you set it in your main layout)
-    if (window.authUser) {
-      return window.authUser.id
-    }
-
-    return null
   }
 
   /**
@@ -83,14 +108,3 @@ export class BroadcastService {
 // Global instance
 export const broadcastService = new BroadcastService()
 
-// Type declaration for window objects
-declare global {
-  interface Window {
-    authUser?: {
-      id: number
-      name: string
-      email: string
-    }
-    Echo?: Echo
-  }
-}
