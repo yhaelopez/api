@@ -21,9 +21,9 @@ class UserCache
     /**
      * Get a paginated list of users from cache or store it if not found
      */
-    public function rememberList(int $page, int $perPage, callable $callback): LengthAwarePaginator
+    public function rememberList(int $page, int $perPage, array $filters, callable $callback): LengthAwarePaginator
     {
-        $cacheKey = $this->getListCacheKey($page, $perPage);
+        $cacheKey = $this->getListCacheKey($page, $perPage, $filters);
 
         return Cache::tags(['users', 'list'])->remember($cacheKey, 300, $callback);
     }
@@ -56,9 +56,14 @@ class UserCache
     /**
      * Build cache key for users list
      */
-    private function getListCacheKey(int $page, int $perPage): string
+    private function getListCacheKey(int $page, int $perPage, array $filters = []): string
     {
-        return "users:list:{$page}:{$perPage}";
+        $filterString = '';
+        if (! empty($filters)) {
+            $filterString = ':'.http_build_query($filters, '', ':');
+        }
+
+        return "users:list:{$page}:{$perPage}{$filterString}";
     }
 
     /**

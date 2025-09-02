@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue';
 import { UserService, type UserListOptions } from '@/services/UserService';
-import type { User } from '@/types/user';
+import type { User, CreateUser } from '@/types/user';
 
 export function useUsers() {
   const users = ref<User[]>([]);
@@ -34,13 +34,15 @@ export function useUsers() {
       
       const response = await UserService.getUsers(userOptions);
       users.value = response.data;
+      
+      // Access pagination data from the meta property (Laravel ResourceCollection structure)
       pagination.value = {
-        current_page: response.current_page,
-        last_page: response.last_page,
-        per_page: response.per_page,
-        total: response.total,
-        from: response.from,
-        to: response.to,
+        current_page: response.meta.current_page,
+        last_page: response.meta.last_page,
+        per_page: response.meta.per_page,
+        total: response.meta.total,
+        from: response.meta.from,
+        to: response.meta.to,
       };
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to load users';
@@ -66,7 +68,7 @@ export function useUsers() {
     }
   };
 
-  const createUser = async (userData: Partial<User>) => {
+  const createUser = async (userData: CreateUser) => {
     loading.value = true;
     error.value = null;
 

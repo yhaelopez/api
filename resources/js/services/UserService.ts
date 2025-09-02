@@ -1,4 +1,4 @@
-import { usersApi, type UsersListParams } from '@/lib/api/users';
+import { usersApi, type UsersListParams, type UsersListResponse } from '@/lib/api/users';
 import type { User, CreateUser } from '@/types/user';
 
 export interface UserFilters {
@@ -20,7 +20,7 @@ export class UserService {
   /**
    * Fetch users with optional filtering and pagination
    */
-  static async getUsers(options: UserListOptions = {}) {
+  static async getUsers(options: UserListOptions = {}): Promise<UsersListResponse> {
     const { page = 1, perPage = 15, filters = {} } = options;
 
     const params: UsersListParams = {

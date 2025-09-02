@@ -26,7 +26,7 @@ class UserService
      */
     public function getUsersList(int $page = 1, int $perPage = 15, array $filters = []): LengthAwarePaginator
     {
-        return $this->userCache->rememberList($page, $perPage, function () use ($page, $perPage, $filters) {
+        return $this->userCache->rememberList($page, $perPage, $filters, function () use ($page, $perPage, $filters) {
             return $this->userRepository->paginate($page, $perPage, $filters);
         });
     }

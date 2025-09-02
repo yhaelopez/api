@@ -5,12 +5,26 @@ interface ApiResponse<T> {
 
 interface PaginatedResponse<T> {
   data: T[];
-  current_page: number;
-  last_page: number;
-  per_page: number;
-  total: number;
-  from: number;
-  to: number;
+  meta: {
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+    from: number;
+    to: number;
+    path: string;
+    links: Array<{
+      url: string;
+      label: string;
+      active: boolean;
+    }>;
+  };
+  links: {
+    first: string;
+    last: string;
+    prev: string | null;
+    next: string | null;
+  };
 }
 
 interface ApiError {

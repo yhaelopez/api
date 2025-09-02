@@ -73,7 +73,7 @@ class UserController extends Controller
     {
         Gate::authorize('viewAny', User::class);
 
-        $perPage = $request->validated('per_page', 15);
+        $perPage = $request->validated('per_page', 10);
         $page = $request->validated('page', 1);
 
         /** @var Request $request - Extract filter parameters */

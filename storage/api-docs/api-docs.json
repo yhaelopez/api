@@ -530,6 +530,79 @@
                     }
                 ]
             }
+        },
+        "/api/v1/users/{user}/profile-photo": {
+            "delete": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Remove the user's profile photo",
+                "operationId": "176337a48ca4ab49f6edb195dddb84c9",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "description": "User ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Profile photo removed successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profile photo removed successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No profile photo found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No profile photo found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden - Cannot delete profile photo"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -948,6 +1021,12 @@
                         "nullable": true
                     },
                     "deleted_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "null",
+                        "nullable": true
+                    },
+                    "restored_at": {
                         "type": "string",
                         "format": "date-time",
                         "example": "null",
