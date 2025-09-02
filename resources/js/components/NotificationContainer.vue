@@ -72,7 +72,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { globalInAppNotifications, type InAppNotification } from '@/composables/useNotifications'
 import Icon from '@/components/Icon.vue'
 

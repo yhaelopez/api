@@ -11,7 +11,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import 'filepond/dist/filepond.min.css'
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css'
@@ -206,7 +206,6 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'file-processed', 'file-removed'])
 
 // Reactive data
-const files = ref([])
 const tempFolder = ref('')
 const pondElement = ref(null)
 const pond = ref(null)

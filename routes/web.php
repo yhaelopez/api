@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Broadcast;
 use Inertia\Inertia;
 
 Route::get('/', function () {
@@ -18,8 +17,7 @@ Route::get('users', function () {
     ]);
 })->middleware(['auth', 'verified']);
 
-// Broadcasting authentication route for private channels
-Broadcast::routes(['middleware' => ['web', 'auth']]);
+// Note: Broadcasting authentication not needed for public channels
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

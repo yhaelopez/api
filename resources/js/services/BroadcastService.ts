@@ -27,28 +27,16 @@ export class BroadcastService {
       const pageData = JSON.parse(pageElement.getAttribute('data-page') || '{}')
       const userId = pageData.props?.auth?.user?.id
       
-      if (!userId) {
-        console.log('BroadcastService: No user ID found')
-        return
-      }
+      if (!userId) return
 
-      console.log('BroadcastService: Setting up listener for user:', userId)
-
-      // Listen to the public channel for testing (no authentication needed)
+      // Listen to the public channel
       const channel = this.echo.channel(`user.${userId}`)
       
-      console.log('BroadcastService: Channel created:', channel)
-      
-      // Use the Pusher instance directly to bind events
+      // Use the Pusher instance directly to bind events (this is what works)
       const pusher = channel.pusher
       const channelName = `user.${userId}`
       
-      console.log('BroadcastService: Using Pusher instance:', pusher)
-      console.log('BroadcastService: Binding to channel:', channelName)
-      
-      // Bind events directly to the Pusher channel
       pusher.subscribe(channelName).bind('in_app_notification', (data: any) => {
-        console.log('BroadcastService: Received notification via Pusher:', data)
         globalInAppNotifications.addNotification({
           type: data.type,
           title: data.title,
@@ -57,39 +45,6 @@ export class BroadcastService {
         })
       })
       
-      // Also try the Echo channel method as backup
-      channel.listen('in_app_notification', (data: any) => {
-        console.log('BroadcastService: Received notification via Echo:', data)
-        globalInAppNotifications.addNotification({
-          type: data.type,
-          title: data.title,
-          message: data.message,
-          duration: data.duration || 5000,
-        })
-      })
-      
-      channel.listen('*', (eventName: string, data: any) => {
-        console.log('BroadcastService: Received ANY event via Echo:', eventName, data)
-      })
-      
-      channel.error((error: any) => {
-        console.error('BroadcastService: Channel error:', error)
-      })
-      
-      channel.subscribed(() => {
-        console.log('BroadcastService: Successfully subscribed to channel user.' + userId)
-        console.log('BroadcastService: Channel object after subscription:', channel)
-        console.log('BroadcastService: Channel listeners:', channel.listeners)
-      })
-
-      // Additional debugging
-      console.log('BroadcastService: Channel object:', channel)
-      console.log('BroadcastService: Channel name:', channel.name)
-      console.log('BroadcastService: Channel options:', channel.options)
-      console.log('BroadcastService: Channel subscription:', channel.subscription)
-
-      console.log('BroadcastService: Listener setup completed for channel user.' + userId)
-
     } catch (error) {
       console.error('BroadcastService: Setup error:', error)
     }
@@ -107,4 +62,3 @@ export class BroadcastService {
 
 // Global instance
 export const broadcastService = new BroadcastService()
-
