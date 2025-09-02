@@ -36,7 +36,8 @@ export class BroadcastService {
       const pusher = channel.pusher
       const channelName = `user.${userId}`
       
-      pusher.subscribe(channelName).bind('in_app_notification', (data: any) => {
+      // Listen for the class name event (immediate broadcasting)
+      pusher.subscribe(channelName).bind('App\\Events\\InAppNotificationEvent', (data: any) => {
         globalInAppNotifications.addNotification({
           type: data.type,
           title: data.title,

@@ -11,6 +11,8 @@
           :key="notification.id"
           :class="notificationClasses(notification.type)"
           class="rounded-lg shadow-lg p-4 border relative overflow-hidden"
+          @mouseenter="pauseTimer(notification.id)"
+          @mouseleave="resumeTimer(notification.id)"
         >
           <!-- Progress bar for auto-dismiss -->
           <div
@@ -18,6 +20,8 @@
             :class="progressBarClasses(notification.type)"
             class="absolute bottom-0 left-0 h-1 animate-shrink"
             :style="{ animationDuration: `${notification.duration}ms` }"
+            :ref="el => setProgressBarRef(el as Element, notification.id)"
+            @animationend="onProgressBarComplete(notification.id)"
           />
 
           <div class="flex items-start gap-3">
@@ -72,10 +76,42 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { globalInAppNotifications, type InAppNotification } from '@/composables/useNotifications'
 import Icon from '@/components/Icon.vue'
 
 const { notifications, removeNotification } = globalInAppNotifications
+
+// Store refs to progress bar elements
+const progressBarRefs = ref<Map<string, HTMLElement>>(new Map())
+
+const setProgressBarRef = (el: Element | null, notificationId: string) => {
+  if (el && el instanceof HTMLElement) {
+    progressBarRefs.value.set(notificationId, el)
+  }
+}
+
+const pauseTimer = (notificationId: string) => {
+  // Pause the visual animation
+  const progressBar = progressBarRefs.value.get(notificationId)
+  if (progressBar) {
+    progressBar.style.animationPlayState = 'paused'
+  }
+}
+
+const resumeTimer = (notificationId: string) => {
+  // Resume the visual animation
+  const progressBar = progressBarRefs.value.get(notificationId)
+  if (progressBar) {
+    progressBar.style.animationPlayState = 'running'
+  }
+}
+
+const onProgressBarComplete = (notificationId: string) => {
+  // When progress bar animation completes, remove the notification
+  // This ensures perfect synchronization between visual and functional
+  removeNotification(notificationId)
+}
 
 const notificationClasses = (type: InAppNotification['type']) => {
   const base = 'bg-white border'
@@ -230,6 +266,6 @@ const closeButtonClasses = (type: InAppNotification['type']) => {
 }
 
 .animate-shrink {
-  animation: shrink linear;
+  animation: shrink linear forwards;
 }
 </style>

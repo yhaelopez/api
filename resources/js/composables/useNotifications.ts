@@ -29,17 +29,14 @@ export const useInAppNotifications = () => {
 
     notifications.value.push(newNotification)
 
-    // Auto-remove notification after duration (unless persistent)
-    if (!newNotification.persistent && newNotification.duration) {
-      setTimeout(() => {
-        removeNotification(id)
-      }, newNotification.duration)
-    }
+    // Note: Timer is now handled by the progress bar animation end event
+    // This ensures perfect synchronization between visual and functional
 
     return id
   }
 
   const removeNotification = (id: string) => {
+    // Remove from notifications
     const index = notifications.value.findIndex(n => n.id === id)
     if (index > -1) {
       notifications.value.splice(index, 1)
@@ -47,6 +44,7 @@ export const useInAppNotifications = () => {
   }
 
   const clearAll = () => {
+    // Clear notifications
     notifications.value.splice(0)
   }
 

@@ -63,14 +63,6 @@ class InAppNotificationEvent implements ShouldBroadcastNow
     }
 
     /**
-     * The event's broadcast name.
-     */
-    public function broadcastAs(): string
-    {
-        return 'in_app_notification';
-    }
-
-    /**
      * Get the data to broadcast.
      */
     public function broadcastWith(): array
