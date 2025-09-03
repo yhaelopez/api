@@ -88,4 +88,3 @@ test('user cannot remove another users profile photo', function () {
     // Verify the photo still exists
     expect($user1->hasMedia('profile_photos'))->toBeTrue();
 });
-
