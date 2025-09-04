@@ -1,6 +1,8 @@
 <?php
 
+use App\Media\ArtistPathGenerator;
 use App\Media\UserPathGenerator;
+use App\Models\Artist;
 use App\Models\User;
 
 return [
@@ -97,6 +99,7 @@ return [
     'custom_path_generators' => [
         // Use custom path generator for User model
         User::class => UserPathGenerator::class,
+        Artist::class => ArtistPathGenerator::class,
     ],
 
     /*

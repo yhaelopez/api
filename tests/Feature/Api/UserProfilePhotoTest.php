@@ -1,11 +1,17 @@
 <?php
 
+use App\Helpers\TestHelper;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
+uses(RefreshDatabase::class);
+
 beforeEach(function () {
     Storage::fake('public');
+    // Create permissions and roles for all tests
+    TestHelper::createPermissionsAndRoles();
 });
 
 test('it can remove user profile photo', function () {

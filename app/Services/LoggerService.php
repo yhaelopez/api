@@ -11,4 +11,12 @@ class LoggerService
     {
         return new GenericLogger('users');
     }
+
+    /**
+     * Get artist logger instance
+     */
+    public function artists(): GenericLogger
+    {
+        return new GenericLogger('artists');
+    }
 }

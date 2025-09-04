@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Enums\GuardEnum;
 use App\Enums\PermissionsEnum;
 use App\Enums\RoleEnum;
-use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 
@@ -60,5 +59,6 @@ class RolesSeeder extends Seeder
 
         // Regular users can only view their own profile
         $role->givePermissionTo(PermissionsEnum::getUserPermissions());
+        $role->givePermissionTo(PermissionsEnum::getArtistPermissions());
     }
 }

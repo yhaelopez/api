@@ -37,7 +37,8 @@ class PermissionsSeeder extends Seeder
         // User module permissions
         $this->createUserPermissions();
 
-        // Add other modules' permissions here as needed
+        // Artist module permissions
+        $this->createArtistPermissions();
     }
 
     /**
@@ -48,6 +49,16 @@ class PermissionsSeeder extends Seeder
         $userPermissions = PermissionsEnum::getUserPermissions();
 
         $this->createPermissionGroup($userPermissions);
+    }
+
+    /**
+     * Create artist management permissions
+     */
+    private function createArtistPermissions(): void
+    {
+        $artistPermissions = PermissionsEnum::getArtistPermissions();
+
+        $this->createPermissionGroup($artistPermissions);
     }
 
     /**

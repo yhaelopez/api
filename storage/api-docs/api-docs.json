@@ -10,6 +10,476 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/v1/artists": {
+            "get": {
+                "tags": [
+                    "Artist"
+                ],
+                "summary": "Display a listing of artists",
+                "operationId": "e2c4d5317ff52fdac6da7054e473fcd5",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ArtistCollection"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Artist"
+                ],
+                "summary": "Store a newly created artist",
+                "operationId": "8cd01cb21c8a0af9cbbc6afd9d451600",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Radiohead"
+                                    },
+                                    "spotify_id": {
+                                        "description": "Optional Spotify artist ID",
+                                        "type": "string",
+                                        "example": "0TnOYISbd1XYRBk9myaseg"
+                                    },
+                                    "popularity": {
+                                        "description": "Optional popularity score (0-100)",
+                                        "type": "integer",
+                                        "example": 85
+                                    },
+                                    "followers_count": {
+                                        "description": "Optional follower count",
+                                        "type": "integer",
+                                        "example": 5432109
+                                    },
+                                    "temp_folder": {
+                                        "description": "Optional temporary folder name from FilePond upload",
+                                        "type": "string",
+                                        "example": "uuid-string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Artist created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ArtistResource"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/artists/{artist}": {
+            "get": {
+                "tags": [
+                    "Artist"
+                ],
+                "summary": "Display the specified artist",
+                "operationId": "2c677f9fe35b725e9e1e992c0caca59b",
+                "parameters": [
+                    {
+                        "name": "artist",
+                        "in": "path",
+                        "description": "Artist ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ArtistResource"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Artist not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Artist"
+                ],
+                "summary": "Update the specified artist",
+                "operationId": "e9e650e4122fd56660cf356f5bf232d9",
+                "parameters": [
+                    {
+                        "name": "artist",
+                        "in": "path",
+                        "description": "Artist ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Radiohead"
+                                    },
+                                    "spotify_id": {
+                                        "description": "Optional Spotify artist ID",
+                                        "type": "string",
+                                        "example": "0TnOYISbd1XYRBk9myaseg"
+                                    },
+                                    "popularity": {
+                                        "description": "Optional popularity score (0-100)",
+                                        "type": "integer",
+                                        "example": 85
+                                    },
+                                    "followers_count": {
+                                        "description": "Optional follower count",
+                                        "type": "integer",
+                                        "example": 5432109
+                                    },
+                                    "temp_folder": {
+                                        "description": "Optional temporary folder name from FilePond upload",
+                                        "type": "string",
+                                        "example": "uuid-string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Artist updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ArtistResource"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Artist not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Artist"
+                ],
+                "summary": "Delete the specified artist",
+                "operationId": "3d242052030634b02b02320435d1368f",
+                "parameters": [
+                    {
+                        "name": "artist",
+                        "in": "path",
+                        "description": "Artist ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Artist deleted"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Artist not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/artists/{artist}/restore": {
+            "post": {
+                "tags": [
+                    "Artist"
+                ],
+                "summary": "Restore the specified soft-deleted artist",
+                "operationId": "0b8e8d7820ae5050f95257bd6ac92572",
+                "parameters": [
+                    {
+                        "name": "artist",
+                        "in": "path",
+                        "description": "Artist ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Artist restored",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Artist restored"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/ArtistResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Artist not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/artists/{artist}/force-delete": {
+            "delete": {
+                "tags": [
+                    "Artist"
+                ],
+                "summary": "Permanently delete the specified artist",
+                "operationId": "8bbd4b566883ef45c6223d0a1b8adad9",
+                "parameters": [
+                    {
+                        "name": "artist",
+                        "in": "path",
+                        "description": "Artist ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Artist permanently deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Artist permanently deleted"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Artist not found"
+                    },
+                    "422": {
+                        "description": "Active record cannot be force deleted"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/artists/{artist}/profile-photo": {
+            "delete": {
+                "tags": [
+                    "Artist"
+                ],
+                "summary": "Remove the artist's profile photo",
+                "operationId": "fe5d70b2f768552f3266145f8fb03889",
+                "parameters": [
+                    {
+                        "name": "artist",
+                        "in": "path",
+                        "description": "Artist ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Profile photo removed successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profile photo removed successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No profile photo found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No profile photo found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden - Cannot delete profile photo"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/v1/roles": {
             "get": {
                 "tags": [
@@ -660,6 +1130,165 @@
     },
     "components": {
         "schemas": {
+            "ArtistCollection": {
+                "title": "Artist Collection",
+                "description": "Artist collection resource",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ArtistResource"
+                        }
+                    },
+                    "links": {
+                        "properties": {
+                            "first": {
+                                "type": "string",
+                                "example": "http://localhost/api/v1/artists?page=1"
+                            },
+                            "last": {
+                                "type": "string",
+                                "example": "http://localhost/api/v1/artists?page=2"
+                            },
+                            "prev": {
+                                "type": "string",
+                                "example": "http://localhost/api/v1/artists?page=1"
+                            },
+                            "next": {
+                                "type": "string",
+                                "example": "http://localhost/api/v1/artists?page=2"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "meta": {
+                        "properties": {
+                            "current_page": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "from": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "last_page": {
+                                "type": "integer",
+                                "example": 2
+                            },
+                            "links": {
+                                "type": "array",
+                                "items": {
+                                    "properties": {
+                                        "url": {
+                                            "type": "string",
+                                            "example": "http://localhost/api/v1/artists?page=1"
+                                        },
+                                        "label": {
+                                            "type": "string",
+                                            "example": "1"
+                                        },
+                                        "active": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "path": {
+                                "type": "string",
+                                "example": "http://localhost/api/v1/artists"
+                            },
+                            "per_page": {
+                                "type": "integer",
+                                "example": 15
+                            },
+                            "to": {
+                                "type": "integer",
+                                "example": 15
+                            },
+                            "total": {
+                                "type": "integer",
+                                "example": 30
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "ArtistResource": {
+                "title": "Artist Resource",
+                "description": "Artist resource representation",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "spotify_id": {
+                        "type": "string",
+                        "example": "0TnOYISbd1XYRBk9myaseg",
+                        "nullable": true
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Radiohead"
+                    },
+                    "popularity": {
+                        "type": "integer",
+                        "example": 85,
+                        "nullable": true
+                    },
+                    "followers_count": {
+                        "type": "integer",
+                        "example": 5432109,
+                        "nullable": true
+                    },
+                    "owner": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/UserResource"
+                            }
+                        ],
+                        "nullable": true,
+                        "description": "The user who owns this artist"
+                    },
+                    "profile_photo": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/ProfilePhotoResource"
+                            }
+                        ],
+                        "nullable": true,
+                        "description": "Artist's profile photo information"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2021-01-01 12:00:00",
+                        "nullable": true
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2021-01-01 12:00:00",
+                        "nullable": true
+                    },
+                    "deleted_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2021-01-01 12:00:00",
+                        "nullable": true
+                    },
+                    "restored_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2021-01-01 12:00:00",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
             "PermissionCollection": {
                 "title": "Permission Collection",
                 "description": "Permission collection resource",
@@ -1098,6 +1727,10 @@
         }
     },
     "tags": [
+        {
+            "name": "Artist",
+            "description": "Artist management"
+        },
         {
             "name": "Role",
             "description": "Role management"

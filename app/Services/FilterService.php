@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Filters\ArtistFilter;
 use App\Filters\UserFilter;
+use App\Models\Artist;
 use App\Models\User;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,9 +21,7 @@ class FilterService
      */
     protected array $filterMap = [
         User::class => UserFilter::class,
-        // Add more models here as you create them:
-        // Product::class => ProductFilter::class,
-        // Order::class => OrderFilter::class,
+        Artist::class => ArtistFilter::class,
     ];
 
     /**

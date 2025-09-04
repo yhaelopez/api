@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Artist;
 use App\Models\User;
+use App\Observers\ArtistObserver;
 use App\Observers\UserObserver;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\ServiceProvider;
@@ -25,5 +27,6 @@ class AppServiceProvider extends ServiceProvider
         JsonResource::withoutWrapping();
 
         User::observe(UserObserver::class);
+        Artist::observe(ArtistObserver::class);
     }
 }

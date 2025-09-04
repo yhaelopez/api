@@ -81,6 +81,14 @@ return [
             'replace_placeholders' => true,
         ],
 
+        'artists' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/artists.log'),
+            'level' => env('LOG_LEVEL', 'info'),
+            'days' => env('LOG_DAILY_DAYS', 14),
+            'replace_placeholders' => true,
+        ],
+
         'products' => [
             'driver' => 'daily',
             'path' => storage_path('logs/products.log'),
