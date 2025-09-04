@@ -44,3 +44,58 @@ For example:
 ```bash
 docker exec -it php php artisan migrate
 ```
+
+## Twilio Mock Integration
+
+This project includes a Twilio Mock setup using Prism for testing SMS functionality without hitting the real Twilio API.
+
+### Setup Instructions
+
+1. **Download Twilio OpenAPI spec:**
+   ```bash
+   composer twilio:spec
+   ```
+
+2. **Start the Twilio Mock container:**
+   ```bash
+   ./vendor/bin/sail up -d twilio-mock
+   ```
+
+3. **Start all services:**
+   ```bash
+   ./vendor/bin/sail up -d
+   ```
+
+4. **Clear configuration cache:**
+   ```bash
+   php artisan config:clear
+   ```
+
+5. **Run the test:**
+   ```bash
+   php artisan test --filter TwilioMockTest
+   ```
+
+### Testing SMS Functionality
+
+You can test the SMS functionality by visiting:
+```
+http://api.local/_dev/sms
+```
+
+Or with a custom phone number:
+```
+http://api.local/_dev/sms?to=+1234567890
+```
+
+The endpoint will return a JSON response with `ok: true` and SMS details when using the mock.
+
+### Configuration
+
+The Twilio configuration is located in `config/services.php`. The mock is enabled by default with `TWILIO_MOCK=true` in your environment variables.
+
+- `TWILIO_SID`: Your Twilio Account SID (defaults to test value)
+- `TWILIO_TOKEN`: Your Twilio Auth Token (defaults to test value)
+- `TWILIO_FROM`: The phone number to send from (defaults to Twilio test number)
+- `TWILIO_MOCK`: Enable/disable mock mode (defaults to true)
+- `TWILIO_MOCK_BASE`: Mock server URL (defaults to http://twilio-mock:4010/)

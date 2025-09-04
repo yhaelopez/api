@@ -25,5 +25,9 @@ Route::get('artists', function () {
 
 // Note: Broadcasting authentication not needed for public channels
 
+Route::get('/_dev/sms', function (App\Services\TwilioSms $sms) {
+    return response()->json($sms->send('+15551234567', 'Hola desde Twilio Mock'));
+});
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

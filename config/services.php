@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    'twilio' => [
+        'sid' => env('TWILIO_ACCOUNT_SID', 'ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'),
+        'token' => env('TWILIO_AUTH_TOKEN', 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'),
+        'from' => env('TWILIO_FROM', '+15005550006'),
+        'mock' => env('TWILIO_MOCK', true),
+        'mock_base' => env('TWILIO_API_BASE_URL', 'http://twilio-mock:4010/'),
+    ],
 ];
