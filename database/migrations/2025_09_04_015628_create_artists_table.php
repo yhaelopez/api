@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('artists', function (Blueprint $table) {
             $table->id();
             $table->foreignId('owner_id')
+                ->nullable()
                 ->constrained('users')
-                ->cascadeOnDelete()
+                ->nullOnDelete()
                 ->cascadeOnUpdate();
             $table->string('spotify_id')->unique()->nullable();
             $table->string('name');

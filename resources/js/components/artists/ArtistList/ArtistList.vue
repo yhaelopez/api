@@ -1,37 +1,19 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import type { UserListEmits, User } from '@/types/user';
-import { UserTable } from '../UserTable';
-import { UserForm } from '../UserForm';
-import { useUsers } from '@/composables/useUsers';
+import type { ArtistListEmits, Artist } from '@/types/artist';
+import { ArtistTable } from '../ArtistTable';
+import { ArtistForm } from '../ArtistForm';
+import { useArtists } from '@/composables/useArtists';
 import { Button } from '@/components/ui/button';
 import { Pagination } from '@/components/ui/pagination';
 import { UserPlus } from 'lucide-vue-next';
 
-const emit = defineEmits<UserListEmits>();
+const emit = defineEmits<ArtistListEmits>();
 
-const { users, loading, error, pagination, fetchUsers } = useUsers();
+const { artists, loading, error, pagination, fetchArtists } = useArtists();
 const showCreateForm = ref(false);
 const showEditForm = ref(false);
-const editingUser = ref<User | null>(null);
-
-// Roles state
-const roles = ref<Array<{ id: number; name: string }>>([]);
-const loadingRoles = ref(false);
-
-// Load roles from API
-const loadRoles = async () => {
-  try {
-    loadingRoles.value = true;
-    const response = await fetch('/api/v1/roles');
-    const data = await response.json();
-    roles.value = data.data;
-  } catch (error) {
-    console.error('Failed to load roles:', error);
-  } finally {
-    loadingRoles.value = false;
-  }
-};
+const editingArtist = ref<Artist | null>(null);
 
 // URL-based pagination
 const getCurrentPageFromUrl = (): number => {
@@ -60,36 +42,36 @@ const updateUrlWithPerPage = (perPage: number) => {
   window.history.pushState({}, '', url.toString());
 };
 
-const handleUserSelect = (user: User) => {
-  emit('userSelected', user);
+const handleArtistSelect = (artist: Artist) => {
+  emit('artistSelected', artist);
 };
 
-const handleUserDeleted = () => {
-  // Refresh users after deletion, preserving current pagination
+const handleArtistDeleted = () => {
+  // Refresh artists after deletion, preserving current pagination
   const currentPage = getCurrentPageFromUrl();
   const currentPerPage = getCurrentPerPageFromUrl();
-  fetchUsers({ page: currentPage, perPage: currentPerPage });
+  fetchArtists({ page: currentPage, perPage: currentPerPage });
 };
 
-const handleUserRestored = () => {
-  // Refresh users after restoration, preserving current pagination
+const handleArtistRestored = () => {
+  // Refresh artists after restoration, preserving current pagination
   const currentPage = getCurrentPageFromUrl();
   const currentPerPage = getCurrentPerPageFromUrl();
-  fetchUsers({ page: currentPage, perPage: currentPerPage });
+  fetchArtists({ page: currentPage, perPage: currentPerPage });
 };
 
-const handleUserForceDeleted = () => {
-  // Refresh users after permanent deletion, preserving current pagination
+const handleArtistForceDeleted = () => {
+  // Refresh artists after permanent deletion, preserving current pagination
   const currentPage = getCurrentPageFromUrl();
   const currentPerPage = getCurrentPerPageFromUrl();
-  fetchUsers({ page: currentPage, perPage: currentPerPage });
+  fetchArtists({ page: currentPage, perPage: currentPerPage });
 };
 
-const handleUserCreated = () => {
-  // Refresh users after creation, preserving current pagination
+const handleArtistCreated = () => {
+  // Refresh artists after creation, preserving current pagination
   const currentPage = getCurrentPageFromUrl();
   const currentPerPage = getCurrentPerPageFromUrl();
-  fetchUsers({ page: currentPage, perPage: currentPerPage });
+  fetchArtists({ page: currentPage, perPage: currentPerPage });
   showCreateForm.value = false;
 };
 
@@ -101,61 +83,52 @@ const openCreateForm = () => {
   showCreateForm.value = true;
 };
 
-const handleUserEdit = (user: User) => {
-  editingUser.value = user;
+const handleArtistEdit = (artist: Artist) => {
+  editingArtist.value = artist;
   showEditForm.value = true;
 };
 
-const handleUserUpdated = () => {
-  // Refresh users after update, preserving current pagination
+const handleArtistUpdated = () => {
+  // Refresh artists after update, preserving current pagination
   const currentPage = getCurrentPageFromUrl();
   const currentPerPage = getCurrentPerPageFromUrl();
-  fetchUsers({ page: currentPage, perPage: currentPerPage });
+  fetchArtists({ page: currentPage, perPage: currentPerPage });
   showEditForm.value = false;
-  editingUser.value = null;
+  editingArtist.value = null;
 };
 
 const handleEditCancelled = () => {
   showEditForm.value = false;
-  editingUser.value = null;
+  editingArtist.value = null;
 };
 
 const handlePageChange = (page: number) => {
   updateUrlWithPage(page);
-  fetchUsers({ page, perPage: getCurrentPerPageFromUrl() });
+  fetchArtists({ page, perPage: getCurrentPerPageFromUrl() });
 };
 
 const handlePerPageChange = (perPage: number) => {
   updateUrlWithPerPage(perPage);
-  fetchUsers({ page: 1, perPage }); // Reset to page 1 when changing per_page
-};
-
-const handleUserResetPassword = (user: User) => {
-  // Implement password reset logic here
-  console.log('Reset password for user:', user);
-  // You might want to show a confirmation modal or a success message
+  fetchArtists({ page: 1, perPage }); // Reset to page 1 when changing per_page
 };
 
 onMounted(() => {
-  // Load roles once for both forms
-  loadRoles();
-  
   // Get current values from URL (with sensible defaults)
   const currentPage = getCurrentPageFromUrl();
   const currentPerPage = getCurrentPerPageFromUrl();
   
-  // Fetch users with the current page and per_page from URL
-  fetchUsers({ page: currentPage, perPage: currentPerPage });
+  // Fetch artists with the current page and per_page from URL
+  fetchArtists({ page: currentPage, perPage: currentPerPage });
 });
 </script>
 
 <template>
   <div class="space-y-6">
     <div class="flex justify-between items-center">
-      <h1 class="text-2xl font-bold text-gray-900">Users</h1>
+      <h1 class="text-2xl font-bold text-gray-900">Artists</h1>
       <Button @click="openCreateForm" class="flex items-center gap-2">
         <UserPlus class="h-4 w-4" />
-        Create User
+        Create Artist
       </Button>
     </div>
     
@@ -173,15 +146,14 @@ onMounted(() => {
       </div>
     </div>
     
-    <UserTable 
-      :users="users" 
+    <ArtistTable 
+      :artists="artists" 
       :loading="loading"
-      @select="handleUserSelect"
-      @delete="handleUserDeleted"
-      @restore="handleUserRestored"
-      @force-delete="handleUserForceDeleted"
-      @edit="handleUserEdit"
-      @user-reset-password="handleUserResetPassword"
+      @select="handleArtistSelect"
+      @delete="handleArtistDeleted"
+      @restore="handleArtistRestored"
+      @force-delete="handleArtistForceDeleted"
+      @edit="handleArtistEdit"
     />
 
     <!-- Pagination -->
@@ -198,26 +170,22 @@ onMounted(() => {
       />
     </div>
 
-    <!-- Create User Form Modal -->
-    <UserForm
+    <!-- Create Artist Form Modal -->
+    <ArtistForm
       :is-edit-mode="false"
       :open="showCreateForm"
-      :roles="roles"
-      :loading-roles="loadingRoles"
       @update:open="showCreateForm = $event"
-      @user-created="handleUserCreated"
+      @artist-created="handleArtistCreated"
       @cancelled="handleCreateCancelled"
     />
 
-    <!-- Edit User Form Modal -->
-    <UserForm
+    <!-- Edit Artist Form Modal -->
+    <ArtistForm
       :is-edit-mode="true"
-      :user="editingUser"
+      :artist="editingArtist"
       :open="showEditForm"
-      :roles="roles"
-      :loading-roles="loadingRoles"
       @update:open="showEditForm = $event"
-      @user-updated="handleUserUpdated"
+      @artist-updated="handleArtistUpdated"
       @cancelled="handleEditCancelled"
     />
 

@@ -19,7 +19,7 @@ class ArtistFactory extends Factory
     public function definition(): array
     {
         return [
-            'owner_id' => User::factory(),
+            'owner_id' => User::factory()->regularUser()->create(),
             'spotify_id' => $this->faker->optional(0.7)->regexify('[A-Za-z0-9]{22}'),
             'name' => $this->faker->name(),
             'popularity' => $this->faker->optional(0.8)->numberBetween(0, 100),

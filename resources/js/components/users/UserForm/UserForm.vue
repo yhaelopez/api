@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch, computed } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import type { User, CreateUser, UpdateUser } from '@/types/user';
 import { UserService } from '@/services/UserService';
@@ -25,6 +25,8 @@ interface Props {
   user?: User | null;
   isEditMode?: boolean;
   open?: boolean;
+  roles?: Array<{ id: number; name: string }>;
+  loadingRoles?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -33,6 +35,8 @@ const props = withDefaults(defineProps<Props>(), {
   user: null,
   isEditMode: false,
   open: false,
+  roles: () => [],
+  loadingRoles: false,
 });
 
 const emit = defineEmits<{
@@ -51,23 +55,7 @@ const form = useForm<CreateUser | UpdateUser>({
 });
 
 const showPassword = ref(false);
-const roles = ref<Array<{ id: number; name: string }>>([]);
-const loadingRoles = ref(false);
 const existingProfilePhoto = ref<Record<string, any> | undefined>(undefined);
-
-// Load roles from API
-const loadRoles = async () => {
-  try {
-    loadingRoles.value = true;
-    const response = await fetch('/api/v1/roles');
-    const data = await response.json();
-    roles.value = data.data;
-  } catch (error) {
-    console.error('Failed to load roles:', error);
-  } finally {
-    loadingRoles.value = false;
-  }
-};
 
 // Watch for user prop changes to populate form in edit mode
 watch(() => props.user, (newUser) => {
@@ -84,10 +72,6 @@ watch(() => props.user, (newUser) => {
     existingProfilePhoto.value = newUser.profile_photo || undefined;
   }
 }, { immediate: true });
-
-onMounted(() => {
-  loadRoles();
-});
 
 const submit = async () => {
   try {
@@ -240,10 +224,10 @@ const passwordRequired = computed(() => !isEditMode.value);
               id="role_id"
               :model-value="form.role_id || ''"
               @update:model-value="(value) => form.role_id = value === '' ? null : Number(value)"
-              :options="roles.map(role => ({ value: role.id, label: role.name }))"
+              :options="props.roles.map(role => ({ value: role.id, label: role.name }))"
               placeholder="Select a role"
               required
-              :disabled="loadingRoles"
+              :disabled="props.loadingRoles"
               :class="{ 'border-red-500': form.errors.role_id }"
             />
             <InputError :message="form.errors.role_id" />
