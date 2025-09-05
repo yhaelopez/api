@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\GoogleProvider;
 use Laravel\Socialite\Two\SpotifyProvider;
 
 class OAuthService
@@ -17,9 +18,9 @@ class OAuthService
      */
     private const SUPPORTED_PROVIDERS = [
         'spotify' => 'spotify_id',
+        'google' => 'google_id',
         // Add more providers here in the future
         // 'github' => 'github_id',
-        // 'google' => 'google_id',
     ];
 
     public function __construct(
@@ -36,9 +37,9 @@ class OAuthService
 
         return match ($provider) {
             'spotify' => $this->redirectToSpotify(),
+            'google' => $this->redirectToGoogle(),
             // Add more providers here in the future
             // 'github' => $this->redirectToGithub(),
-            // 'google' => $this->redirectToGoogle(),
             default => Socialite::driver($provider)->redirect(),
         };
     }
@@ -52,9 +53,9 @@ class OAuthService
 
         return match ($provider) {
             'spotify' => $this->handleSpotifyCallback(),
+            'google' => $this->handleGoogleCallback(),
             // Add more providers here in the future
             // 'github' => $this->handleGithubCallback(),
-            // 'google' => $this->handleGoogleCallback(),
             default => $this->handleGenericCallback($provider),
         };
     }
@@ -98,6 +99,8 @@ class OAuthService
             // 'soa-manage-entitlements',
             // 'soa-manage-partner',
             // 'soa-create-partner',
+        ])->with([
+            'show_dialog' => 'true', // Always show permission consent screen
         ])->redirect();
     }
 
@@ -146,6 +149,52 @@ class OAuthService
     }
 
     /**
+     * Redirect to Google OAuth with specific scopes
+     */
+    private function redirectToGoogle(): RedirectResponse
+    {
+        /** @var GoogleProvider $googleDriver */
+        $googleDriver = Socialite::driver('google');
+        
+        return $googleDriver->scopes([
+            'openid',
+            'profile',
+            'email',
+        ])->with([
+            'prompt' => 'consent', // Always show consent screen
+            'access_type' => 'offline', // Request refresh token
+        ])->redirect();
+    }
+
+    /**
+     * Handle Google OAuth callback
+     */
+    private function handleGoogleCallback(): RedirectResponse
+    {
+        try {
+            $providerUser = Socialite::driver('google')->user();
+        } catch (Exception $e) {
+            $this->logger->oauth()->error('Google OAuth callback error', [
+                'provider' => 'google',
+                'error' => $e->getMessage(),
+                'action' => 'google_callback_failed',
+            ]);
+
+            return redirect()->route('login')
+                ->withErrors(['oauth' => 'Google authentication failed. Please try again.']);
+        }
+
+        // Store OAuth credentials
+        $scopes = [
+            'openid',
+            'profile',
+            'email',
+        ];
+
+        return $this->processOAuthUser('google', $providerUser, $scopes);
+    }
+
+    /**
      * Handle generic OAuth callback (for providers without specific logic)
      */
     private function handleGenericCallback(string $provider): RedirectResponse
@@ -188,7 +237,7 @@ class OAuthService
         // Update the provider ID if it's null
         $providerIdField = self::SUPPORTED_PROVIDERS[$provider];
 
-        if (is_null($user->$providerIdField)) {
+        if (empty($user->$providerIdField)) {
             $user->update([$providerIdField => $providerUser->getId()]);
 
             $this->logger->oauth()->info('OAuth provider linked to user', [
@@ -203,7 +252,7 @@ class OAuthService
         $this->credentialService->storeCredentials($user, $provider, $providerUser, $scopes);
 
         // Auto-verify email if not already verified
-        if (is_null($user->email_verified_at)) {
+        if (empty($user->email_verified_at)) {
             $user->update(['email_verified_at' => now()]);
 
             $this->logger->oauth()->info('User email auto-verified via OAuth', [

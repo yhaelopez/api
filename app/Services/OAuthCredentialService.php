@@ -137,9 +137,9 @@ class OAuthCredentialService
     {
         return match ($token->provider) {
             'spotify' => $this->refreshSpotifyToken($token),
+            'google' => $this->refreshGoogleToken($token),
             // Add more providers here
             // 'github' => $this->refreshGithubToken($token),
-            // 'google' => $this->refreshGoogleToken($token),
             default => throw new Exception("Token refresh not supported for provider: {$token->provider}"),
         };
     }
@@ -167,6 +167,34 @@ class OAuthCredentialService
             'access_token' => $data['access_token'],
             'refresh_token' => $data['refresh_token'] ?? $token->refresh_token, // Keep old refresh token if not provided
             'expires_at' => now()->addSeconds($data['expires_in']),
+        ]);
+
+        return $token->fresh();
+    }
+
+    /**
+     * Refresh Google token
+     */
+    private function refreshGoogleToken(OAuthToken $token): ?OAuthToken
+    {
+        $response = Http::asForm()->post('https://oauth2.googleapis.com/token', [
+            'client_id' => config('services.google.client_id'),
+            'client_secret' => config('services.google.client_secret'),
+            'refresh_token' => $token->refresh_token,
+            'grant_type' => 'refresh_token',
+        ]);
+
+        if (!$response->successful()) {
+            throw new Exception('Google token refresh failed: ' . $response->body());
+        }
+
+        $data = $response->json();
+
+        // Update the token with new credentials
+        $token->update([
+            'access_token' => $data['access_token'],
+            'expires_at' => now()->addSeconds($data['expires_in']),
+            // Google doesn't provide a new refresh token, keep the existing one
         ]);
 
         return $token->fresh();

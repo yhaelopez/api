@@ -42,6 +42,7 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         'email',
         'password',
         'spotify_id',
+        'google_id',
     ];
 
     /**
