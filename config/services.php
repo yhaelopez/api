@@ -42,4 +42,10 @@ return [
         'mock' => env('TWILIO_MOCK', true),
         'mock_base' => env('TWILIO_API_BASE_URL', 'http://twilio-mock:4010/'),
     ],
+
+    'spotify' => [
+        'client_id' => env('SPOTIFY_CLIENT_ID'),
+        'client_secret' => env('SPOTIFY_CLIENT_SECRET'),
+        'redirect' => env('SPOTIFY_REDIRECT_URI'),
+    ],
 ];

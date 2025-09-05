@@ -59,7 +59,7 @@ class UserService
             }
         }
 
-        $this->logger->user()->info('User created', [
+        $this->logger->users()->info('User created', [
             'user_id' => $user->id,
             'action' => 'user_created_success',
         ]);
@@ -96,7 +96,7 @@ class UserService
             $this->roleService->syncRoles($updatedUser, [$role]);
         }
 
-        $this->logger->user()->info('User updated', [
+        $this->logger->users()->info('User updated', [
             'user_id' => $user->id,
             'action' => 'user_updated_success',
         ]);
@@ -119,7 +119,7 @@ class UserService
 
         $this->userRepository->delete($user);
 
-        $this->logger->user()->info('User soft deleted', [
+        $this->logger->users()->info('User soft deleted', [
             'user_id' => $user->id,
             'action' => 'user_soft_deleted_success',
         ]);
@@ -153,7 +153,7 @@ class UserService
                 diskName: $this->storageService->getProfilePhotoDisk()
             );
 
-        $this->logger->user()->info('Profile photo added to user', [
+        $this->logger->users()->info('Profile photo added to user', [
             'user_id' => $user->id,
             'filename' => $profilePhoto->getClientOriginalName(),
             'action' => 'profile_photo_added',
@@ -178,7 +178,7 @@ class UserService
         // Clear the profile photos collection (removes files and database records)
         $user->clearMediaCollection('profile_photos');
 
-        $this->logger->user()->info('Profile photo removed from user', [
+        $this->logger->users()->info('Profile photo removed from user', [
             'user_id' => $user->id,
             'action' => 'profile_photo_removed',
         ]);
@@ -199,7 +199,7 @@ class UserService
     {
         $this->userRepository->restore($user);
 
-        $this->logger->user()->info('User restored', [
+        $this->logger->users()->info('User restored', [
             'user_id' => $user->id,
             'action' => 'user_restored_success',
         ]);
@@ -224,7 +224,7 @@ class UserService
     {
         // Check if user is soft-deleted before force deleting
         if (! $user->trashed()) {
-            $this->logger->user()->alert('Attempted to force delete active user', [
+            $this->logger->users()->alert('Attempted to force delete active user', [
                 'user_id' => $user->id,
                 'user_email' => $user->email,
                 'action' => 'force_delete_active_user_attempt',
@@ -239,7 +239,7 @@ class UserService
         $userName = $user->name;
         $this->userRepository->forceDelete($user);
 
-        $this->logger->user()->info('User permanently deleted', [
+        $this->logger->users()->info('User permanently deleted', [
             'user_id' => $user->id,
             'action' => 'user_permanently_deleted_success',
         ]);
@@ -261,7 +261,7 @@ class UserService
         $status = Password::sendResetLink(['email' => $user->email]);
 
         if ($status === Password::RESET_LINK_SENT) {
-            $this->logger->user()->info('Password reset link sent', [
+            $this->logger->users()->info('Password reset link sent', [
                 'user_id' => $user->id,
                 'user_email' => $user->email,
                 'action' => 'password_reset_link_sent',
@@ -275,7 +275,7 @@ class UserService
             return true;
         }
 
-        $this->logger->user()->error('Failed to send password reset link', [
+        $this->logger->users()->error('Failed to send password reset link', [
             'user_id' => $user->id,
             'user_email' => $user->email,
             'action' => 'password_reset_link_failed',

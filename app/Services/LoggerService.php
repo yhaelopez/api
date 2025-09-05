@@ -4,10 +4,15 @@ namespace App\Services;
 
 class LoggerService
 {
+    public function oauth(): GenericLogger
+    {
+        return new GenericLogger('oauth');
+    }
+
     /**
      * Get user logger instance
      */
-    public function user(): GenericLogger
+    public function users(): GenericLogger
     {
         return new GenericLogger('users');
     }

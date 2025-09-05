@@ -6,6 +6,7 @@ use App\Enums\GuardEnum;
 use App\Traits\RestoreStamps;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -40,6 +41,7 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         'name',
         'email',
         'password',
+        'spotify_id',
     ];
 
     /**
@@ -64,5 +66,32 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
             'password' => 'hashed',
             'restored_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Get the OAuth tokens for the user
+     */
+    public function oauthTokens(): HasMany
+    {
+        return $this->hasMany(OAuthToken::class);
+    }
+
+    /**
+     * Get OAuth token for a specific provider
+     */
+    public function getOAuthToken(string $provider): ?OAuthToken
+    {
+        return $this->oauthTokens()
+            ->active()
+            ->forProvider($provider)
+            ->first();
+    }
+
+    /**
+     * Check if user has OAuth token for provider
+     */
+    public function hasOAuthToken(string $provider): bool
+    {
+        return ! empty($this->getOAuthToken($provider));
     }
 }

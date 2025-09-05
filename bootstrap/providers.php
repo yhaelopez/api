@@ -1,8 +1,17 @@
 <?php
 
+use App\Providers\AppServiceProvider;
+use App\Providers\EventServiceProvider;
+use App\Providers\HorizonServiceProvider;
+use App\Providers\TelescopeServiceProvider;
+use App\Providers\TwilioServiceProvider;
+use SocialiteProviders\Manager\ServiceProvider;
+
 return [
-    App\Providers\AppServiceProvider::class,
-    App\Providers\HorizonServiceProvider::class,
-    App\Providers\TelescopeServiceProvider::class,
-    App\Providers\TwilioServiceProvider::class,
+    AppServiceProvider::class,
+    EventServiceProvider::class,
+    HorizonServiceProvider::class,
+    TelescopeServiceProvider::class,
+    TwilioServiceProvider::class,
+    ServiceProvider::class,
 ];
