@@ -23,6 +23,7 @@ import FilePondPluginImageExifOrientation from 'filepond-plugin-image-exif-orien
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview'
 import FilePondPluginImageResize from 'filepond-plugin-image-resize'
 import FilePondPluginImageTransform from 'filepond-plugin-image-transform'
+import type { FilePondFile, FilePondErrorDescription } from 'filepond'
 
 // Register plugins
 FilePond.registerPlugin(
@@ -207,20 +208,20 @@ const emit = defineEmits(['update:modelValue', 'file-processed', 'file-removed']
 
 // Reactive data
 const tempFolder = ref('')
-const pondElement = ref(null)
-const pond = ref(null)
+const pondElement = ref<HTMLDivElement | null>(null)
+const pond = ref<any>(null)
 
 // Server configuration for FilePond
 const serverConfig = {
-  url: '/api/admin/v1/upload/temp',
-  headers: {
-    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-    'Authorization': `Bearer ${localStorage.getItem('auth_token') || ''}`
-  },
   process: {
-    method: 'POST',
+    url: '/api/admin/v1/upload/temp',
+    method: 'POST' as const,
     withCredentials: false,
-    onload: (response) => {
+    headers: {
+      'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+      'Authorization': `Bearer ${localStorage.getItem('auth_token') || ''}`
+    },
+    onload: (response: string) => {
       try {
         const result = JSON.parse(response)
         if (result.success) {
@@ -228,23 +229,25 @@ const serverConfig = {
           emit('update:modelValue', result.folder)
           emit('file-processed', result)
         }
+        return result.folder || ''
       } catch (e) {
         console.error('Failed to parse upload response:', e)
+        return ''
       }
     },
-    onerror: (response) => {
+    onerror: (response: string) => {
       console.error('Upload failed:', response)
     }
   },
   revert: {
     url: '/api/admin/v1/upload/temp',
-    method: 'DELETE',
+    method: 'DELETE' as const,
     headers: {
       'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
       'Authorization': `Bearer ${localStorage.getItem('auth_token') || ''}`
     }
   },
-  remove: (source, load, error) => {
+  remove: (source: string, load: () => void, error: (message: string) => void) => {
     // Handle removal of already uploaded files (permanent media)
     // Check if this is a profile photo for a specific user
     if (props.user && props.existingFile) {
@@ -277,7 +280,7 @@ const serverConfig = {
 }
 
 // Event handlers
-const handleAddFile = (error, file) => {
+const handleAddFile = (error: FilePondErrorDescription | null, file: FilePondFile) => {
   if (error) {
     console.error('Error adding file:', error)
     return
@@ -285,7 +288,7 @@ const handleAddFile = (error, file) => {
   console.log('File added:', file)
 }
 
-const handleRemoveFile = (error, file) => {
+const handleRemoveFile = (error: FilePondErrorDescription | null, file: FilePondFile) => {
   if (error) {
     console.error('Error removing file:', error)
     return
@@ -295,7 +298,7 @@ const handleRemoveFile = (error, file) => {
   emit('file-removed', file)
 }
 
-const handleProcessFile = (error, file) => {
+const handleProcessFile = (error: FilePondErrorDescription | null, file: FilePondFile) => {
   if (error) {
     console.error('Error processing file:', error)
     return
@@ -303,7 +306,7 @@ const handleProcessFile = (error, file) => {
   console.log('File processed:', file)
 }
 
-const handleError = (error, file, status) => {
+const handleError = (error: FilePondErrorDescription, file?: FilePondFile, status?: any) => {
   console.error('FilePond error:', error, file, status)
 }
 
@@ -316,10 +319,10 @@ onMounted(() => {
   // Initialize FilePond after component is mounted
   if (pondElement.value) {
     // Prepare initial files array if we have an existing file
-    const initialFiles = props.existingFile ? [{
+    const initialFiles: any[] = props.existingFile ? [{
       source: props.existingFile.url,
       options: {
-        type: 'local',
+        type: 'local' as const,
         file: {
           name: props.existingFile.name,
           size: props.existingFile.size || 0,
@@ -337,30 +340,12 @@ onMounted(() => {
       allowDrop: props.allowDrop,
       allowPaste: props.allowPaste,
       allowBrowse: props.allowBrowse,
-      allowImport: props.allowImport,
       allowRevert: props.allowRevert,
       allowRemove: props.allowRemove,
-      allowDownload: props.allowDownload,
-      allowZoom: props.allowZoom,
-      allowFullscreen: props.allowFullscreen,
-      allowRotate: props.allowRotate,
-      allowCrop: props.allowCrop,
-      allowResize: props.allowResize,
-      allowEdit: props.allowEdit,
-      allowPrint: props.allowPrint,
-      allowExport: props.allowExport,
-      allowUpload: props.allowUpload,
       instantUpload: props.instantUpload,
-      acceptedFileTypes: props.acceptedFileTypes,
-      maxFileSize: props.maxFileSize,
+      acceptedFileTypes: props.acceptedFileTypes as string[],
       maxFiles: props.maxFiles,
       maxParallelUploads: props.maxParallelUploads,
-      imagePreview: props.imagePreview,
-      imageResize: props.imageResize,
-      imageTransform: props.imageTransform,
-      imageExifOrientation: props.imageExifOrientation,
-      allowFilePoster: props.allowFilePoster,
-      filePosterHeight: props.filePosterHeight,
       labelIdle: props.labelIdle,
       labelFileProcessing: props.labelFileProcessing,
       labelFileProcessingComplete: props.labelFileProcessingComplete,
