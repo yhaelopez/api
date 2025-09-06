@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Models\User;
+use App\Models\Admin;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
@@ -14,7 +14,7 @@ use Illuminate\Queue\SerializesModels;
  *
  * Dispatch in-app notifications to users via broadcasting
  *
- * @property User $user
+ * @property Admin $admin
  * @property string $type
  * @property string $title
  * @property string|null $message
@@ -24,7 +24,7 @@ class InAppNotificationEvent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    private User $user;
+    private Admin $admin;
 
     private string $type;
 
@@ -37,9 +37,9 @@ class InAppNotificationEvent implements ShouldBroadcastNow
     /**
      * Create a new event instance.
      */
-    public function __construct(User $user, string $type, string $title, ?string $message = null, int $duration = 5000)
+    public function __construct(Admin $admin, string $type, string $title, ?string $message = null, int $duration = 5000)
     {
-        $this->user = $user;
+        $this->admin = $admin;
         $this->type = $type;
         $this->title = $title;
         $this->message = $message;
@@ -51,7 +51,7 @@ class InAppNotificationEvent implements ShouldBroadcastNow
      */
     public function broadcastOn(): Channel
     {
-        return new Channel("user.{$this->user->id}");
+        return new Channel("user.{$this->admin->id}");
     }
 
     /**
@@ -59,7 +59,7 @@ class InAppNotificationEvent implements ShouldBroadcastNow
      */
     public function broadcastWhen(): bool
     {
-        return ! empty($this->user);
+        return ! empty($this->admin);
     }
 
     /**
@@ -87,7 +87,7 @@ class InAppNotificationEvent implements ShouldBroadcastNow
     {
         return [
             'in-app-notification',
-            'user:'.$this->user->id,
+            'user:'.$this->admin->id,
             'type:'.$this->type,
         ];
     }

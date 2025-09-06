@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Enums\PermissionsEnum;
+use App\Models\Admin;
 use App\Models\Artist;
 use App\Models\User;
 
@@ -11,7 +12,7 @@ class ArtistPolicy
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $user): bool
+    public function viewAny(Admin|User $user): bool
     {
         return $user->hasPermissionTo(PermissionsEnum::ARTISTS_VIEW_ANY->value);
     }
@@ -19,7 +20,7 @@ class ArtistPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Artist $artist): bool
+    public function view(Admin|User $user, Artist $artist): bool
     {
         // Users can view their own artists
         if ($user->id === $artist->owner_id) {
@@ -32,7 +33,7 @@ class ArtistPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(Admin|User $user): bool
     {
         return $user->hasPermissionTo(PermissionsEnum::ARTISTS_CREATE->value);
     }
@@ -40,7 +41,7 @@ class ArtistPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Artist $artist): bool
+    public function update(Admin|User $user, Artist $artist): bool
     {
         // Users can update their own artists
         if ($user->id === $artist->owner_id) {
@@ -53,7 +54,7 @@ class ArtistPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Artist $artist): bool
+    public function delete(Admin|User $user, Artist $artist): bool
     {
         // Users can delete their own artists
         if ($user->id === $artist->owner_id) {
@@ -66,7 +67,7 @@ class ArtistPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Artist $artist): bool
+    public function restore(Admin|User $user, Artist $artist): bool
     {
         // Users can restore their own artists
         if ($user->id === $artist->owner_id) {
@@ -79,7 +80,7 @@ class ArtistPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Artist $artist): bool
+    public function forceDelete(Admin|User $user, Artist $artist): bool
     {
         return $user->hasPermissionTo(PermissionsEnum::ARTISTS_FORCE_DELETE->value);
     }

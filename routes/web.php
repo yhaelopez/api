@@ -19,3 +19,14 @@ require __DIR__.'/auth.php';
 
 // Include settings routes
 require __DIR__.'/settings.php';
+
+// Admin management routes
+Route::middleware('auth:admin')->group(function () {
+    Route::get('users', function () {
+        return inertia('users/index');
+    })->name('users.index');
+    
+    Route::get('artists', function () {
+        return inertia('artists/index');
+    })->name('artists.index');
+});
