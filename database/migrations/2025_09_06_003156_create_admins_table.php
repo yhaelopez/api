@@ -20,19 +20,29 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
-            $table->unsignedBigInteger('deleted_by')->nullable();
-            $table->unsignedBigInteger('restored_by')->nullable();
+            $table->foreignId('created_by')
+                ->nullable()
+                ->constrained('admins')
+                ->nullOnDelete()
+                ->cascadeOnUpdate();
+            $table->foreignId('updated_by')
+                ->nullable()
+                ->constrained('admins')
+                ->nullOnDelete()
+                ->cascadeOnUpdate();
+            $table->foreignId('deleted_by')
+                ->nullable()
+                ->constrained('admins')
+                ->nullOnDelete()
+                ->cascadeOnUpdate();
+            $table->foreignId('restored_by')
+                ->nullable()
+                ->constrained('admins')
+                ->nullOnDelete()
+                ->cascadeOnUpdate();
             $table->timestamps();
             $table->softDeletes();
             $table->timestamp('restored_at')->nullable();
-
-            // Foreign key constraints
-            $table->foreign('created_by')->references('id')->on('admins')->onDelete('set null');
-            $table->foreign('updated_by')->references('id')->on('admins')->onDelete('set null');
-            $table->foreign('deleted_by')->references('id')->on('admins')->onDelete('set null');
-            $table->foreign('restored_by')->references('id')->on('admins')->onDelete('set null');
         });
     }
 

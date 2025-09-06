@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Enums\GuardEnum;
-use App\Traits\RestoreStamps;
+use App\Traits\AdminStamps;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,21 +12,19 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Mattiverse\Userstamps\Traits\Userstamps;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Permission\Traits\HasRoles;
 
 class Admin extends Authenticatable implements HasMedia, MustVerifyEmail
 {
+    use AdminStamps;
     use HasApiTokens;
     use HasFactory;
     use HasRoles;
     use InteractsWithMedia;
     use Notifiable;
-    use RestoreStamps;
     use SoftDeletes;
-    use Userstamps;
 
     /**
      * The guard used for authentication
