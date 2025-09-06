@@ -40,8 +40,7 @@ class AdminUpdateRequest extends FormRequest
         return [
             'name' => 'sometimes|string|max:255',
             'email' => 'sometimes|email|unique:admins,email,'.$this->route('admin')->id.'|max:255',
-            'password' => ['sometimes', 'confirmed', Password::min(8)],
-            'password_confirmation' => 'required_with:password|string',
+            'password' => ['sometimes', Password::min(8)],
             'role_id' => 'sometimes|integer|exists:roles,id',
             'temp_folder' => 'sometimes|string|max:255',
         ];
@@ -59,9 +58,7 @@ class AdminUpdateRequest extends FormRequest
             'name.max' => 'The name may not be greater than 255 characters.',
             'email.email' => 'The email must be a valid email address.',
             'email.unique' => 'The email has already been taken.',
-            'password.confirmed' => 'The password confirmation does not match.',
             'password.min' => 'The password must be at least 8 characters.',
-            'password_confirmation.required_with' => 'The password confirmation field is required when password is present.',
             'role_id.exists' => 'The selected role is invalid.',
         ];
     }

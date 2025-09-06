@@ -127,7 +127,22 @@ class AdminController extends Controller
 
         $page = $request->validated('page', 1);
         $perPage = $request->validated('per_page', 15);
-        $filters = $request->validated();
+
+        $filters = $request->only([
+            'search',
+            'role',
+            'role_id',
+            'created_from',
+            'created_to',
+            'updated_from',
+            'updated_to',
+            'deleted_from',
+            'deleted_to',
+            'with_inactive',
+            'only_inactive',
+            'sort_by',
+            'sort_direction',
+        ]);
 
         $admins = $this->adminService->getAdminsList($page, $perPage, $filters);
 

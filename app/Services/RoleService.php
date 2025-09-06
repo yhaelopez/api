@@ -72,7 +72,7 @@ class RoleService
     {
         $model->syncRoles($roles);
 
-        match ($model) {
+        match ($model::class) {
             Admin::class => event(new AdminUpdated($model)),
             User::class => event(new UserUpdated($model)),
         };

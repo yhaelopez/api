@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 import { AdminService } from '@/services/AdminService';
-import type { Admin } from '@/types/admin';
+import type { Admin, AdminListOptions } from '@/types/admin';
 
 export function useAdmins() {
   const admins = ref<Admin[]>([]);
@@ -15,7 +15,7 @@ export function useAdmins() {
     to: 0,
   });
 
-  const fetchAdmins = async (options: { page?: number; perPage?: number } = {}) => {
+  const fetchAdmins = async (options: AdminListOptions = {}) => {
     loading.value = true;
     error.value = null;
 
@@ -23,6 +23,10 @@ export function useAdmins() {
       const response = await AdminService.getAdmins({
         page: options.page || 1,
         perPage: options.perPage || 10,
+        filters: {
+          ...options.filters,
+          withInactive: true,
+        },
       });
 
       admins.value = response.data;

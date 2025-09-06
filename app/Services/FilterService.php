@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Filters\AdminFilter;
 use App\Filters\ArtistFilter;
 use App\Filters\UserFilter;
+use App\Models\Admin;
 use App\Models\Artist;
 use App\Models\User;
 use Exception;
@@ -20,6 +22,7 @@ class FilterService
      * @var array<string, string>
      */
     protected array $filterMap = [
+        Admin::class => AdminFilter::class,
         User::class => UserFilter::class,
         Artist::class => ArtistFilter::class,
     ];
