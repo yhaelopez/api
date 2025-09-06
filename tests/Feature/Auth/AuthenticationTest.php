@@ -1,41 +1,63 @@
 <?php
 
-use App\Models\User;
+use App\Helpers\TestHelper;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
 
-test('login screen can be rendered', function () {
-    $response = $this->get('/login');
+uses(RefreshDatabase::class, WithFaker::class);
 
-    $response->assertStatus(200);
+beforeEach(function () {
+    // Create permissions and roles for all tests
+    TestHelper::createPermissionsAndRoles();
 });
 
-test('users can authenticate using the login screen', function () {
-    $user = User::factory()->create();
+describe('Authentication', function () {
+    test('login screen can be rendered', function () {
+        $response = $this->get('/login');
 
-    $response = $this->post('/login', [
-        'email' => $user->email,
-        'password' => 'password',
-    ]);
+        $response->assertStatus(200);
+    });
 
-    $this->assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
-});
+    test('admins can authenticate using the login screen', function () {
+        $admin = TestHelper::createTestSuperAdmin();
 
-test('users can not authenticate with invalid password', function () {
-    $user = User::factory()->create();
+        $response = $this->post('/login', [
+            'email' => $admin->email,
+            'password' => 'password',
+        ]);
 
-    $this->post('/login', [
-        'email' => $user->email,
-        'password' => 'wrong-password',
-    ]);
+        $this->assertAuthenticated('admin');
+        $response->assertRedirect(route('dashboard', absolute: false));
+    });
 
-    $this->assertGuest();
-});
+    test('admins can not authenticate with invalid password', function () {
+        $admin = TestHelper::createTestSuperAdmin();
 
-test('users can logout', function () {
-    $user = User::factory()->create();
+        $this->post('/login', [
+            'email' => $admin->email,
+            'password' => 'wrong-password',
+        ]);
 
-    $response = $this->actingAs($user)->post('/logout');
+        $this->assertGuest('admin');
+    });
 
-    $this->assertGuest();
-    $response->assertRedirect('/');
+    test('admins can logout', function () {
+        $admin = TestHelper::createTestSuperAdmin();
+
+        $response = $this->actingAs($admin, 'admin')->post('/logout');
+
+        $this->assertGuest('admin');
+        $response->assertRedirect('/');
+    });
+
+    test('users cannot authenticate through admin login', function () {
+        $user = \App\Models\User::factory()->regularUser()->create();
+
+        $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertGuest('admin');
+    });
 });

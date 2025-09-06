@@ -195,6 +195,9 @@ class UserController extends Controller
     {
         Gate::authorize('view', $user);
 
+        // Get user with relationships loaded
+        $user = $this->userService->getUser($user->id);
+
         return new UserResource($user);
     }
 
@@ -356,7 +359,7 @@ class UserController extends Controller
     {
         Gate::authorize('restore', $user);
 
-        $restoredUser = $this->userService->restoreUser($user);
+        $restoredUser = $this->userService->restore($user);
 
         return response()->json([
             'message' => 'User restored',

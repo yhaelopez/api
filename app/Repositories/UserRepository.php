@@ -37,6 +37,22 @@ class UserRepository
     }
 
     /**
+     * Find a user with trashed
+     */
+    public function findWithTrashed(int $id): User
+    {
+        return User::withTrashed()->findOrFail($id);
+    }
+
+    /**
+     * Find a user by email
+     */
+    public function findByEmail(string $email): ?User
+    {
+        return User::where('email', $email)->first();
+    }
+
+    /**
      * Get paginated list of users with roles and filters
      */
     public function paginate(int $page, int $perPage, array $filters = []): LengthAwarePaginator
@@ -54,7 +70,10 @@ class UserRepository
      */
     public function create(array $data): User
     {
-        return User::create($data);
+        $user = User::create($data);
+
+        // Load the roles relationship for immediate use
+        return $user->load('roles');
     }
 
     /**
@@ -64,7 +83,8 @@ class UserRepository
     {
         $user->update($data);
 
-        return $user->fresh();
+        // Load the roles relationship for immediate use
+        return $user->fresh(['roles']);
     }
 
     /**
@@ -81,6 +101,17 @@ class UserRepository
     public function restore(User $user): bool
     {
         return $user->restore();
+    }
+
+    /**
+     * Restore a soft-deleted user and return it with relationships loaded
+     */
+    public function restoreWithRoles(User $user): User
+    {
+        $user->restore();
+
+        // Load the roles relationship for immediate use
+        return $user->fresh(['roles']);
     }
 
     /**

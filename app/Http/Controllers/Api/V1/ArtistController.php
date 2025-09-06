@@ -199,6 +199,9 @@ class ArtistController extends Controller
     {
         Gate::authorize('view', $artist);
 
+        // Load the owner relationship for the response
+        $artist->load('owner');
+
         return new ArtistResource($artist);
     }
 

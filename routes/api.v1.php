@@ -9,36 +9,36 @@ use Illuminate\Support\Facades\Route;
 // V1 API Routes - 60 requests per minute
 Route::prefix('v1')->middleware(['web', 'auth:admin,api', 'throttle:60,1'])->group(function () {
     // Role Controller
-    Route::get('roles', [RoleController::class, 'index'])->name('roles.index');
+    Route::get('roles', [RoleController::class, 'index'])->name('v1.roles.index');
 
     // Upload Controller
-    Route::post('upload/temp', [UploadController::class, 'storeTemp'])->name('upload.temp');
+    Route::post('upload/temp', [UploadController::class, 'storeTemp'])->name('v1.upload.temp');
 
     // User Controller
-    Route::apiResource('users', UserController::class);
+    Route::apiResource('users', UserController::class)->names('v1.users');
 
     // Custom user routes
     Route::post('users/{user}/restore', [UserController::class, 'restore'])
-        ->name('users.restore')
+        ->name('v1.users.restore')
         ->withTrashed();
     Route::delete('users/{user}/force-delete', [UserController::class, 'forceDelete'])
-        ->name('users.force-delete')
+        ->name('v1.users.force-delete')
         ->withTrashed();
     Route::delete('users/{user}/profile-photo', [UserController::class, 'removeProfilePhoto'])
-        ->name('users.profile-photo.delete');
+        ->name('v1.users.profile-photo.delete');
     Route::post('users/{user}/send-password-reset', [UserController::class, 'sendPasswordResetLink'])
-        ->name('users.send-password-reset');
+        ->name('v1.users.send-password-reset');
 
     // Artist Controller
-    Route::apiResource('artists', ArtistController::class);
+    Route::apiResource('artists', ArtistController::class)->names('v1.artists');
 
     // Custom artist routes
     Route::post('artists/{artist}/restore', [ArtistController::class, 'restore'])
-        ->name('artists.restore')
+        ->name('v1.artists.restore')
         ->withTrashed();
     Route::delete('artists/{artist}/force-delete', [ArtistController::class, 'forceDelete'])
-        ->name('artists.force-delete')
+        ->name('v1.artists.force-delete')
         ->withTrashed();
     Route::delete('artists/{artist}/profile-photo', [ArtistController::class, 'removeProfilePhoto'])
-        ->name('artists.profile-photo.delete');
+        ->name('v1.artists.profile-photo.delete');
 });

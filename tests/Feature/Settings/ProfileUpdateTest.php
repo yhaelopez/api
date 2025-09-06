@@ -1,91 +1,120 @@
 <?php
 
-use App\Models\User;
+use App\Helpers\TestHelper;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 
 uses(RefreshDatabase::class, WithFaker::class);
 
-test('profile page is displayed', function () {
-    $user = User::factory()->create();
-
-    $response = $this
-        ->actingAs($user)
-        ->get('/settings/profile');
-
-    $response->assertOk();
+beforeEach(function () {
+    // Create permissions and roles for all tests
+    TestHelper::createPermissionsAndRoles();
 });
 
-test('profile information can be updated', function () {
-    $user = User::factory()->create();
+describe('Profile Update', function () {
+    test('profile page is displayed', function () {
+        $admin = TestHelper::createTestSuperAdmin();
 
-    $email = $this->faker->email;
+        $response = $this
+            ->actingAs($admin, 'admin')
+            ->get('/settings/profile');
 
-    $response = $this
-        ->actingAs($user)
-        ->patch('/settings/profile', [
-            'name' => 'Test User',
-            'email' => $email,
-        ]);
+        $response->assertOk();
+    });
 
-    $response
-        ->assertSessionHasNoErrors()
-        ->assertRedirect('/settings/profile');
+    test('profile information can be updated', function () {
+        $admin = TestHelper::createTestSuperAdmin();
 
-    $user->refresh();
+        $email = $this->faker->email;
 
-    expect($user->name)->toBe('Test User');
-    expect($user->email)->toBe($email);
-    expect($user->email_verified_at)->toBeNull();
-});
+        $response = $this
+            ->actingAs($admin, 'admin')
+            ->patch('/settings/profile', [
+                'name' => 'Test Admin',
+                'email' => $email,
+            ]);
 
-test('email verification status is unchanged when the email address is unchanged', function () {
-    $user = User::factory()->create();
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect('/settings/profile');
 
-    $response = $this
-        ->actingAs($user)
-        ->patch('/settings/profile', [
-            'name' => 'Test User',
-            'email' => $user->email,
-        ]);
+        $admin->refresh();
 
-    $response
-        ->assertSessionHasNoErrors()
-        ->assertRedirect('/settings/profile');
+        expect($admin->name)->toBe('Test Admin');
+        expect($admin->email)->toBe($email);
+        expect($admin->email_verified_at)->toBeNull();
+    });
 
-    expect($user->refresh()->email_verified_at)->not->toBeNull();
-});
+    test('email verification status is unchanged when the email address is unchanged', function () {
+        $admin = TestHelper::createTestSuperAdmin();
 
-test('user can delete their account', function () {
-    $user = User::factory()->create();
+        $response = $this
+            ->actingAs($admin, 'admin')
+            ->patch('/settings/profile', [
+                'name' => 'Test Admin',
+                'email' => $admin->email,
+            ]);
 
-    $response = $this
-        ->actingAs($user)
-        ->delete('/settings/profile', [
-            'password' => 'password',
-        ]);
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect('/settings/profile');
 
-    $response
-        ->assertSessionHasNoErrors()
-        ->assertRedirect('/');
+        expect($admin->refresh()->email_verified_at)->not->toBeNull();
+    });
 
-    $this->assertGuest();
-    expect($user->fresh())->toBeNull();
-});
+    test('admin can delete their account', function () {
+        $admin = TestHelper::createTestSuperAdmin();
 
-test('correct password must be provided to delete account', function () {
-    $user = User::factory()->create();
+        $response = $this
+            ->actingAs($admin, 'admin')
+            ->delete('/settings/profile', [
+                'password' => 'password',
+            ]);
 
-    $response = $this
-        ->actingAs($user)
-        ->from('/settings/profile')
-        ->delete('/settings/profile', [
-            'password' => 'wrong-password',
-        ]);
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect('/');
 
-    $response
-        ->assertSessionHasErrors('password')
-        ->assertRedirect('/settings/profile');
+        $this->assertGuest('admin');
+        expect($admin->fresh())->toBeNull();
+    });
 
-    expect($user->fresh())->not->toBeNull();
+    test('correct password must be provided to delete account', function () {
+        $admin = TestHelper::createTestSuperAdmin();
+
+        $response = $this
+            ->actingAs($admin, 'admin')
+            ->from('/settings/profile')
+            ->delete('/settings/profile', [
+                'password' => 'wrong-password',
+            ]);
+
+        $response
+            ->assertSessionHasErrors('password')
+            ->assertRedirect('/settings/profile');
+
+        expect($admin->fresh())->not->toBeNull();
+    });
+
+    test('unauthenticated user cannot access profile page', function () {
+        $response = $this->get('/settings/profile');
+
+        $response->assertRedirect(route('login'));
+    });
+
+    test('profile update requires valid email format', function () {
+        $admin = TestHelper::createTestSuperAdmin();
+
+        $response = $this
+            ->actingAs($admin, 'admin')
+            ->from('/settings/profile')
+            ->patch('/settings/profile', [
+                'name' => 'Test Admin',
+                'email' => 'invalid-email',
+            ]);
+
+        $response
+            ->assertSessionHasErrors('email')
+            ->assertRedirect('/settings/profile');
+    });
 });

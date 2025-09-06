@@ -195,16 +195,14 @@ class UserService
     /**
      * Restore a soft-deleted user
      */
-    public function restoreUser(User $user): User
+    public function restore(User $user): User
     {
-        $this->userRepository->restore($user);
+        $restoredUser = $this->userRepository->restoreWithRoles($user);
 
         $this->logger->users()->info('User restored', [
             'user_id' => $user->id,
             'action' => 'user_restored_success',
         ]);
-
-        $restoredUser = $user->fresh();
 
         // Send success notification to current user
         $this->inAppNotificationService->success(

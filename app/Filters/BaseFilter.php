@@ -156,11 +156,11 @@ abstract class BaseFilter
         $to = $this->get('created_to');
 
         if ($from) {
-            $query->where('created_at', '>=', $from);
+            $query->where('created_at', '>=', Carbon::parse($from)->startOfDay());
         }
 
         if ($to) {
-            $query->where('created_at', '<=', $to);
+            $query->where('created_at', '<=', Carbon::parse($to)->endOfDay());
         }
     }
 
@@ -175,11 +175,11 @@ abstract class BaseFilter
         $to = $this->get('updated_to');
 
         if ($from) {
-            $query->where('updated_at', '>=', $from);
+            $query->where('updated_at', '>=', Carbon::parse($from)->startOfDay());
         }
 
         if ($to) {
-            $query->where('updated_at', '<=', $to);
+            $query->where('updated_at', '<=', Carbon::parse($to)->endOfDay());
         }
     }
 

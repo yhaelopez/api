@@ -14,7 +14,7 @@ use Illuminate\Queue\SerializesModels;
  *
  * Dispatch in-app notifications to users via broadcasting
  *
- * @property Admin $admin
+ * @property Admin|null $admin
  * @property string $type
  * @property string $title
  * @property string|null $message
@@ -24,7 +24,7 @@ class InAppNotificationEvent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    private Admin $admin;
+    private ?Admin $admin;
 
     private string $type;
 
@@ -37,7 +37,7 @@ class InAppNotificationEvent implements ShouldBroadcastNow
     /**
      * Create a new event instance.
      */
-    public function __construct(Admin $admin, string $type, string $title, ?string $message = null, int $duration = 5000)
+    public function __construct(?Admin $admin, string $type, string $title, ?string $message = null, int $duration = 5000)
     {
         $this->admin = $admin;
         $this->type = $type;
@@ -87,7 +87,7 @@ class InAppNotificationEvent implements ShouldBroadcastNow
     {
         return [
             'in-app-notification',
-            'user:'.$this->admin->id,
+            'admin:'.$this->admin?->id,
             'type:'.$this->type,
         ];
     }

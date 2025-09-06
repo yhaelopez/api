@@ -37,6 +37,14 @@ class ArtistRepository
     }
 
     /**
+     * Find an artist with trashed
+     */
+    public function findWithTrashed(int $id): Artist
+    {
+        return Artist::withTrashed()->findOrFail($id);
+    }
+
+    /**
      * Get paginated list of artists with owner and filters
      */
     public function paginate(int $page, int $perPage, array $filters = []): LengthAwarePaginator
@@ -54,7 +62,10 @@ class ArtistRepository
      */
     public function create(array $data): Artist
     {
-        return Artist::create($data);
+        $artist = Artist::create($data);
+
+        // Load the owner relationship for immediate use
+        return $artist->load('owner');
     }
 
     /**
@@ -64,7 +75,8 @@ class ArtistRepository
     {
         $artist->update($data);
 
-        return $artist->fresh();
+        // Load the owner relationship for immediate use
+        return $artist->fresh(['owner']);
     }
 
     /**
@@ -81,6 +93,17 @@ class ArtistRepository
     public function restore(Artist $artist): bool
     {
         return $artist->restore();
+    }
+
+    /**
+     * Restore a soft-deleted artist and return it with relationships loaded
+     */
+    public function restoreWithOwner(Artist $artist): Artist
+    {
+        $artist->restore();
+
+        // Load the owner relationship for immediate use
+        return $artist->fresh(['owner']);
     }
 
     /**

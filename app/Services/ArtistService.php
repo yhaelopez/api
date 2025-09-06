@@ -168,14 +168,12 @@ class ArtistService
      */
     public function restoreArtist(Artist $artist): Artist
     {
-        $this->artistRepository->restore($artist);
+        $restoredArtist = $this->artistRepository->restoreWithOwner($artist);
 
         $this->logger->artists()->info('Artist restored', [
             'artist_id' => $artist->id,
             'action' => 'artist_restored_success',
         ]);
-
-        $restoredArtist = $artist->fresh();
 
         // Send success notification to current user
         $this->inAppNotificationService->success(

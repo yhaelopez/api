@@ -6,6 +6,7 @@ use App\Enums\GuardEnum;
 use App\Enums\RoleEnum;
 use App\Models\Admin;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
 /**
@@ -24,7 +25,7 @@ class AdminFactory extends Factory
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+            'password' => Hash::make('password'),
             'spotify_id' => null,
             'google_id' => null,
         ];
@@ -41,6 +42,18 @@ class AdminFactory extends Factory
                 ->first();
 
             $admin->assignRole($role);
+        });
+    }
+
+    /**
+     * Create an unverified admin
+     */
+    public function unverified(): static
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'email_verified_at' => null,
+            ];
         });
     }
 }

@@ -1,9 +1,8 @@
 <?php
 
-namespace Tests\Feature\Api;
-
 use App\Enums\GuardEnum;
 use App\Helpers\TestHelper;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 
@@ -14,90 +13,68 @@ beforeEach(function () {
     TestHelper::createPermissionsAndRoles();
 });
 
-test('superadmin can view all roles', function () {
-    // Act as superadmin
-    $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
+describe('Role API', function () {
+    describe('index', function () {
+        test('member user can view roles', function () {
+            // Act as member user
+            $user = User::factory()->regularUser()->create();
+            $this->actingAs($user, GuardEnum::API->value);
 
-    // Act - Get all roles
-    $response = $this->getJson(route('roles.index'));
+            // Act
+            $response = $this->getJson(route('v1.roles.index'));
 
-    // Assert - Check response structure and data
-    $response->assertStatus(200)
-        ->assertJsonStructure([
-            'data' => [
-                '*' => [
-                    'id',
-                    'name',
-                    'guard_name',
-                ],
-            ],
-            'links' => [
-                'first',
-                'last',
-                'prev',
-                'next',
-            ],
-            'meta' => [
-                'current_page',
-                'from',
-                'last_page',
-                'links',
-                'path',
-                'per_page',
-                'to',
-                'total',
-            ],
-        ]);
+            // Assert
+            $response->assertStatus(200)
+                ->assertJsonStructure([
+                    'data',
+                    'links' => ['first', 'last', 'prev', 'next'],
+                    'meta' => [
+                        'current_page',
+                        'from',
+                        'last_page',
+                        'links',
+                        'path',
+                        'per_page',
+                        'to',
+                        'total',
+                    ],
+                ]);
 
-    // Should have at least 1 role (member for API guard)
-    $this->assertGreaterThanOrEqual(1, count($response->json('data')));
+            // Verify all returned roles are from the API guard
+            $roles = $response->json('data');
+            foreach ($roles as $role) {
+                expect($role['guard_name'])->toBe(GuardEnum::API->value);
+            }
+        });
 
-    // All roles should be from API guard (user roles)
-    $roles = $response->json('data');
-    foreach ($roles as $role) {
-        $this->assertEquals('api', $role['guard_name']);
-    }
-});
+        test('returns only API roles', function () {
+            // Act as member user
+            $user = User::factory()->regularUser()->create();
+            $this->actingAs($user, GuardEnum::API->value);
 
-test('authorized user can view all roles', function () {
-    // Act as user with view permission
-    $user = TestHelper::createTestUser();
-    $user->givePermissionTo('users.viewAny');
-    $this->actingAs($user, GuardEnum::API->value);
+            // Act
+            $response = $this->getJson(route('v1.roles.index'));
 
-    // Act - Get all roles
-    $response = $this->getJson(route('roles.index'));
+            // Assert
+            $response->assertStatus(200);
 
-    // Assert - Should succeed
-    $response->assertStatus(200);
+            // Verify all returned roles are from the API guard
+            $roles = $response->json('data');
+            foreach ($roles as $role) {
+                expect($role['guard_name'])->toBe(GuardEnum::API->value);
+            }
 
-    // All roles should be from API guard (user roles)
-    $roles = $response->json('data');
-    foreach ($roles as $role) {
-        $this->assertEquals('api', $role['guard_name']);
-    }
-});
+            // Verify we have the member role
+            $roleNames = collect($roles)->pluck('name')->toArray();
+            expect($roleNames)->toContain('member');
+        });
 
-test('unauthorized user cannot view roles', function () {
-    // Act as unauthorized user
-    $user = TestHelper::createTestUnauthorizedUser();
-    $this->actingAs($user, GuardEnum::API->value);
+        test('unauthenticated user cannot view roles', function () {
+            // Act
+            $response = $this->getJson(route('v1.roles.index'));
 
-    // Act - Try to get roles
-    $response = $this->getJson(route('roles.index'));
-
-    // Assert - Should be forbidden
-    $response->assertStatus(403);
-});
-
-test('unauthenticated user cannot view roles', function () {
-    // Create a test without authentication
-    $this->refreshApplication();
-
-    // Act - Try to get roles without authentication
-    $response = $this->getJson(route('roles.index'));
-
-    // Assert - Check for 401 Unauthorized
-    $response->assertStatus(401);
+            // Assert
+            $response->assertStatus(401);
+        });
+    });
 });

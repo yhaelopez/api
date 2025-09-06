@@ -1,16 +1,36 @@
 <?php
 
-use App\Models\User;
+use App\Enums\GuardEnum;
+use App\Helpers\TestHelper;
+use App\Models\Admin;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
 
-test('guests are redirected to the login page', function () {
-    $response = $this->get('/dashboard');
-    $response->assertRedirect('/login');
+uses(RefreshDatabase::class, WithFaker::class);
+
+beforeEach(function () {
+    // Create permissions and roles for all tests
+    TestHelper::createPermissionsAndRoles();
 });
 
-test('authenticated users can visit the dashboard', function () {
-    $user = User::factory()->create();
-    $this->actingAs($user);
+describe('Dashboard', function () {
+    test('superadmin can access dashboard', function () {
+        // Act as superadmin admin
+        $admin = Admin::factory()->superadmin()->create();
+        $this->actingAs($admin, GuardEnum::ADMIN->value);
 
-    $response = $this->get('/dashboard');
-    $response->assertStatus(200);
+        // Act
+        $response = $this->get(route('dashboard'));
+
+        // Assert
+        $response->assertStatus(200);
+    });
+
+    test('unauthenticated user is redirected to login', function () {
+        // Act
+        $response = $this->get(route('dashboard'));
+
+        // Assert
+        $response->assertRedirect(route('login'));
+    });
 });
