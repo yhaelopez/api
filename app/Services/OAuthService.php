@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Admin;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\RedirectResponse;
@@ -31,7 +32,7 @@ class OAuthService
     /**
      * Redirect the user to the OAuth provider
      */
-    public function redirectToProvider(string $provider): RedirectResponse
+    public function redirectToProvider(string $provider, string $guard = 'admin'): RedirectResponse
     {
         $this->validateProvider($provider);
 
@@ -47,16 +48,16 @@ class OAuthService
     /**
      * Handle the OAuth callback from the provider
      */
-    public function handleCallback(string $provider): RedirectResponse
+    public function handleCallback(string $provider, string $guard = 'admin'): RedirectResponse
     {
         $this->validateProvider($provider);
 
         return match ($provider) {
-            'spotify' => $this->handleSpotifyCallback(),
-            'google' => $this->handleGoogleCallback(),
+            'spotify' => $this->handleSpotifyCallback($guard),
+            'google' => $this->handleGoogleCallback($guard),
             // Add more providers here in the future
-            // 'github' => $this->handleGithubCallback(),
-            default => $this->handleGenericCallback($provider),
+            // 'github' => $this->handleGithubCallback($guard),
+            default => $this->handleGenericCallback($provider, $guard),
         };
     }
 
@@ -107,7 +108,7 @@ class OAuthService
     /**
      * Handle Spotify OAuth callback
      */
-    private function handleSpotifyCallback(): RedirectResponse
+    private function handleSpotifyCallback(string $guard = 'admin'): RedirectResponse
     {
         try {
             $providerUser = Socialite::driver('spotify')->user();
@@ -145,7 +146,7 @@ class OAuthService
             'user-read-private',
         ];
 
-        return $this->processOAuthUser('spotify', $providerUser, $scopes);
+        return $this->processOAuthUser('spotify', $providerUser, $scopes, $guard);
     }
 
     /**
@@ -169,7 +170,7 @@ class OAuthService
     /**
      * Handle Google OAuth callback
      */
-    private function handleGoogleCallback(): RedirectResponse
+    private function handleGoogleCallback(string $guard = 'admin'): RedirectResponse
     {
         try {
             $providerUser = Socialite::driver('google')->user();
@@ -191,13 +192,13 @@ class OAuthService
             'email',
         ];
 
-        return $this->processOAuthUser('google', $providerUser, $scopes);
+        return $this->processOAuthUser('google', $providerUser, $scopes, $guard);
     }
 
     /**
      * Handle generic OAuth callback (for providers without specific logic)
      */
-    private function handleGenericCallback(string $provider): RedirectResponse
+    private function handleGenericCallback(string $provider, string $guard = 'admin'): RedirectResponse
     {
         try {
             $providerUser = Socialite::driver($provider)->user();
@@ -212,25 +213,30 @@ class OAuthService
                 ->withErrors(['oauth' => 'Authentication failed. Please try again.']);
         }
 
-        return $this->processOAuthUser($provider, $providerUser, []);
+        return $this->processOAuthUser($provider, $providerUser, [], $guard);
     }
 
     /**
      * Process OAuth user (common logic for all providers)
      */
-    private function processOAuthUser(string $provider, $providerUser, array $scopes = []): RedirectResponse
+    private function processOAuthUser(string $provider, $providerUser, array $scopes = [], string $guard = 'admin'): RedirectResponse
     {
-        // Find user by email
-        $user = User::where('email', $providerUser->getEmail())->first();
+        // Determine the model based on guard
+        $model = $guard === 'admin' ? Admin::class : User::class;
+        
+        // Find user/admin by email
+        $user = $model::where('email', $providerUser->getEmail())->first();
 
         if (! $user) {
             $this->logger->oauth()->warning('OAuth login attempted with non-existent user', [
                 'provider' => $provider,
                 'email' => $providerUser->getEmail(),
+                'guard' => $guard,
                 'action' => 'oauth_user_not_found',
             ]);
 
-            return redirect()->route('login')
+            $loginRoute = 'login';
+            return redirect()->route($loginRoute)
                 ->withErrors(['oauth' => 'No account found with this email address. Please contact an administrator.']);
         }
 
@@ -244,6 +250,7 @@ class OAuthService
                 'user_id' => $user->id,
                 'provider' => $provider,
                 'provider_id' => $providerUser->getId(),
+                'guard' => $guard,
                 'action' => 'oauth_provider_linked',
             ]);
         }
@@ -258,19 +265,22 @@ class OAuthService
             $this->logger->oauth()->info('User email auto-verified via OAuth', [
                 'user_id' => $user->id,
                 'provider' => $provider,
+                'guard' => $guard,
                 'action' => 'oauth_email_auto_verified',
             ]);
         }
 
-        Auth::login($user);
+        Auth::guard($guard)->login($user);
 
         $this->logger->oauth()->info('User logged in via OAuth', [
             'user_id' => $user->id,
             'provider' => $provider,
+            'guard' => $guard,
             'action' => 'oauth_login_success',
         ]);
 
-        return redirect()->intended(route('dashboard'));
+        $redirectRoute = 'dashboard';
+        return redirect()->intended(route($redirectRoute));
     }
 
     /**

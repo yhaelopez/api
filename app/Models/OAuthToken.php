@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class OAuthToken extends Model
 {
@@ -13,7 +14,8 @@ class OAuthToken extends Model
     protected $table = 'oauth_tokens';
 
     protected $fillable = [
-        'user_id',
+        'tokenable_id',
+        'tokenable_type',
         'provider',
         'provider_user_id',
         'access_token',
@@ -37,11 +39,11 @@ class OAuthToken extends Model
     ];
 
     /**
-     * Get the user that owns the OAuth token
+     * Get the parent tokenable model (User or Admin)
      */
-    public function user(): BelongsTo
+    public function tokenable(): MorphTo
     {
-        return $this->belongsTo(User::class);
+        return $this->morphTo();
     }
 
     /**

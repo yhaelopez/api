@@ -32,7 +32,7 @@ class PasswordResetLinkController extends Controller
             'email' => 'required|email',
         ]);
 
-        Password::sendResetLink(
+        Password::broker('admins')->sendResetLink(
             $request->only('email')
         );
 

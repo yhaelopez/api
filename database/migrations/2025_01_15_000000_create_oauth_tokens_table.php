@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('oauth_tokens', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->morphs('tokenable'); // Adds tokenable_id and tokenable_type for polymorphic relationship
             $table->string('provider'); // spotify, github, google, etc.
             $table->string('provider_user_id'); // The user's ID on the provider platform
             $table->text('access_token')->nullable();
@@ -25,9 +25,9 @@ return new class extends Migration
             $table->timestamps();
 
             // Indexes for performance
-            $table->index(['user_id', 'provider']);
+            $table->index(['tokenable_id', 'tokenable_type', 'provider']);
             $table->index(['provider', 'provider_user_id']);
-            $table->unique(['user_id', 'provider']); // One token per provider per user
+            $table->unique(['tokenable_id', 'tokenable_type', 'provider']); // One token per provider per tokenable
         });
     }
 

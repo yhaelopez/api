@@ -17,7 +17,7 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable implements HasMedia, MustVerifyEmail
+class Admin extends Authenticatable implements HasMedia, MustVerifyEmail
 {
     use HasApiTokens;
     use HasFactory;
@@ -31,7 +31,7 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
     /**
      * The guard used for authentication
      */
-    protected $guard_name = GuardEnum::WEB->value;
+    protected $guard_name = GuardEnum::ADMIN->value;
 
     /**
      * The attributes that are mass assignable.
@@ -71,7 +71,7 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
     }
 
     /**
-     * Get the OAuth tokens for the user
+     * Get the OAuth tokens for the admin
      */
     public function oauthTokens(): MorphMany
     {
@@ -90,7 +90,7 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
     }
 
     /**
-     * Check if user has OAuth token for provider
+     * Check if admin has OAuth token for provider
      */
     public function hasOAuthToken(string $provider): bool
     {

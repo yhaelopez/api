@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Admin;
 use App\Models\OAuthToken;
 use App\Models\User;
 use Exception;
@@ -16,10 +17,11 @@ class OAuthCredentialService
     /**
      * Store OAuth credentials after successful authentication
      */
-    public function storeCredentials(User $user, string $provider, $providerUser, array $scopes = []): OAuthToken
+    public function storeCredentials(User|Admin $user, string $provider, $providerUser, array $scopes = []): OAuthToken
     {
         $tokenData = [
-            'user_id' => $user->id,
+            'tokenable_id' => $user->id,
+            'tokenable_type' => get_class($user),
             'provider' => $provider,
             'provider_user_id' => $providerUser->getId(),
             'access_token' => $providerUser->token,
@@ -37,7 +39,7 @@ class OAuthCredentialService
 
         // Update or create the token
         $token = OAuthToken::updateOrCreate(
-            ['user_id' => $user->id, 'provider' => $provider],
+            ['tokenable_id' => $user->id, 'tokenable_type' => get_class($user), 'provider' => $provider],
             $tokenData
         );
 
@@ -54,18 +56,19 @@ class OAuthCredentialService
     /**
      * Get active token for user and provider
      */
-    public function getActiveToken(User $user, string $provider): ?OAuthToken
+    public function getActiveToken(User|Admin $user, string $provider): ?OAuthToken
     {
         return OAuthToken::active()
             ->forProvider($provider)
-            ->where('user_id', $user->id)
+            ->where('tokenable_id', $user->id)
+            ->where('tokenable_type', get_class($user))
             ->first();
     }
 
     /**
      * Get valid access token (refresh if needed)
      */
-    public function getValidAccessToken(User $user, string $provider): ?string
+    public function getValidAccessToken(User|Admin $user, string $provider): ?string
     {
         $token = $this->getActiveToken($user, $provider);
 
@@ -203,7 +206,7 @@ class OAuthCredentialService
     /**
      * Make authenticated API request to provider
      */
-    public function makeApiRequest(User $user, string $provider, string $method, string $url, array $options = []): array
+    public function makeApiRequest(User|Admin $user, string $provider, string $method, string $url, array $options = []): array
     {
         $accessToken = $this->getValidAccessToken($user, $provider);
 

@@ -18,7 +18,7 @@ class OAuthController extends Controller
      */
     public function redirect(string $provider): RedirectResponse
     {
-        return $this->oauthService->redirectToProvider($provider);
+        return $this->oauthService->redirectToProvider($provider, 'admin');
     }
 
     /**
@@ -26,6 +26,6 @@ class OAuthController extends Controller
      */
     public function callback(string $provider, Request $request): RedirectResponse
     {
-        return $this->oauthService->handleCallback($provider);
+        return $this->oauthService->handleCallback($provider, 'admin');
     }
 }

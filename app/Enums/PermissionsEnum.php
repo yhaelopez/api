@@ -29,13 +29,33 @@ enum PermissionsEnum: string
             self::USERS_UPDATE->value,
             self::USERS_DELETE->value,
             self::USERS_RESTORE->value,
-            self::USERS_FORCE_DELETE->value,
+            // Removed USERS_FORCE_DELETE for users
         ];
     }
 
     public static function getArtistPermissions(): array
     {
         return [
+            self::ARTISTS_VIEW_ANY->value,
+            self::ARTISTS_VIEW->value,
+            self::ARTISTS_CREATE->value,
+            self::ARTISTS_UPDATE->value,
+            self::ARTISTS_DELETE->value,
+            self::ARTISTS_RESTORE->value,
+            // Removed ARTISTS_FORCE_DELETE for users
+        ];
+    }
+
+    public static function getAdminPermissions(): array
+    {
+        return [
+            self::USERS_VIEW_ANY->value,
+            self::USERS_VIEW->value,
+            self::USERS_CREATE->value,
+            self::USERS_UPDATE->value,
+            self::USERS_DELETE->value,
+            self::USERS_RESTORE->value,
+            self::USERS_FORCE_DELETE->value,
             self::ARTISTS_VIEW_ANY->value,
             self::ARTISTS_VIEW->value,
             self::ARTISTS_CREATE->value,

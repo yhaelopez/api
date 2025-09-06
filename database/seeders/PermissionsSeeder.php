@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\GuardEnum;
 use App\Enums\PermissionsEnum;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
@@ -34,10 +35,10 @@ class PermissionsSeeder extends Seeder
      */
     private function createPermissions(): void
     {
-        // User module permissions
+        // User module permissions (for both guards)
         $this->createUserPermissions();
 
-        // Artist module permissions
+        // Artist module permissions (for both guards)
         $this->createArtistPermissions();
     }
 
@@ -46,9 +47,13 @@ class PermissionsSeeder extends Seeder
      */
     private function createUserPermissions(): void
     {
+        // User permissions for web guard (no force delete)
         $userPermissions = PermissionsEnum::getUserPermissions();
+        $this->createPermissionGroup($userPermissions, GuardEnum::WEB->value);
 
-        $this->createPermissionGroup($userPermissions);
+        // Admin permissions for admin guard (with force delete)
+        $adminPermissions = PermissionsEnum::getAdminPermissions();
+        $this->createPermissionGroup($adminPermissions, GuardEnum::ADMIN->value);
     }
 
     /**
@@ -56,21 +61,24 @@ class PermissionsSeeder extends Seeder
      */
     private function createArtistPermissions(): void
     {
+        // Artist permissions are the same for both guards
         $artistPermissions = PermissionsEnum::getArtistPermissions();
-
-        $this->createPermissionGroup($artistPermissions);
+        $this->createPermissionGroup($artistPermissions, GuardEnum::WEB->value);
+        $this->createPermissionGroup($artistPermissions, GuardEnum::ADMIN->value);
     }
 
     /**
      * Create a group of permissions
      */
-    private function createPermissionGroup(array $permissions): void
+    private function createPermissionGroup(array $permissions, string $guard = 'web'): void
     {
         foreach ($permissions as $permission) {
-            Permission::create([
-                'name' => $permission,
-                'guard_name' => 'web',
-            ]);
+            Permission::firstOrCreate(
+                [
+                    'name' => $permission,
+                    'guard_name' => $guard,
+                ]
+            );
         }
     }
 }

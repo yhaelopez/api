@@ -99,7 +99,7 @@ return [
     /*
      * List of guards that should be checked for permissions.
      */
-    'guards' => ['web'],
+    'guards' => ['web', 'admin'],
 
     /*
      * When set to true, the method for checking permissions will be registered on the gate.
