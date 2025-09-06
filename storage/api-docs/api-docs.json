@@ -10,13 +10,13 @@
         "version": "1.0.0"
     },
     "paths": {
-        "/api/v1/admins": {
+        "/api/admin/v1/admins": {
             "get": {
                 "tags": [
                     "Admin"
                 ],
                 "summary": "Display a listing of admins",
-                "operationId": "df91b201d4237ddff79f52e404df75f1",
+                "operationId": "76b1dc65ef16c6cef6b002440850494b",
                 "parameters": [
                     {
                         "name": "page",
@@ -134,7 +134,7 @@
                     "Admin"
                 ],
                 "summary": "Store a newly created admin",
-                "operationId": "9d9ca69097a019e5b2bb3a79407a9f91",
+                "operationId": "57f44825d7fef224fece836f13044482",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -170,13 +170,13 @@
                 ]
             }
         },
-        "/api/v1/admins/{id}": {
+        "/api/admin/v1/admins/{id}": {
             "get": {
                 "tags": [
                     "Admin"
                 ],
                 "summary": "Display the specified admin",
-                "operationId": "024763a0221de3238db7ec5d8f899fab",
+                "operationId": "288e1577ee8b4aba198ddf799485475e",
                 "parameters": [
                     {
                         "name": "id",
@@ -217,7 +217,7 @@
                     "Admin"
                 ],
                 "summary": "Update the specified admin",
-                "operationId": "ed5acd6c191964f67a9d431318ff7741",
+                "operationId": "bab1be880e3989944ba8f19be3cfbd50",
                 "parameters": [
                     {
                         "name": "id",
@@ -271,7 +271,7 @@
                     "Admin"
                 ],
                 "summary": "Remove the specified admin",
-                "operationId": "f72a44a5a6c6d9d1fd7c38a16fab782b",
+                "operationId": "ac9200ee91ececbd2efd75d371427a5c",
                 "parameters": [
                     {
                         "name": "id",
@@ -314,13 +314,13 @@
                 ]
             }
         },
-        "/api/v1/admins/{id}/restore": {
+        "/api/admin/v1/admins/{id}/restore": {
             "post": {
                 "tags": [
                     "Admin"
                 ],
                 "summary": "Restore a soft-deleted admin",
-                "operationId": "71dead148f496491c5dd35cd1d5faad4",
+                "operationId": "255ffb354747c5f1492dcd998d169284",
                 "parameters": [
                     {
                         "name": "id",
@@ -357,13 +357,13 @@
                 ]
             }
         },
-        "/api/v1/admins/{id}/force-delete": {
+        "/api/admin/v1/admins/{id}/force-delete": {
             "delete": {
                 "tags": [
                     "Admin"
                 ],
                 "summary": "Permanently delete an admin",
-                "operationId": "772cede229872696bbb69730a0e488a4",
+                "operationId": "a5903cf0c5a786a01b7204a406b4e99a",
                 "parameters": [
                     {
                         "name": "id",
@@ -409,13 +409,13 @@
                 ]
             }
         },
-        "/api/v1/admins/{id}/profile-photo": {
+        "/api/admin/v1/admins/{id}/profile-photo": {
             "delete": {
                 "tags": [
                     "Admin"
                 ],
                 "summary": "Remove admin profile photo",
-                "operationId": "f226d74a16c1f9573c22aa967c85f053",
+                "operationId": "a2e8b1c9e193ce93575ebee5fe1b3538",
                 "parameters": [
                     {
                         "name": "id",
@@ -458,13 +458,13 @@
                 ]
             }
         },
-        "/api/v1/admins/{id}/send-password-reset": {
+        "/api/admin/v1/admins/{id}/send-password-reset": {
             "post": {
                 "tags": [
                     "Admin"
                 ],
                 "summary": "Send password reset link to admin",
-                "operationId": "b62bfaf82937750731568bf54b983344",
+                "operationId": "d2abad63c4d2a488b107db2b261fbbe2",
                 "parameters": [
                     {
                         "name": "id",
@@ -507,13 +507,13 @@
                 ]
             }
         },
-        "/api/v1/artists": {
+        "/api/admin/v1/artists": {
             "get": {
                 "tags": [
                     "Artist"
                 ],
                 "summary": "Display a listing of artists",
-                "operationId": "13a1f35299e05a59c69cfe22dd89e2d5",
+                "operationId": "f02e7823c3057ac327c1e8348031aa78",
                 "parameters": [
                     {
                         "name": "page",
@@ -562,7 +562,7 @@
                     "Artist"
                 ],
                 "summary": "Store a newly created artist",
-                "operationId": "2fa6203e506e3794471a2f9ec57740a9",
+                "operationId": "fa942a7b7b6a932f77855c1258454e05",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -622,13 +622,13 @@
                 ]
             }
         },
-        "/api/v1/artists/{artist}": {
+        "/api/admin/v1/artists/{artist}": {
             "get": {
                 "tags": [
                     "Artist"
                 ],
                 "summary": "Display the specified artist",
-                "operationId": "16bac8b71684b5b4bbf3fa88d8757b67",
+                "operationId": "b841babef9721a71e460c0a675566e06",
                 "parameters": [
                     {
                         "name": "artist",
@@ -669,7 +669,7 @@
                     "Artist"
                 ],
                 "summary": "Update the specified artist",
-                "operationId": "a7404403d79091d4fb73bac1f7808da3",
+                "operationId": "d11eebe03dd8bf355743d2f292948141",
                 "parameters": [
                     {
                         "name": "artist",
@@ -739,7 +739,7 @@
                     "Artist"
                 ],
                 "summary": "Delete the specified artist",
-                "operationId": "90ce4e904084d6442ad63e907839d1ec",
+                "operationId": "54f9412bd7b95107b2a2f4d5dd0671d2",
                 "parameters": [
                     {
                         "name": "artist",
@@ -782,13 +782,13 @@
                 ]
             }
         },
-        "/api/v1/artists/{artist}/restore": {
+        "/api/admin/v1/artists/{artist}/restore": {
             "post": {
                 "tags": [
                     "Artist"
                 ],
                 "summary": "Restore the specified soft-deleted artist",
-                "operationId": "2cf4edf321a1be389174c76c9753ef74",
+                "operationId": "ba509c549270c18ffe3d22ffba5a3b46",
                 "parameters": [
                     {
                         "name": "artist",
@@ -834,13 +834,13 @@
                 ]
             }
         },
-        "/api/v1/artists/{artist}/force-delete": {
+        "/api/admin/v1/artists/{artist}/force-delete": {
             "delete": {
                 "tags": [
                     "Artist"
                 ],
                 "summary": "Permanently delete the specified artist",
-                "operationId": "ecb0cd2c401d78721647a864e31687fb",
+                "operationId": "ed51687903e95c65a55d1eb1b30e9180",
                 "parameters": [
                     {
                         "name": "artist",
@@ -889,13 +889,13 @@
                 ]
             }
         },
-        "/api/v1/artists/{artist}/profile-photo": {
+        "/api/admin/v1/artists/{artist}/profile-photo": {
             "delete": {
                 "tags": [
                     "Artist"
                 ],
                 "summary": "Remove the artist's profile photo",
-                "operationId": "19150486df4774aec43bd2654ca5c3e9",
+                "operationId": "27b209994d3607ed2ca0a28877004115",
                 "parameters": [
                     {
                         "name": "artist",
@@ -962,13 +962,13 @@
                 ]
             }
         },
-        "/api/v1/roles": {
+        "/api/admin/v1/roles": {
             "get": {
                 "tags": [
                     "Role"
                 ],
                 "summary": "Display a listing of roles",
-                "operationId": "a250b4e6aa478949d06fb6e7fa1d7ef6",
+                "operationId": "bff28417a46aa3fb1b3868acac59b7ce",
                 "parameters": [
                     {
                         "name": "page",
@@ -1027,13 +1027,13 @@
                 ]
             }
         },
-        "/api/v1/upload/temp": {
+        "/api/admin/v1/upload/temp": {
             "post": {
                 "tags": [
                     "Upload"
                 ],
                 "summary": "Store a temporary file",
-                "operationId": "84d71c9241c3205151e17076b62f1e47",
+                "operationId": "a513b440df437e0608aec52c93bda4a7",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1101,13 +1101,13 @@
                 ]
             }
         },
-        "/api/v1/users": {
+        "/api/admin/v1/users": {
             "get": {
                 "tags": [
                     "User"
                 ],
                 "summary": "Display a listing of users",
-                "operationId": "58e3fdbd4969eca81ac41819a77e2136",
+                "operationId": "42c9ec047cf8bc24fecf2ff4dbd683b6",
                 "parameters": [
                     {
                         "name": "page",
@@ -1156,7 +1156,7 @@
                     "User"
                 ],
                 "summary": "Store a newly created user",
-                "operationId": "e2769f6532a4574b9581dd12cad0dae4",
+                "operationId": "aa5b6f68f1a9384715382504917fa4a9",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1221,13 +1221,13 @@
                 ]
             }
         },
-        "/api/v1/users/{user}": {
+        "/api/admin/v1/users/{user}": {
             "get": {
                 "tags": [
                     "User"
                 ],
                 "summary": "Display the specified user",
-                "operationId": "e2ec4b6fac811ac7b6e9c13e35590a92",
+                "operationId": "fab5b5ac5931aa91c342452649177dd7",
                 "parameters": [
                     {
                         "name": "user",
@@ -1268,7 +1268,7 @@
                     "User"
                 ],
                 "summary": "Update the specified user",
-                "operationId": "e38af4a3cc354948bf5719d5f94c13e4",
+                "operationId": "a80d958ad19081c96b1f3712b92efc1c",
                 "parameters": [
                     {
                         "name": "user",
@@ -1347,7 +1347,7 @@
                     "User"
                 ],
                 "summary": "Delete the specified user",
-                "operationId": "9218d5b37265635cc1fd8b6e75221d9d",
+                "operationId": "15ae01ddef22e18c5a2e1d1566dccc39",
                 "parameters": [
                     {
                         "name": "user",
@@ -1390,13 +1390,13 @@
                 ]
             }
         },
-        "/api/v1/users/{user}/restore": {
+        "/api/admin/v1/users/{user}/restore": {
             "post": {
                 "tags": [
                     "User"
                 ],
                 "summary": "Restore the specified soft-deleted user",
-                "operationId": "898485ee822e98b90a208968df427d5b",
+                "operationId": "e1d2ace2d1d4253cb07be337f2b12b78",
                 "parameters": [
                     {
                         "name": "user",
@@ -1442,13 +1442,13 @@
                 ]
             }
         },
-        "/api/v1/users/{user}/force-delete": {
+        "/api/admin/v1/users/{user}/force-delete": {
             "delete": {
                 "tags": [
                     "User"
                 ],
                 "summary": "Permanently delete the specified user",
-                "operationId": "dc8d56ca1c12299d1944972a4b2c449a",
+                "operationId": "6355c3b70d85e709ca4f424a441aee25",
                 "parameters": [
                     {
                         "name": "user",
@@ -1497,13 +1497,13 @@
                 ]
             }
         },
-        "/api/v1/users/{user}/profile-photo": {
+        "/api/admin/v1/users/{user}/profile-photo": {
             "delete": {
                 "tags": [
                     "User"
                 ],
                 "summary": "Remove the user's profile photo",
-                "operationId": "5050ec42b6863350842236d3e4215bf4",
+                "operationId": "2dd000d7e7cbdf0f2742bf4b73e934ac",
                 "parameters": [
                     {
                         "name": "user",
@@ -1570,13 +1570,13 @@
                 ]
             }
         },
-        "/api/v1/users/{user}/send-password-reset": {
+        "/api/admin/v1/users/{user}/send-password-reset": {
             "post": {
                 "tags": [
                     "User"
                 ],
                 "summary": "Send password reset link to user",
-                "operationId": "ef44fd7fea95d99bc9377647e8ee143e",
+                "operationId": "7291797a4619fedf89a5b07811522f4e",
                 "parameters": [
                     {
                         "name": "user",

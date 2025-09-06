@@ -2,6 +2,7 @@
 
 use App\Enums\GuardEnum;
 use App\Helpers\TestHelper;
+use App\Models\Admin;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -17,8 +18,8 @@ describe('Role API', function () {
     describe('index', function () {
         test('member user can view roles', function () {
             // Act as member user
-            $user = User::factory()->regularUser()->create();
-            $this->actingAs($user, GuardEnum::API->value);
+            $admin = Admin::factory()->superadmin()->create();
+            $this->actingAs($admin, GuardEnum::ADMIN->value);
 
             // Act
             $response = $this->getJson(route('admin.v1.roles.index'));
@@ -49,8 +50,8 @@ describe('Role API', function () {
 
         test('returns only API roles', function () {
             // Act as member user
-            $user = User::factory()->regularUser()->create();
-            $this->actingAs($user, GuardEnum::API->value);
+            $admin = Admin::factory()->superadmin()->create();
+            $this->actingAs($admin, GuardEnum::ADMIN->value);
 
             // Act
             $response = $this->getJson(route('admin.v1.roles.index'));

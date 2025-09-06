@@ -33,7 +33,7 @@ class UserController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/v1/users",
+     *     path="/api/admin/v1/users",
      *     summary="Display a listing of users",
      *     tags={"User"},
      *     security={{"bearerAuth":{}}},
@@ -100,7 +100,7 @@ class UserController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/v1/users",
+     *     path="/api/admin/v1/users",
      *     summary="Store a newly created user",
      *     tags={"User"},
      *     security={{"bearerAuth":{}}},
@@ -160,7 +160,7 @@ class UserController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/v1/users/{user}",
+     *     path="/api/admin/v1/users/{user}",
      *     summary="Display the specified user",
      *     tags={"User"},
      *     security={{"bearerAuth":{}}},
@@ -203,7 +203,7 @@ class UserController extends Controller
 
     /**
      * @OA\Put(
-     *     path="/api/v1/users/{user}",
+     *     path="/api/admin/v1/users/{user}",
      *     summary="Update the specified user",
      *     tags={"User"},
      *     security={{"bearerAuth":{}}},
@@ -273,7 +273,7 @@ class UserController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/api/v1/users/{user}",
+     *     path="/api/admin/v1/users/{user}",
      *     summary="Delete the specified user",
      *     tags={"User"},
      *     security={{"bearerAuth":{}}},
@@ -319,7 +319,7 @@ class UserController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/v1/users/{user}/restore",
+     *     path="/api/admin/v1/users/{user}/restore",
      *     summary="Restore the specified soft-deleted user",
      *     tags={"User"},
      *     security={{"bearerAuth":{}}},
@@ -369,7 +369,7 @@ class UserController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/api/v1/users/{user}/force-delete",
+     *     path="/api/admin/v1/users/{user}/force-delete",
      *     summary="Permanently delete the specified user",
      *     tags={"User"},
      *     security={{"bearerAuth":{}}},
@@ -436,7 +436,7 @@ class UserController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/api/v1/users/{user}/profile-photo",
+     *     path="/api/admin/v1/users/{user}/profile-photo",
      *     summary="Remove the user's profile photo",
      *     tags={"User"},
      *     security={{"bearerAuth":{}}},
@@ -505,7 +505,7 @@ class UserController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/v1/users/{user}/send-password-reset",
+     *     path="/api/admin/v1/users/{user}/send-password-reset",
      *     summary="Send password reset link to user",
      *     tags={"User"},
      *     security={{"bearerAuth":{}}},

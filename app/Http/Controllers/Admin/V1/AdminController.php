@@ -31,7 +31,7 @@ class AdminController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/v1/admins",
+     *     path="/api/admin/v1/admins",
      *     summary="Display a listing of admins",
      *     tags={"Admin"},
      *     security={{"bearerAuth":{}}},
@@ -151,7 +151,7 @@ class AdminController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/v1/admins/{id}",
+     *     path="/api/admin/v1/admins/{id}",
      *     summary="Display the specified admin",
      *     tags={"Admin"},
      *     security={{"bearerAuth":{}}},
@@ -193,7 +193,7 @@ class AdminController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/v1/admins",
+     *     path="/api/admin/v1/admins",
      *     summary="Store a newly created admin",
      *     tags={"Admin"},
      *     security={{"bearerAuth":{}}},
@@ -242,7 +242,7 @@ class AdminController extends Controller
 
     /**
      * @OA\Put(
-     *     path="/api/v1/admins/{id}",
+     *     path="/api/admin/v1/admins/{id}",
      *     summary="Update the specified admin",
      *     tags={"Admin"},
      *     security={{"bearerAuth":{}}},
@@ -304,7 +304,7 @@ class AdminController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/api/v1/admins/{id}",
+     *     path="/api/admin/v1/admins/{id}",
      *     summary="Remove the specified admin",
      *     tags={"Admin"},
      *     security={{"bearerAuth":{}}},
@@ -349,7 +349,7 @@ class AdminController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/v1/admins/{id}/restore",
+     *     path="/api/admin/v1/admins/{id}/restore",
      *     summary="Restore a soft-deleted admin",
      *     tags={"Admin"},
      *     security={{"bearerAuth":{}}},
@@ -391,7 +391,7 @@ class AdminController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/api/v1/admins/{id}/force-delete",
+     *     path="/api/admin/v1/admins/{id}/force-delete",
      *     summary="Permanently delete an admin",
      *     tags={"Admin"},
      *     security={{"bearerAuth":{}}},
@@ -444,7 +444,7 @@ class AdminController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/api/v1/admins/{id}/profile-photo",
+     *     path="/api/admin/v1/admins/{id}/profile-photo",
      *     summary="Remove admin profile photo",
      *     tags={"Admin"},
      *     security={{"bearerAuth":{}}},
@@ -489,7 +489,7 @@ class AdminController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/v1/admins/{id}/send-password-reset",
+     *     path="/api/admin/v1/admins/{id}/send-password-reset",
      *     summary="Send password reset link to admin",
      *     tags={"Admin"},
      *     security={{"bearerAuth":{}}},

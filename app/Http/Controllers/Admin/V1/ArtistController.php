@@ -33,7 +33,7 @@ class ArtistController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/v1/artists",
+     *     path="/api/admin/v1/artists",
      *     summary="Display a listing of artists",
      *     tags={"Artist"},
      *     security={{"bearerAuth":{}}},
@@ -99,7 +99,7 @@ class ArtistController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/v1/artists",
+     *     path="/api/admin/v1/artists",
      *     summary="Store a newly created artist",
      *     tags={"Artist"},
      *     security={{"bearerAuth":{}}},
@@ -164,7 +164,7 @@ class ArtistController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/v1/artists/{artist}",
+     *     path="/api/admin/v1/artists/{artist}",
      *     summary="Display the specified artist",
      *     tags={"Artist"},
      *     security={{"bearerAuth":{}}},
@@ -207,7 +207,7 @@ class ArtistController extends Controller
 
     /**
      * @OA\Put(
-     *     path="/api/v1/artists/{artist}",
+     *     path="/api/admin/v1/artists/{artist}",
      *     summary="Update the specified artist",
      *     tags={"Artist"},
      *     security={{"bearerAuth":{}}},
@@ -275,7 +275,7 @@ class ArtistController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/api/v1/artists/{artist}",
+     *     path="/api/admin/v1/artists/{artist}",
      *     summary="Delete the specified artist",
      *     tags={"Artist"},
      *     security={{"bearerAuth":{}}},
@@ -321,7 +321,7 @@ class ArtistController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/v1/artists/{artist}/restore",
+     *     path="/api/admin/v1/artists/{artist}/restore",
      *     summary="Restore the specified soft-deleted artist",
      *     tags={"Artist"},
      *     security={{"bearerAuth":{}}},
@@ -371,7 +371,7 @@ class ArtistController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/api/v1/artists/{artist}/force-delete",
+     *     path="/api/admin/v1/artists/{artist}/force-delete",
      *     summary="Permanently delete the specified artist",
      *     tags={"Artist"},
      *     security={{"bearerAuth":{}}},
@@ -438,7 +438,7 @@ class ArtistController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/api/v1/artists/{artist}/profile-photo",
+     *     path="/api/admin/v1/artists/{artist}/profile-photo",
      *     summary="Remove the artist's profile photo",
      *     tags={"Artist"},
      *     security={{"bearerAuth":{}}},

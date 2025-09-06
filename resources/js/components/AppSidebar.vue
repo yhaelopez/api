@@ -5,7 +5,7 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Users, Music, Shield, Telescope, Clock, FileText } from 'lucide-vue-next';
+import { BookOpen, Folder, LayoutGrid, Users, Music, Shield, Telescope, Clock, FileText, Mail } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
@@ -29,6 +29,9 @@ const mainNavItems: NavItem[] = [
         href: '/artists?page=1&per_page=5',
         icon: Music,
     },
+];
+
+const footerNavItems: NavItem[] = [
     {
         title: 'Telescope',
         href: '/telescope',
@@ -44,9 +47,11 @@ const mainNavItems: NavItem[] = [
         href: '/api/documentation',
         icon: FileText,
     },
-];
-
-const footerNavItems: NavItem[] = [
+    {
+        title: 'Mailpit',
+        href: 'http://localhost:8025',
+        icon: Mail,
+    },
     {
         title: 'Github Repo',
         href: 'https://github.com/laravel/vue-starter-kit',

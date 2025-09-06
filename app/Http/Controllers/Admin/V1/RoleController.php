@@ -24,7 +24,7 @@ class RoleController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/v1/roles",
+     *     path="/api/admin/v1/roles",
      *     summary="Display a listing of roles",
      *     tags={"Role"},
      *     security={{"bearerAuth":{}}},
