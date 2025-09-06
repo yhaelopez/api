@@ -49,7 +49,7 @@ Route::middleware('auth:admin')->group(function () {
                 'users' => \App\Models\User::count(),
                 'artists' => \App\Models\Artist::count(),
                 'admins' => \App\Models\Admin::count(),
-            ]
+            ],
         ]);
     })->name('dashboard');
 

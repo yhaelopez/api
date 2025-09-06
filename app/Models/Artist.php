@@ -2,12 +2,11 @@
 
 namespace App\Models;
 
-use App\Traits\RestoreStamps;
+use App\Traits\UserStamps;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Mattiverse\Userstamps\Traits\Userstamps;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -15,7 +14,6 @@ class Artist extends Model implements HasMedia
 {
     use HasFactory;
     use InteractsWithMedia;
-    use RestoreStamps;
     use SoftDeletes;
     use Userstamps;
 
@@ -28,8 +26,6 @@ class Artist extends Model implements HasMedia
         'owner_id',
         'spotify_id',
         'name',
-        'popularity',
-        'followers_count',
     ];
 
     /**
@@ -40,8 +36,6 @@ class Artist extends Model implements HasMedia
     protected function casts(): array
     {
         return [
-            'popularity' => 'integer',
-            'followers_count' => 'integer',
             'restored_at' => 'datetime',
         ];
     }

@@ -17,8 +17,6 @@ use OpenApi\Annotations as OA;
  *     @OA\Property(property="id", type="integer", example=1),
  *     @OA\Property(property="spotify_id", type="string", example="0TnOYISbd1XYRBk9myaseg", nullable=true),
  *     @OA\Property(property="name", type="string", example="Radiohead"),
- *     @OA\Property(property="popularity", type="integer", example=85, nullable=true),
- *     @OA\Property(property="followers_count", type="integer", example=5432109, nullable=true),
  *     @OA\Property(
  *         property="owner",
  *         description="The user who owns this artist",
@@ -50,8 +48,6 @@ class ArtistResource extends JsonResource
             'id' => $this->id,
             'spotify_id' => $this->spotify_id,
             'name' => $this->name,
-            'popularity' => $this->popularity,
-            'followers_count' => $this->followers_count,
             'owner' => $this->whenLoaded('owner', function () {
                 return new UserResource($this->owner);
             }),

@@ -17,7 +17,7 @@ beforeEach(function () {
 test('superadmin can view all roles', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Act - Get all roles
     $response = $this->getJson(route('roles.index'));
@@ -50,27 +50,39 @@ test('superadmin can view all roles', function () {
             ],
         ]);
 
-    // Should have at least 2 roles (superadmin and user)
-    $this->assertGreaterThanOrEqual(2, count($response->json('data')));
+    // Should have at least 1 role (member for API guard)
+    $this->assertGreaterThanOrEqual(1, count($response->json('data')));
+    
+    // All roles should be from API guard (user roles)
+    $roles = $response->json('data');
+    foreach ($roles as $role) {
+        $this->assertEquals('api', $role['guard_name']);
+    }
 });
 
 test('authorized user can view all roles', function () {
     // Act as user with view permission
     $user = TestHelper::createTestUser();
     $user->givePermissionTo('users.viewAny');
-    $this->actingAs($user, GuardEnum::WEB->value);
+    $this->actingAs($user, GuardEnum::API->value);
 
     // Act - Get all roles
     $response = $this->getJson(route('roles.index'));
 
     // Assert - Should succeed
     $response->assertStatus(200);
+    
+    // All roles should be from API guard (user roles)
+    $roles = $response->json('data');
+    foreach ($roles as $role) {
+        $this->assertEquals('api', $role['guard_name']);
+    }
 });
 
 test('unauthorized user cannot view roles', function () {
     // Act as unauthorized user
     $user = TestHelper::createTestUnauthorizedUser();
-    $this->actingAs($user, GuardEnum::WEB->value);
+    $this->actingAs($user, GuardEnum::API->value);
 
     // Act - Try to get roles
     $response = $this->getJson(route('roles.index'));

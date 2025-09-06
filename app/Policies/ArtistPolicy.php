@@ -23,8 +23,13 @@ class ArtistPolicy
     public function view(Admin|User $user, Artist $artist): bool
     {
         // Users can view their own artists
-        if ($user->id === $artist->owner_id) {
+        if ($user instanceof User && $user->id === $artist->owner_id) {
             return true;
+        }
+
+        // Admins can view any artist if they have permission
+        if ($user instanceof Admin) {
+            return $user->hasPermissionTo(PermissionsEnum::ARTISTS_VIEW->value);
         }
 
         return $user->hasPermissionTo(PermissionsEnum::ARTISTS_VIEW->value);
@@ -44,8 +49,13 @@ class ArtistPolicy
     public function update(Admin|User $user, Artist $artist): bool
     {
         // Users can update their own artists
-        if ($user->id === $artist->owner_id) {
+        if ($user instanceof User && $user->id === $artist->owner_id) {
             return true;
+        }
+
+        // Admins can update any artist if they have permission
+        if ($user instanceof Admin) {
+            return $user->hasPermissionTo(PermissionsEnum::ARTISTS_UPDATE->value);
         }
 
         return $user->hasPermissionTo(PermissionsEnum::ARTISTS_UPDATE->value);
@@ -57,10 +67,16 @@ class ArtistPolicy
     public function delete(Admin|User $user, Artist $artist): bool
     {
         // Users can delete their own artists
-        if ($user->id === $artist->owner_id) {
+        if ($user instanceof User && $user->id === $artist->owner_id) {
             return true;
         }
 
+        // Admins can delete any artist if they have permission
+        if ($user instanceof Admin) {
+            return $user->hasPermissionTo(PermissionsEnum::ARTISTS_DELETE->value);
+        }
+
+        // Regular users need permission to delete other artists
         return $user->hasPermissionTo(PermissionsEnum::ARTISTS_DELETE->value);
     }
 
@@ -70,8 +86,13 @@ class ArtistPolicy
     public function restore(Admin|User $user, Artist $artist): bool
     {
         // Users can restore their own artists
-        if ($user->id === $artist->owner_id) {
+        if ($user instanceof User && $user->id === $artist->owner_id) {
             return true;
+        }
+
+        // Admins can restore any artist if they have permission
+        if ($user instanceof Admin) {
+            return $user->hasPermissionTo(PermissionsEnum::ARTISTS_RESTORE->value);
         }
 
         return $user->hasPermissionTo(PermissionsEnum::ARTISTS_RESTORE->value);

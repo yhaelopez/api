@@ -44,8 +44,6 @@ const emit = defineEmits<{
 const form = useForm<CreateArtist | UpdateArtist>({
   name: '',
   spotify_id: '',
-  popularity: undefined,
-  followers_count: undefined,
   temp_folder: '',
 });
 
@@ -56,8 +54,6 @@ watch(() => props.artist, (newArtist) => {
   if (newArtist && props.isEditMode) {
     form.name = newArtist.name;
     form.spotify_id = newArtist.spotify_id || '';
-    form.popularity = newArtist.popularity;
-    form.followers_count = newArtist.followers_count;
     // Reset temp_folder in edit mode
     form.temp_folder = '';
     // Set existing profile photo if available
@@ -71,9 +67,7 @@ const submit = async () => {
       // Update existing artist
       const updateData: UpdateArtist = {
         name: form.name || props.artist.name,
-        spotify_id: form.spotify_id || undefined,
-        popularity: form.popularity,
-        followers_count: form.followers_count
+        spotify_id: form.spotify_id || undefined
       };
 
       // Include temp_folder if provided
@@ -93,9 +87,7 @@ const submit = async () => {
       
       const createData: CreateArtist = {
         name: form.name,
-        spotify_id: form.spotify_id || undefined,
-        popularity: form.popularity,
-        followers_count: form.followers_count
+        spotify_id: form.spotify_id || undefined
       };
 
       // Include temp_folder if provided
@@ -194,40 +186,6 @@ const icon = computed(() => isEditMode.value ? UserCheck : UserPlus);
             <InputError :message="form.errors.spotify_id" />
           </div>
 
-          <!-- Popularity Field -->
-          <div class="space-y-2">
-            <Label for="popularity">
-              Popularity (0-100)
-              <span class="text-gray-500 text-sm">(optional)</span>
-            </Label>
-            <Input
-              id="popularity"
-              v-model.number="form.popularity"
-              type="number"
-              min="0"
-              max="100"
-              placeholder="Enter popularity score"
-              :class="{ 'border-red-500': form.errors.popularity }"
-            />
-            <InputError :message="form.errors.popularity" />
-          </div>
-
-          <!-- Followers Count Field -->
-          <div class="space-y-2">
-            <Label for="followers_count">
-              Followers Count
-              <span class="text-gray-500 text-sm">(optional)</span>
-            </Label>
-            <Input
-              id="followers_count"
-              v-model.number="form.followers_count"
-              type="number"
-              min="0"
-              placeholder="Enter followers count"
-              :class="{ 'border-red-500': form.errors.followers_count }"
-            />
-            <InputError :message="form.errors.followers_count" />
-          </div>
 
 
           <!-- Profile Photo Field -->

@@ -2,8 +2,6 @@ export interface Artist {
   id: number;
   name: string;
   spotify_id?: string;
-  popularity?: number;
-  followers_count?: number;
   created_at: string;
   updated_at: string;
   deleted_at?: string;
@@ -24,16 +22,12 @@ export interface Artist {
 export interface CreateArtist {
   name: string;
   spotify_id?: string;
-  popularity?: number;
-  followers_count?: number;
   temp_folder?: string;
 }
 
 export interface UpdateArtist {
   name?: string;
   spotify_id?: string;
-  popularity?: number;
-  followers_count?: number;
   temp_folder?: string;
 }
 

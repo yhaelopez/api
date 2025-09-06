@@ -187,8 +187,8 @@ class OAuthCredentialService
             'grant_type' => 'refresh_token',
         ]);
 
-        if (!$response->successful()) {
-            throw new Exception('Google token refresh failed: ' . $response->body());
+        if (! $response->successful()) {
+            throw new Exception('Google token refresh failed: '.$response->body());
         }
 
         $data = $response->json();

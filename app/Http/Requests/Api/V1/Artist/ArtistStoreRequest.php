@@ -34,17 +34,6 @@ class ArtistStoreRequest extends FormRequest
                 'max:255',
                 'unique:artists,spotify_id',
             ],
-            'popularity' => [
-                'nullable',
-                'integer',
-                'min:0',
-                'max:100',
-            ],
-            'followers_count' => [
-                'nullable',
-                'integer',
-                'min:0',
-            ],
             'profile_photo' => [
                 'nullable',
                 'file',
@@ -66,9 +55,6 @@ class ArtistStoreRequest extends FormRequest
             'name.required' => 'The artist name field is required.',
             'name.max' => 'The artist name may not be greater than 255 characters.',
             'spotify_id.unique' => 'An artist with this Spotify ID already exists.',
-            'popularity.min' => 'The popularity must be at least 0.',
-            'popularity.max' => 'The popularity may not be greater than 100.',
-            'followers_count.min' => 'The followers count must be at least 0.',
             'profile_photo.file' => 'The profile photo must be a valid file.',
             'profile_photo.image' => 'The profile photo must be an image.',
             'profile_photo.mimes' => 'The profile photo must be a JPEG, PNG, or WebP file.',

@@ -81,8 +81,6 @@ class ArtistController extends Controller
         $filters = $request->only([
             'search',
             'owner_id',
-            'min_popularity',
-            'max_popularity',
             'created_from',
             'created_to',
             'updated_from',
@@ -115,8 +113,6 @@ class ArtistController extends Controller
      *
      *             @OA\Property(property="name", type="string", example="Radiohead"),
      *             @OA\Property(property="spotify_id", type="string", example="0TnOYISbd1XYRBk9myaseg", description="Optional Spotify artist ID"),
-     *             @OA\Property(property="popularity", type="integer", example=85, description="Optional popularity score (0-100)"),
-     *             @OA\Property(property="followers_count", type="integer", example=5432109, description="Optional follower count"),
      *             @OA\Property(property="temp_folder", type="string", example="uuid-string", description="Optional temporary folder name from FilePond upload")
      *         )
      *     ),
@@ -226,8 +222,6 @@ class ArtistController extends Controller
      *
      *             @OA\Property(property="name", type="string", example="Radiohead"),
      *             @OA\Property(property="spotify_id", type="string", example="0TnOYISbd1XYRBk9myaseg", description="Optional Spotify artist ID"),
-     *             @OA\Property(property="popularity", type="integer", example=85, description="Optional popularity score (0-100)"),
-     *             @OA\Property(property="followers_count", type="integer", example=5432109, description="Optional follower count"),
      *             @OA\Property(property="temp_folder", type="string", example="uuid-string", description="Optional temporary folder name from FilePond upload")
      *         )
      *     ),

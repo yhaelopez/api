@@ -55,8 +55,8 @@ class UserPolicy
      */
     public function delete(Admin|User $user, User $model): bool
     {
-        // Prevent users from deleting themselves via API
-        if ($user->id === $model->id) {
+        // Prevent users from deleting themselves via API (but allow admins to delete anyone)
+        if ($user instanceof User && $user->id === $model->id) {
             return false;
         }
 

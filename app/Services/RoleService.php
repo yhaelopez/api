@@ -22,11 +22,27 @@ class RoleService
     }
 
     /**
+     * Get paginated list of roles filtered by guard
+     */
+    public function getRolesListByGuard(string $guard, int $page = 1, int $perPage = 15): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    {
+        return $this->roleRepository->paginateByGuard($guard, $page, $perPage);
+    }
+
+    /**
      * Get all available roles (for internal use)
      */
     public function getAllRoles(): Collection
     {
         return $this->roleRepository->getAll();
+    }
+
+    /**
+     * Get all available roles filtered by guard
+     */
+    public function getAllRolesByGuard(string $guard): Collection
+    {
+        return $this->roleRepository->getAllByGuard($guard);
     }
 
     /**

@@ -25,7 +25,7 @@ class RolesSeeder extends Seeder
     private function createRoles(): void
     {
         // Create roles for both guards
-        $this->createRolesForGuard(GuardEnum::WEB->value);
+        $this->createRolesForGuard(GuardEnum::API->value);
         $this->createRolesForGuard(GuardEnum::ADMIN->value);
     }
 
@@ -38,8 +38,8 @@ class RolesSeeder extends Seeder
             // Only superadmin for admin guard
             $this->createSuperAdminRole($guard);
         } else {
-            // Only user for web guard
-            $this->createUserRole($guard);
+            // Only member for api guard
+            $this->createMemberRole($guard);
         }
     }
 
@@ -58,16 +58,16 @@ class RolesSeeder extends Seeder
     }
 
     /**
-     * Create basic user role
+     * Create basic member role
      */
-    private function createUserRole(string $guard): void
+    private function createMemberRole(string $guard): void
     {
         $role = Role::firstOrCreate([
-            'name' => RoleEnum::USER->value,
+            'name' => RoleEnum::MEMBER->value,
             'guard_name' => $guard,
         ]);
 
-        // Regular users can only view their own profile (no force delete)
+        // Regular members can only view their own profile (no force delete)
         $role->givePermissionTo(PermissionsEnum::getUserPermissions());
         $role->givePermissionTo(PermissionsEnum::getArtistPermissions());
     }

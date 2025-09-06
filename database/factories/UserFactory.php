@@ -46,19 +46,6 @@ class UserFactory extends Factory
         ]);
     }
 
-    /**
-     * Create a superadmin user with all permissions
-     */
-    public function superadmin(): static
-    {
-        return $this->afterCreating(function (User $user) {
-            $role = Role::where('name', RoleEnum::SUPERADMIN->value)
-                ->where('guard_name', GuardEnum::WEB->value)
-                ->first();
-
-            $user->assignRole($role);
-        });
-    }
 
     /**
      * Create a regular user with basic role
@@ -66,8 +53,8 @@ class UserFactory extends Factory
     public function regularUser(): static
     {
         return $this->afterCreating(function (User $user) {
-            $role = Role::where('name', RoleEnum::USER->value)
-                ->where('guard_name', GuardEnum::WEB->value)
+            $role = Role::where('name', RoleEnum::MEMBER->value)
+                ->where('guard_name', GuardEnum::API->value)
                 ->first();
 
             $user->assignRole($role);

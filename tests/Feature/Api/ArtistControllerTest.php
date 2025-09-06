@@ -22,7 +22,7 @@ beforeEach(function () {
 test('superadmin can view all artists', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create test artists
     Artist::factory()->count(20)->create();
@@ -54,7 +54,7 @@ test('superadmin can view all artists', function () {
 test('superadmin can view any artist profile', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create a random artist
     $randomArtist = Artist::factory()->create();
@@ -70,7 +70,7 @@ test('superadmin can view any artist profile', function () {
 test('superadmin can delete any artist', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create an artist to delete
     $artistToDelete = Artist::factory()->create();
@@ -265,7 +265,7 @@ test('unauthorized user cannot delete other artists', function () {
 test('index endpoint validates input parameters', function () {
     // Act as superadmin for this test
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Act - Try with invalid parameters
     $response = $this->getJson(route('artists.index', ['page' => 'invalid', 'per_page' => 'invalid']));
@@ -278,7 +278,7 @@ test('index endpoint validates input parameters', function () {
 test('show endpoint returns 404 for non-existent artist', function () {
     // Act as superadmin for this test
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Act - Request non-existent artist
     $response = $this->getJson(route('artists.show', 999999));
@@ -290,7 +290,7 @@ test('show endpoint returns 404 for non-existent artist', function () {
 test('destroy endpoint returns 404 for non-existent artist', function () {
     // Act as superadmin for this test
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Act - Try to delete non-existent artist
     $response = $this->deleteJson(route('artists.destroy', 999999));
@@ -343,7 +343,7 @@ test('unauthenticated user cannot access destroy endpoint', function () {
 test('rate limiting is enforced for artist endpoints', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Make 61 requests (exceeding the 60 per minute limit)
     for ($i = 0; $i < 61; $i++) {
@@ -364,7 +364,7 @@ test('rate limiting is enforced for artist endpoints', function () {
 test('cache is invalidated when new artist is created', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create some initial test artists to ensure we have a baseline
     Artist::factory()->count(3)->create();
@@ -393,7 +393,7 @@ test('cache is invalidated when new artist is created', function () {
 test('cached response returns old data when database changes manually', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Ensure we have a clean starting point
     Artist::query()->forceDelete();
@@ -440,7 +440,7 @@ test('cached response returns old data when database changes manually', function
 test('cache is invalidated when artist is deleted via API', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create some initial test artists and one to delete
     Artist::factory()->count(3)->create();
@@ -471,7 +471,7 @@ test('cache is invalidated when artist is deleted via API', function () {
 test('update method validates spotify_id uniqueness when changing spotify_id', function () {
     // Act as superadmin for this test
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create two artists
     $artist1 = Artist::factory()->create(['spotify_id' => 'artist1_id']);
@@ -493,13 +493,11 @@ test('update method validates spotify_id uniqueness when changing spotify_id', f
 test('superadmin can create a new artist', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     $artistData = [
         'name' => 'New Artist',
         'spotify_id' => 'new_artist_123',
-        'popularity' => 75,
-        'followers_count' => 1000000,
     ];
 
     // Act - Create new artist
@@ -511,8 +509,6 @@ test('superadmin can create a new artist', function () {
             'id',
             'name',
             'spotify_id',
-            'popularity',
-            'followers_count',
             'created_at',
             'updated_at',
         ])
@@ -536,7 +532,6 @@ test('authorized user can create a new artist', function () {
     $artistData = [
         'name' => 'Another Artist',
         'spotify_id' => 'another_artist_456',
-        'popularity' => 50,
     ];
 
     // Act - Create new artist
@@ -574,7 +569,7 @@ test('unauthorized user cannot create a new artist', function () {
 test('store method validates required fields', function () {
     // Act as superadmin for this test
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Act - Try with missing required fields
     $response = $this->postJson(route('artists.store'), []);
@@ -587,7 +582,7 @@ test('store method validates required fields', function () {
 test('store method validates spotify_id uniqueness', function () {
     // Act as superadmin for this test
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create existing artist
     Artist::factory()->create(['spotify_id' => 'existing_spotify_id']);
@@ -603,38 +598,13 @@ test('store method validates spotify_id uniqueness', function () {
         ->assertJsonValidationErrors(['spotify_id']);
 });
 
-test('store method validates popularity range', function () {
-    // Act as superadmin for this test
-    $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
-
-    // Act - Try with invalid popularity values
-    $response = $this->postJson(route('artists.store'), [
-        'name' => 'Test Artist',
-        'popularity' => 150, // > 100
-    ]);
-
-    // Assert - Check validation errors
-    $response->assertStatus(422)
-        ->assertJsonValidationErrors(['popularity']);
-
-    // Act - Try with negative popularity
-    $response2 = $this->postJson(route('artists.store'), [
-        'name' => 'Test Artist 2',
-        'popularity' => -10,
-    ]);
-
-    // Assert - Check validation errors
-    $response2->assertStatus(422)
-        ->assertJsonValidationErrors(['popularity']);
-});
 
 // UPDATE METHOD TESTS
 
 test('superadmin can update any artist', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create an artist to update
     $artistToUpdate = Artist::factory()->create();
@@ -642,7 +612,6 @@ test('superadmin can update any artist', function () {
     $updateData = [
         'name' => 'Updated Name',
         'spotify_id' => 'updated_spotify_id',
-        'popularity' => 90,
     ];
 
     // Act - Update the artist
@@ -692,7 +661,6 @@ test('user can update their own artists', function () {
 
     $updateData = [
         'name' => 'My Updated Artist',
-        'popularity' => 80,
     ];
 
     // Act - Update own artist
@@ -700,8 +668,7 @@ test('user can update their own artists', function () {
 
     // Assert - Should succeed
     $response->assertStatus(200)
-        ->assertJsonPath('name', $updateData['name'])
-        ->assertJsonPath('popularity', $updateData['popularity']);
+        ->assertJsonPath('name', $updateData['name']);
 });
 
 test('unauthorized user cannot update other artists', function () {
@@ -762,7 +729,7 @@ test('unauthenticated user cannot access update endpoint', function () {
 test('superadmin can restore a soft-deleted artist', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create and soft-delete an artist
     $deletedArtist = Artist::factory()->create();
@@ -851,7 +818,7 @@ test('unauthorized user cannot restore other artists', function () {
 test('restore endpoint returns 404 for non-existent artist', function () {
     // Act as superadmin for this test
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Act - Try to restore non-existent artist
     $response = $this->postJson(route('artists.restore', 999999));
@@ -865,7 +832,7 @@ test('restore endpoint returns 404 for non-existent artist', function () {
 test('superadmin can permanently delete an artist', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create an artist to permanently delete
     $artistToDelete = Artist::factory()->create();
@@ -920,7 +887,7 @@ test('unauthorized user cannot permanently delete artists', function () {
 test('force delete endpoint returns 404 for non-existent artist', function () {
     // Act as superadmin for this test
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Act - Try to permanently delete non-existent artist
     $response = $this->deleteJson(route('artists.force-delete', 999999));
@@ -932,7 +899,7 @@ test('force delete endpoint returns 404 for non-existent artist', function () {
 test('force delete endpoint returns 422 for active (non-deleted) artist', function () {
     // Act as superadmin for this test
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create an active artist (not soft-deleted)
     $activeArtist = Artist::factory()->create();
@@ -947,7 +914,7 @@ test('force delete endpoint returns 422 for active (non-deleted) artist', functi
 test('force delete works only with soft-deleted artists', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create and soft-delete an artist
     $deletedArtist = Artist::factory()->create();
@@ -972,7 +939,7 @@ test('force delete works only with soft-deleted artists', function () {
 test('force delete workflow: delete then force delete', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create an artist
     $artist = Artist::factory()->create();
@@ -1000,7 +967,7 @@ test('force delete workflow: delete then force delete', function () {
 test('force delete with onlyTrashed prevents deletion of active artists', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create multiple artists
     $activeArtist1 = Artist::factory()->create();
@@ -1033,7 +1000,7 @@ test('force delete with onlyTrashed prevents deletion of active artists', functi
 test('force delete triggers ForceDeleteActiveRecordException for active artists', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create an active artist (not soft-deleted)
     $activeArtist = Artist::factory()->create();
@@ -1092,7 +1059,7 @@ test('unauthenticated user cannot access force delete endpoint', function () {
 test('superadmin can create artist with profile photo using temp folder', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     $artistData = [
         'name' => 'Artist With Photo',
@@ -1116,7 +1083,7 @@ test('superadmin can create artist with profile photo using temp folder', functi
 test('superadmin can update artist with profile photo using temp folder', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // First, create an artist without profile photo
     $artistData = [
@@ -1151,7 +1118,7 @@ test('superadmin can update artist with profile photo using temp folder', functi
 test('artist resource includes profile_photo field when available', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create an artist
     $artist = Artist::factory()->create();
@@ -1165,8 +1132,6 @@ test('artist resource includes profile_photo field when available', function () 
             'id',
             'name',
             'spotify_id',
-            'popularity',
-            'followers_count',
             'profile_photo', // This field should be present (even if null)
             'created_at',
             'updated_at',
@@ -1180,7 +1145,7 @@ test('artist resource includes profile_photo field when available', function () 
 test('store method accepts temp_folder field', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     $artistData = [
         'name' => 'Artist With Temp Folder',
@@ -1206,7 +1171,7 @@ test('store method accepts temp_folder field', function () {
 test('update method accepts temp_folder field', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create an artist to update
     $artistToUpdate = Artist::factory()->create();

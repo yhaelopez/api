@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Enums\GuardEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\Role\RoleCollection;
 use App\Models\User;
@@ -66,8 +67,13 @@ class RoleController extends Controller
         $perPage = request('per_page', 15);
         $page = request('page', 1);
 
-        $roles = $this->roleService->getRolesList($page, $perPage);
+        // Always return API roles (user roles) for this endpoint
+        $guard = GuardEnum::API->value;
+        
+        // Get roles filtered by the API guard (user roles)
+        $roles = $this->roleService->getRolesListByGuard($guard, $page, $perPage);
 
         return new RoleCollection($roles);
     }
+
 }

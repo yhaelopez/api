@@ -258,7 +258,7 @@ class UserService
      */
     public function sendPasswordResetLink(User $user): bool
     {
-        $status = Password::sendResetLink(['email' => $user->email]);
+        $status = Password::broker('users')->sendResetLink(['email' => $user->email]);
 
         if ($status === Password::RESET_LINK_SENT) {
             $this->logger->users()->info('Password reset link sent', [

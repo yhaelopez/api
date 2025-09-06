@@ -18,12 +18,23 @@ return new class extends Migration
                 ->constrained('users')
                 ->nullOnDelete()
                 ->cascadeOnUpdate();
-            $table->string('spotify_id')->unique()->nullable();
+            $table->string('spotify_id')->nullable();
             $table->string('name');
-            $table->integer('popularity')->unsigned()->nullable();
-            $table->bigInteger('followers_count')->unsigned()->nullable();
-            $table->userstamps();
-            $table->userstampSoftDeletes();
+            $table->foreignId('created_by')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete()
+                ->cascadeOnUpdate();
+            $table->foreignId('updated_by')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete()
+                ->cascadeOnUpdate();
+            $table->foreignId('deleted_by')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete()
+                ->cascadeOnUpdate();
             $table->foreignId('restored_by')
                 ->nullable()
                 ->constrained('users')
@@ -34,11 +45,7 @@ return new class extends Migration
             $table->timestamp('restored_at')->nullable();
 
             // Indexes
-            $table->index(['owner_id']);
             $table->index(['spotify_id']);
-            $table->index(['name']);
-            $table->index(['popularity']);
-            $table->index(['created_at']);
         });
     }
 

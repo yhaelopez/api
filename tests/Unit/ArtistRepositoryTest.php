@@ -63,8 +63,6 @@ class ArtistRepositoryTest extends TestCase
             'owner_id' => $owner->id,
             'name' => 'Test Artist',
             'spotify_id' => 'test_spotify_id_123',
-            'popularity' => 75,
-            'followers_count' => 1000000,
         ];
 
         $artist = $this->artistRepository->create($artistData);
@@ -72,8 +70,6 @@ class ArtistRepositoryTest extends TestCase
         $this->assertInstanceOf(Artist::class, $artist);
         $this->assertEquals('Test Artist', $artist->name);
         $this->assertEquals('test_spotify_id_123', $artist->spotify_id);
-        $this->assertEquals(75, $artist->popularity);
-        $this->assertEquals(1000000, $artist->followers_count);
         $this->assertEquals($owner->id, $artist->owner_id);
     }
 
@@ -166,26 +162,19 @@ class ArtistRepositoryTest extends TestCase
         $this->assertEquals('Minimal Artist', $artist->name);
         $this->assertEquals($owner->id, $artist->owner_id);
         $this->assertNull($artist->spotify_id);
-        $this->assertNull($artist->popularity);
-        $this->assertNull($artist->followers_count);
     }
 
     public function test_can_update_artist_spotify_data()
     {
         $artist = Artist::factory()->withoutSpotifyData()->create();
         $this->assertNull($artist->spotify_id);
-        $this->assertNull($artist->popularity);
 
         $updateData = [
             'spotify_id' => 'updated_spotify_id',
-            'popularity' => 85,
-            'followers_count' => 2000000,
         ];
 
         $updatedArtist = $this->artistRepository->update($artist, $updateData);
 
         $this->assertEquals('updated_spotify_id', $updatedArtist->spotify_id);
-        $this->assertEquals(85, $updatedArtist->popularity);
-        $this->assertEquals(2000000, $updatedArtist->followers_count);
     }
 }

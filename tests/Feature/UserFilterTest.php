@@ -18,7 +18,7 @@ beforeEach(function () {
 test('superadmin can filter users by search term', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Count initial users (should be 1 - just the superadmin)
     $initialCount = User::count();
@@ -53,7 +53,7 @@ test('superadmin can filter users by search term', function () {
 test('superadmin can filter users by role name', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Count initial users
     $initialCount = User::count();
@@ -63,7 +63,7 @@ test('superadmin can filter users by role name', function () {
     $adminUser->assignRole('superadmin');
 
     $regularUser = User::factory()->create(['name' => 'Jane User']);
-    $regularUser->assignRole('user');
+    $regularUser->assignRole('member');
 
     // Count total users after creation
     $totalUsers = User::count();
@@ -88,10 +88,10 @@ test('superadmin can filter users by role name', function () {
 test('superadmin can filter users by role id', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Get role to filter by
-    $userRole = \Spatie\Permission\Models\Role::where('name', 'user')->first();
+    $userRole = \Spatie\Permission\Models\Role::where('name', 'member')->first();
 
     // Count initial users
     $initialCount = User::count();
@@ -101,10 +101,10 @@ test('superadmin can filter users by role id', function () {
     $adminUser->assignRole('superadmin');
 
     $regularUser1 = User::factory()->create(['name' => 'Jane User']);
-    $regularUser1->assignRole('user');
+    $regularUser1->assignRole('member');
 
     $regularUser2 = User::factory()->create(['name' => 'Bob Developer']);
-    $regularUser2->assignRole('user');
+    $regularUser2->assignRole('member');
 
     // Count total users after creation
     $totalUsers = User::count();
@@ -122,14 +122,14 @@ test('superadmin can filter users by role id', function () {
     // Should return fewer users than total when filtering
     expect($filteredCount)->toBeLessThan($totalUsers);
 
-    // Should return at least 2 users (the ones with 'user' role)
+    // Should return at least 2 users (the ones with 'member' role)
     expect($filteredCount)->toBeGreaterThanOrEqual(2);
 });
 
 test('superadmin can filter users by date range', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Count initial users
     $initialCount = User::count();
@@ -176,7 +176,7 @@ test('superadmin can filter users by date range', function () {
 test('superadmin can sort users by name ascending', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Count initial users
     $initialCount = User::count();
@@ -215,7 +215,7 @@ test('superadmin can sort users by name ascending', function () {
 test('superadmin can sort users by email ascending', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Count initial users
     $initialCount = User::count();
@@ -254,7 +254,7 @@ test('superadmin can sort users by email ascending', function () {
 test('superadmin can sort users by email descending', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Count initial users
     $initialCount = User::count();
@@ -293,7 +293,7 @@ test('superadmin can sort users by email descending', function () {
 test('search filter rejects short terms', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Count initial users
     $initialCount = User::count();
@@ -316,7 +316,7 @@ test('search filter rejects short terms', function () {
 test('search filter ignores empty terms', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Count initial users
     $initialCount = User::count();
@@ -342,10 +342,10 @@ test('search filter ignores empty terms', function () {
 test('role id takes priority over role name', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Get role to filter by
-    $userRole = \Spatie\Permission\Models\Role::where('name', 'user')->first();
+    $userRole = \Spatie\Permission\Models\Role::where('name', 'member')->first();
 
     // Count initial users
     $initialCount = User::count();
@@ -355,10 +355,10 @@ test('role id takes priority over role name', function () {
     $adminUser->assignRole('superadmin');
 
     $regularUser1 = User::factory()->create(['name' => 'Jane User']);
-    $regularUser1->assignRole('user');
+    $regularUser1->assignRole('member');
 
     $regularUser2 = User::factory()->create(['name' => 'Bob Developer']);
-    $regularUser2->assignRole('user');
+    $regularUser2->assignRole('member');
 
     // Count total users after creation
     $totalUsers = User::count();
@@ -379,14 +379,14 @@ test('role id takes priority over role name', function () {
     // Should return fewer users than total when filtering
     expect($filteredCount)->toBeLessThan($totalUsers);
 
-    // Should return users with 'user' role (not 'superadmin')
+    // Should return users with 'member' role (not 'superadmin')
     expect($filteredCount)->toBeGreaterThan(0);
 });
 
 test('default sorting is by created_at descending', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Count initial users
     $initialCount = User::count();
@@ -433,7 +433,7 @@ test('default sorting is by created_at descending', function () {
 test('can combine multiple filters', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Count initial users
     $initialCount = User::count();
@@ -443,10 +443,10 @@ test('can combine multiple filters', function () {
     $adminUser->assignRole('superadmin');
 
     $regularUser1 = User::factory()->create(['name' => 'Jane User']);
-    $regularUser1->assignRole('user');
+    $regularUser1->assignRole('member');
 
     $regularUser2 = User::factory()->create(['name' => 'Bob Developer']);
-    $regularUser2->assignRole('user');
+    $regularUser2->assignRole('member');
 
     // Count total users after creation
     $totalUsers = User::count();
@@ -455,7 +455,7 @@ test('can combine multiple filters', function () {
     // Act - Combine search, role, and sorting filters
     $response = $this->getJson(route('users.index', [
         'search' => 'user',
-        'role' => 'user',
+        'role' => 'member',
         'sort_by' => 'name',
         'sort_direction' => 'asc',
     ]));
@@ -476,7 +476,7 @@ test('can combine multiple filters', function () {
 test('returns empty results when no matches found', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Count initial users
     $initialCount = User::count();
@@ -531,7 +531,7 @@ test('unauthenticated user cannot access filtered users', function () {
 test('superadmin can filter users by updated date range', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Count initial users
     $initialCount = User::count();
@@ -578,7 +578,7 @@ test('superadmin can filter users by updated date range', function () {
 test('superadmin can filter users by deleted date range', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create test users
     $user1 = User::factory()->create(['name' => 'John Admin']);
@@ -619,7 +619,7 @@ test('superadmin can filter users by deleted date range', function () {
 test('superadmin can filter users by email search', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Count initial users
     $initialCount = User::count();
@@ -654,10 +654,10 @@ test('superadmin can filter users by email search', function () {
 test('superadmin can filter users by numeric role string', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Get role to filter by
-    $userRole = \Spatie\Permission\Models\Role::where('name', 'user')->first();
+    $userRole = \Spatie\Permission\Models\Role::where('name', 'member')->first();
 
     // Count initial users
     $initialCount = User::count();
@@ -667,10 +667,10 @@ test('superadmin can filter users by numeric role string', function () {
     $adminUser->assignRole('superadmin');
 
     $regularUser1 = User::factory()->create(['name' => 'Jane User']);
-    $regularUser1->assignRole('user');
+    $regularUser1->assignRole('member');
 
     $regularUser2 = User::factory()->create(['name' => 'Bob Developer']);
-    $regularUser2->assignRole('user');
+    $regularUser2->assignRole('member');
 
     // Count total users after creation
     $totalUsers = User::count();
@@ -688,14 +688,14 @@ test('superadmin can filter users by numeric role string', function () {
     // Should return fewer users than total when filtering
     expect($filteredCount)->toBeLessThan($totalUsers);
 
-    // Should return users with 'user' role
+    // Should return users with 'member' role
     expect($filteredCount)->toBeGreaterThan(0);
 });
 
 test('superadmin can filter users by non-existent role name', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Count initial users
     $initialCount = User::count();
@@ -721,7 +721,7 @@ test('superadmin can filter users by non-existent role name', function () {
 test('superadmin can sort users by ID', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Count initial users
     $initialCount = User::count();

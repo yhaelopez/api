@@ -44,19 +44,6 @@ class ArtistIndexRequest extends FormRequest
                 'integer',
                 'exists:users,id',
             ],
-            'min_popularity' => [
-                'nullable',
-                'integer',
-                'min:0',
-                'max:100',
-            ],
-            'max_popularity' => [
-                'nullable',
-                'integer',
-                'min:0',
-                'max:100',
-                'gte:min_popularity',
-            ],
             'created_from' => [
                 'nullable',
                 'date',
@@ -95,7 +82,7 @@ class ArtistIndexRequest extends FormRequest
             'sort_by' => [
                 'nullable',
                 'string',
-                'in:id,name,popularity,followers_count,created_at,updated_at',
+                'in:id,name,created_at,updated_at',
             ],
             'sort_direction' => [
                 'nullable',

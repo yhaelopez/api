@@ -51,12 +51,6 @@ const handleArtistEdit = (artist: Artist) => {
               Spotify ID
             </th>
             <th class="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-              Popularity
-            </th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-              Followers
-            </th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
               Status
             </th>
             <th class="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
@@ -103,16 +97,6 @@ const handleArtistEdit = (artist: Artist) => {
                   {{ artist.spotify_id }}
                 </span>
                 <span v-else class="text-gray-400">Not linked</span>
-              </div>
-            </td>
-            <td class="px-4 py-4 whitespace-nowrap cursor-pointer" @click="handleArtistClick(artist)">
-              <div class="text-sm text-muted-foreground">
-                {{ artistTableService.formatPopularity(artist.popularity) }}
-              </div>
-            </td>
-            <td class="px-4 py-4 whitespace-nowrap cursor-pointer" @click="handleArtistClick(artist)">
-              <div class="text-sm text-muted-foreground">
-                {{ artistTableService.formatFollowers(artist.followers_count) }}
               </div>
             </td>
             <td class="px-4 py-4 whitespace-nowrap cursor-pointer" @click="handleArtistClick(artist)">

@@ -151,8 +151,8 @@ onMounted(() => {
 
 <template>
   <div class="space-y-6">
-    <div class="flex justify-between items-center">
-      <h1 class="text-2xl font-bold text-gray-900">Users</h1>
+    <div class="flex justify-end items-center">
+      <!-- <h1 class="text-2xl font-bold text-gray-900">Users</h1> -->
       <Button @click="openCreateForm" class="flex items-center gap-2">
         <UserPlus class="h-4 w-4" />
         Create User

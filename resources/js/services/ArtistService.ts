@@ -104,8 +104,6 @@ export class ArtistService {
       isActive: !artist.deleted_at,
       statusText: artist.deleted_at ? 'Deleted' : 'Active',
       createdAt: new Date(artist.created_at).toLocaleDateString(),
-      popularityText: artist.popularity ? `${artist.popularity}%` : 'Unknown',
-      followersText: artist.followers_count ? artist.followers_count.toLocaleString() : 'Unknown',
     };
   }
 

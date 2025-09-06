@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Enums\GuardEnum;
 use App\Enums\RoleEnum;
 use App\Models\Admin;
 use Illuminate\Database\Seeder;

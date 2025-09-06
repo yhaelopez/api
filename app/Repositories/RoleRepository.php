@@ -17,11 +17,31 @@ class RoleRepository
     }
 
     /**
+     * Get paginated list of roles filtered by guard
+     */
+    public function paginateByGuard(string $guard, int $page = 1, int $perPage = 15): LengthAwarePaginator
+    {
+        return Role::where('guard_name', $guard)
+            ->orderBy('name')
+            ->paginate($perPage, ['*'], 'page', $page);
+    }
+
+    /**
      * Get all roles
      */
     public function getAll(): Collection
     {
         return Role::orderBy('name')->get();
+    }
+
+    /**
+     * Get all roles filtered by guard
+     */
+    public function getAllByGuard(string $guard): Collection
+    {
+        return Role::where('guard_name', $guard)
+            ->orderBy('name')
+            ->get();
     }
 
     /**

@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 // Home route
 Route::get('/', function () {
@@ -25,7 +24,7 @@ Route::middleware('auth:admin')->group(function () {
     Route::get('users', function () {
         return inertia('users/index');
     })->name('users.index');
-    
+
     Route::get('artists', function () {
         return inertia('artists/index');
     })->name('artists.index');

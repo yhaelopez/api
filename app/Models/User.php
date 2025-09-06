@@ -3,7 +3,8 @@
 namespace App\Models;
 
 use App\Enums\GuardEnum;
-use App\Traits\RestoreStamps;
+use App\Traits\UserStamps;
+use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -11,26 +12,24 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Mattiverse\Userstamps\Traits\Userstamps;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable implements HasMedia, MustVerifyEmail
+class User extends Authenticatable implements CanResetPassword, HasMedia, MustVerifyEmail
 {
     use HasApiTokens;
     use HasFactory;
     use HasRoles;
     use InteractsWithMedia;
     use Notifiable;
-    use RestoreStamps;
     use SoftDeletes;
-    use Userstamps;
+    use UserStamps;
 
     /**
      * The guard used for authentication
      */
-    protected $guard_name = GuardEnum::WEB->value;
+    protected $guard_name = GuardEnum::API->value;
 
     /**
      * The attributes that are mass assignable.

@@ -18,7 +18,6 @@ class ArtistFilter extends BaseFilter
     {
         $this->applySearchFilter($query);
         $this->applyOwnerFilter($query);
-        $this->applyPopularityFilter($query);
         $this->applyDateFilters($query);
         $this->applySortBy($query);
         $this->applyWithInactiveFilter($query);
@@ -58,24 +57,6 @@ class ArtistFilter extends BaseFilter
         }
     }
 
-    /**
-     * Apply popularity filter
-     *
-     * @param  Builder  $query  The query builder
-     */
-    private function applyPopularityFilter(Builder $query): void
-    {
-        $minPopularity = $this->getInt('min_popularity');
-        $maxPopularity = $this->getInt('max_popularity');
-
-        if ($minPopularity !== null) {
-            $query->where('popularity', '>=', $minPopularity);
-        }
-
-        if ($maxPopularity !== null) {
-            $query->where('popularity', '<=', $maxPopularity);
-        }
-    }
 
     /**
      * Get artist-specific sortable fields
@@ -86,8 +67,6 @@ class ArtistFilter extends BaseFilter
     {
         return [
             'name',
-            'popularity',
-            'followers_count',
         ];
     }
 }

@@ -7,7 +7,7 @@ use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
 
 // V1 API Routes - 60 requests per minute
-Route::prefix('v1')->middleware(['web', 'auth', 'throttle:60,1'])->group(function () {
+Route::prefix('v1')->middleware(['web', 'auth:admin,api', 'throttle:60,1'])->group(function () {
     // Role Controller
     Route::get('roles', [RoleController::class, 'index'])->name('roles.index');
 

@@ -38,19 +38,6 @@ class ArtistUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique('artists', 'spotify_id')->ignore($artistId),
             ],
-            'popularity' => [
-                'sometimes',
-                'nullable',
-                'integer',
-                'min:0',
-                'max:100',
-            ],
-            'followers_count' => [
-                'sometimes',
-                'nullable',
-                'integer',
-                'min:0',
-            ],
             'profile_photo' => [
                 'sometimes',
                 'file',
@@ -71,9 +58,6 @@ class ArtistUpdateRequest extends FormRequest
         return [
             'name.max' => 'The artist name may not be greater than 255 characters.',
             'spotify_id.unique' => 'An artist with this Spotify ID already exists.',
-            'popularity.min' => 'The popularity must be at least 0.',
-            'popularity.max' => 'The popularity may not be greater than 100.',
-            'followers_count.min' => 'The followers count must be at least 0.',
             'profile_photo.file' => 'The profile photo must be a valid file.',
             'profile_photo.image' => 'The profile photo must be an image.',
             'profile_photo.mimes' => 'The profile photo must be a JPEG, PNG, or WebP file.',

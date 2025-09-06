@@ -21,7 +21,7 @@ beforeEach(function () {
 test('superadmin can view all users', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create test users
     User::factory()->count(20)->create();
@@ -53,7 +53,7 @@ test('superadmin can view all users', function () {
 test('superadmin can view any user profile', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create a random user
     $randomUser = User::factory()->create();
@@ -69,7 +69,7 @@ test('superadmin can view any user profile', function () {
 test('superadmin can delete any user', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create a user to delete
     $userToDelete = User::factory()->create();
@@ -241,7 +241,7 @@ test('unauthorized user cannot delete any user including themselves', function (
 test('index endpoint validates input parameters', function () {
     // Act as superadmin for this test
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Act - Try with invalid parameters
     $response = $this->getJson(route('users.index', ['page' => 'invalid', 'per_page' => 'invalid']));
@@ -254,7 +254,7 @@ test('index endpoint validates input parameters', function () {
 test('show endpoint returns 404 for non-existent user', function () {
     // Act as superadmin for this test
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Act - Request non-existent user
     $response = $this->getJson(route('users.show', 999999));
@@ -266,7 +266,7 @@ test('show endpoint returns 404 for non-existent user', function () {
 test('destroy endpoint returns 404 for non-existent user', function () {
     // Act as superadmin for this test
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Act - Try to delete non-existent user
     $response = $this->deleteJson(route('users.destroy', 999999));
@@ -319,7 +319,7 @@ test('unauthenticated user cannot access destroy endpoint', function () {
 test('rate limiting is enforced for user endpoints', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Make 61 requests (exceeding the 60 per minute limit)
     for ($i = 0; $i < 61; $i++) {
@@ -340,7 +340,7 @@ test('rate limiting is enforced for user endpoints', function () {
 test('cache is invalidated when new user is created', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create some test users
     User::factory()->count(5)->create();
@@ -369,7 +369,7 @@ test('cache is invalidated when new user is created', function () {
 test('cached response returns old data when database changes manually', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // First request - should hit database
     $response1 = $this->getJson(route('users.index'));
@@ -405,7 +405,7 @@ test('cached response returns old data when database changes manually', function
 test('cache is invalidated when user is deleted via API', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create a user to delete
     $userToDelete = User::factory()->create();
@@ -435,7 +435,7 @@ test('cache is invalidated when user is deleted via API', function () {
 test('update method validates email uniqueness when changing email', function () {
     // Act as superadmin for this test
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create two users
     $user1 = User::factory()->create(['email' => 'user1@example.com']);
@@ -457,7 +457,7 @@ test('update method validates email uniqueness when changing email', function ()
 test('superadmin can create a new user', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     $userData = [
         'name' => 'New User',
@@ -529,7 +529,7 @@ test('unauthorized user cannot create a new user', function () {
 test('store method validates required fields', function () {
     // Act as superadmin for this test
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Act - Try with missing required fields
     $response = $this->postJson(route('users.store'), []);
@@ -542,7 +542,7 @@ test('store method validates required fields', function () {
 test('store method validates email format and uniqueness', function () {
     // Act as superadmin for this test
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create existing user
     User::factory()->create(['email' => 'existing@example.com']);
@@ -562,10 +562,10 @@ test('store method validates email format and uniqueness', function () {
 test('store method can create user with role', function () {
     // Act as superadmin for this test
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Get a role to assign
-    $role = \Spatie\Permission\Models\Role::where('name', 'user')->first();
+    $role = \Spatie\Permission\Models\Role::where('name', 'member')->first();
 
     $userData = [
         'name' => 'User With Role',
@@ -596,7 +596,7 @@ test('store method can create user with role', function () {
 test('store method validates role_id exists', function () {
     // Act as superadmin for this test
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     $userData = [
         'name' => 'User With Invalid Role',
@@ -618,7 +618,7 @@ test('store method validates role_id exists', function () {
 test('superadmin can update any user', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create a user to update
     $userToUpdate = TestHelper::createTestUser();
@@ -741,7 +741,7 @@ test('unauthenticated user cannot access update endpoint', function () {
 test('update method can update user role', function () {
     // Act as superadmin for this test
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create a user to update
     $userToUpdate = TestHelper::createTestUser();
@@ -769,7 +769,7 @@ test('update method can update user role', function () {
 test('update method validates role_id exists', function () {
     // Act as superadmin for this test
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create a user to update
     $userToUpdate = TestHelper::createTestUser();
@@ -792,7 +792,7 @@ test('update method validates role_id exists', function () {
 test('superadmin can restore a soft-deleted user', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create and soft-delete a user
     $deletedUser = User::factory()->create();
@@ -864,7 +864,7 @@ test('unauthorized user cannot restore users', function () {
 test('restore endpoint returns 404 for non-existent user', function () {
     // Act as superadmin for this test
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Act - Try to restore non-existent user
     $response = $this->postJson(route('users.restore', 999999));
@@ -878,7 +878,7 @@ test('restore endpoint returns 404 for non-existent user', function () {
 test('superadmin can permanently delete a user', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create a user to permanently delete
     $userToDelete = User::factory()->create();
@@ -933,7 +933,7 @@ test('unauthorized user cannot permanently delete users', function () {
 test('force delete endpoint returns 404 for non-existent user', function () {
     // Act as superadmin for this test
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Act - Try to permanently delete non-existent user
     $response = $this->deleteJson(route('users.force-delete', 999999));
@@ -945,7 +945,7 @@ test('force delete endpoint returns 404 for non-existent user', function () {
 test('force delete endpoint returns 422 for active (non-deleted) user', function () {
     // Act as superadmin for this test
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create an active user (not soft-deleted)
     $activeUser = User::factory()->create();
@@ -960,7 +960,7 @@ test('force delete endpoint returns 422 for active (non-deleted) user', function
 test('force delete works only with soft-deleted users', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create and soft-delete a user
     $deletedUser = User::factory()->create();
@@ -985,7 +985,7 @@ test('force delete works only with soft-deleted users', function () {
 test('force delete workflow: delete then force delete', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create a user
     $user = User::factory()->create();
@@ -1013,7 +1013,7 @@ test('force delete workflow: delete then force delete', function () {
 test('force delete with onlyTrashed prevents deletion of active users', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create multiple users
     $activeUser1 = User::factory()->create();
@@ -1046,7 +1046,7 @@ test('force delete with onlyTrashed prevents deletion of active users', function
 test('force delete triggers ForceDeleteActiveRecordException for active users', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create an active user (not soft-deleted)
     $activeUser = User::factory()->create();
@@ -1105,7 +1105,7 @@ test('unauthenticated user cannot access force delete endpoint', function () {
 test('superadmin can create user with profile photo using temp folder', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     $userData = [
         'name' => 'User With Photo',
@@ -1130,7 +1130,7 @@ test('superadmin can create user with profile photo using temp folder', function
 test('superadmin can update user with profile photo using temp folder', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // First, create a user without profile photo
     $userData = [
@@ -1166,7 +1166,7 @@ test('superadmin can update user with profile photo using temp folder', function
 test('user resource includes profile_photo field when available', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create a user
     $user = User::factory()->create();
@@ -1193,7 +1193,7 @@ test('user resource includes profile_photo field when available', function () {
 test('store method accepts temp_folder field', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     $userData = [
         'name' => 'User With Temp Folder',
@@ -1220,7 +1220,7 @@ test('store method accepts temp_folder field', function () {
 test('update method accepts temp_folder field', function () {
     // Act as superadmin
     $superadmin = TestHelper::createTestSuperAdmin();
-    $this->actingAs($superadmin, GuardEnum::WEB->value);
+    $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
     // Create a user to update
     $userToUpdate = TestHelper::createTestUser();

@@ -47,9 +47,9 @@ class PermissionsSeeder extends Seeder
      */
     private function createUserPermissions(): void
     {
-        // User permissions for web guard (no force delete)
+        // User permissions for api guard (no force delete)
         $userPermissions = PermissionsEnum::getUserPermissions();
-        $this->createPermissionGroup($userPermissions, GuardEnum::WEB->value);
+        $this->createPermissionGroup($userPermissions, GuardEnum::API->value);
 
         // Admin permissions for admin guard (with force delete)
         $adminPermissions = PermissionsEnum::getAdminPermissions();
@@ -63,7 +63,7 @@ class PermissionsSeeder extends Seeder
     {
         // Artist permissions are the same for both guards
         $artistPermissions = PermissionsEnum::getArtistPermissions();
-        $this->createPermissionGroup($artistPermissions, GuardEnum::WEB->value);
+        $this->createPermissionGroup($artistPermissions, GuardEnum::API->value);
         $this->createPermissionGroup($artistPermissions, GuardEnum::ADMIN->value);
     }
 

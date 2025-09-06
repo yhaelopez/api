@@ -156,7 +156,7 @@ class OAuthService
     {
         /** @var GoogleProvider $googleDriver */
         $googleDriver = Socialite::driver('google');
-        
+
         return $googleDriver->scopes([
             'openid',
             'profile',
@@ -223,7 +223,7 @@ class OAuthService
     {
         // Determine the model based on guard
         $model = $guard === 'admin' ? Admin::class : User::class;
-        
+
         // Find user/admin by email
         $user = $model::where('email', $providerUser->getEmail())->first();
 
@@ -236,6 +236,7 @@ class OAuthService
             ]);
 
             $loginRoute = 'login';
+
             return redirect()->route($loginRoute)
                 ->withErrors(['oauth' => 'No account found with this email address. Please contact an administrator.']);
         }
@@ -280,6 +281,7 @@ class OAuthService
         ]);
 
         $redirectRoute = 'dashboard';
+
         return redirect()->intended(route($redirectRoute));
     }
 

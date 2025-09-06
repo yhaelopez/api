@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Models\Admin;
 use App\Models\User;
 use Database\Seeders\PermissionsSeeder;
 use Database\Seeders\RolesSeeder;
@@ -24,11 +25,11 @@ class TestHelper
     /**
      * Create a superadmin user for testing
      *
-     * @return User The created superadmin user
+     * @return Admin The created superadmin user
      */
-    public static function createTestSuperAdmin(): User
+    public static function createTestSuperAdmin(): Admin
     {
-        return User::factory()->superadmin()->create([
+        return Admin::factory()->superadmin()->create([
             'name' => 'Super Admin',
             'email' => 'admin@'.fake()->domainName(),
         ]);

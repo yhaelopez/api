@@ -5,8 +5,6 @@ export interface ArtistTableService {
   getArtistInitials(artist: Artist): string;
   getArtistStatus(artist: Artist): { text: string; isActive: boolean; isDeleted: boolean };
   sortArtists(artists: Artist[], field: keyof Artist, direction: 'asc' | 'desc'): Artist[];
-  formatPopularity(popularity?: number): string;
-  formatFollowers(followers?: number): string;
 }
 
 export class ArtistTableServiceImpl implements ArtistTableService {
@@ -50,21 +48,6 @@ export class ArtistTableServiceImpl implements ArtistTableService {
     });
   }
 
-  formatPopularity(popularity?: number): string {
-    if (popularity === undefined || popularity === null) return 'Unknown';
-    return `${popularity}%`;
-  }
-
-  formatFollowers(followers?: number): string {
-    if (followers === undefined || followers === null) return 'Unknown';
-    if (followers >= 1000000) {
-      return `${(followers / 1000000).toFixed(1)}M`;
-    }
-    if (followers >= 1000) {
-      return `${(followers / 1000).toFixed(1)}K`;
-    }
-    return followers.toString();
-  }
 }
 
 export const artistTableService = new ArtistTableServiceImpl();
