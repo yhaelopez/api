@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Api\V1\User;
+namespace App\Http\Requests\Admin\V1\Artist;
 
-use App\Models\User;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\Rule;
 
-class UserStoreRequest extends FormRequest
+class ArtistUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,32 +23,23 @@ class UserStoreRequest extends FormRequest
      */
     public function rules(): array
     {
+        $artistId = $this->route('artist');
+
         return [
             'name' => [
-                'required',
+                'sometimes',
                 'string',
                 'max:255',
             ],
-            'email' => [
-                'required',
-                'string',
-                'lowercase',
-                'email',
-                'max:255',
-                'unique:'.User::class,
-            ],
-            'password' => [
-                'required',
-                'string',
-                Password::defaults(),
-            ],
-            'role_id' => [
+            'spotify_id' => [
+                'sometimes',
                 'nullable',
-                'integer',
-                'exists:roles,id',
+                'string',
+                'max:255',
+                Rule::unique('artists', 'spotify_id')->ignore($artistId),
             ],
             'profile_photo' => [
-                'nullable',
+                'sometimes',
                 'file',
                 'image',
                 'mimes:jpeg,png,webp',
@@ -66,12 +56,8 @@ class UserStoreRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'The name field is required.',
-            'name.max' => 'The name may not be greater than 255 characters.',
-            'email.required' => 'The email field is required.',
-            'email.email' => 'The email must be a valid email address.',
-            'email.unique' => 'The email has already been taken.',
-            'password.required' => 'The password field is required.',
+            'name.max' => 'The artist name may not be greater than 255 characters.',
+            'spotify_id.unique' => 'An artist with this Spotify ID already exists.',
             'profile_photo.file' => 'The profile photo must be a valid file.',
             'profile_photo.image' => 'The profile photo must be an image.',
             'profile_photo.mimes' => 'The profile photo must be a JPEG, PNG, or WebP file.',

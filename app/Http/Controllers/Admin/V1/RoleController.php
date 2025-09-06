@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1;
+namespace App\Http\Controllers\Admin\V1;
 
 use App\Enums\GuardEnum;
 use App\Http\Controllers\Controller;

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Api\V1\User;
+namespace App\Http\Requests\Admin\V1\Artist;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UserIndexRequest extends FormRequest
+class ArtistIndexRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -39,14 +39,10 @@ class UserIndexRequest extends FormRequest
                 'string',
                 'min:2',
             ],
-            'role' => [
-                'nullable',
-                'string',
-            ],
-            'role_id' => [
+            'owner_id' => [
                 'nullable',
                 'integer',
-                'exists:roles,id',
+                'exists:users,id',
             ],
             'created_from' => [
                 'nullable',
@@ -86,7 +82,7 @@ class UserIndexRequest extends FormRequest
             'sort_by' => [
                 'nullable',
                 'string',
-                'in:id,name,email,created_at,updated_at',
+                'in:id,name,created_at,updated_at',
             ],
             'sort_direction' => [
                 'nullable',

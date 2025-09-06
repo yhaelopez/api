@@ -22,7 +22,7 @@ class UserPolicy
     public function view(Admin|User $user, User $model): bool
     {
         // Users can view their own profile
-        if ($user->id === $model->id) {
+        if ($user instanceof User && $user->id === $model->id) {
             return true;
         }
 
@@ -43,7 +43,7 @@ class UserPolicy
     public function update(Admin|User $user, User $model): bool
     {
         // Users can update their own profile
-        if ($user->id === $model->id) {
+        if ($user instanceof User && $user->id === $model->id) {
             return true;
         }
 
@@ -85,7 +85,7 @@ class UserPolicy
     public function sendPasswordResetLink(Admin|User $user, User $model): bool
     {
         // Users can send password reset links to themselves
-        if ($user->id === $model->id) {
+        if ($user instanceof User && $user->id === $model->id) {
             return true;
         }
 

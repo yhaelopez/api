@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Http\Requests\Api\V1\Artist;
+namespace App\Http\Requests\Admin\V1\User;
 
+use App\Models\User;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 
-class ArtistStoreRequest extends FormRequest
+class UserStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -28,16 +30,23 @@ class ArtistStoreRequest extends FormRequest
                 'string',
                 'max:255',
             ],
-            'spotify_id' => [
-                'nullable',
+            'email' => [
+                'required',
                 'string',
+                'lowercase',
+                'email',
                 'max:255',
-                'unique:artists,spotify_id',
+                'unique:'.User::class,
             ],
-            'owner_id' => [
+            'password' => [
+                'required',
+                'string',
+                Password::defaults(),
+            ],
+            'role_id' => [
                 'nullable',
                 'integer',
-                'exists:users,id',
+                'exists:roles,id',
             ],
             'profile_photo' => [
                 'nullable',
@@ -57,11 +66,12 @@ class ArtistStoreRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'The artist name field is required.',
-            'name.max' => 'The artist name may not be greater than 255 characters.',
-            'spotify_id.unique' => 'An artist with this Spotify ID already exists.',
-            'owner_id.integer' => 'The owner must be a valid user ID.',
-            'owner_id.exists' => 'The selected owner does not exist.',
+            'name.required' => 'The name field is required.',
+            'name.max' => 'The name may not be greater than 255 characters.',
+            'email.required' => 'The email field is required.',
+            'email.email' => 'The email must be a valid email address.',
+            'email.unique' => 'The email has already been taken.',
+            'password.required' => 'The password field is required.',
             'profile_photo.file' => 'The profile photo must be a valid file.',
             'profile_photo.image' => 'The profile photo must be an image.',
             'profile_photo.mimes' => 'The profile photo must be a JPEG, PNG, or WebP file.',

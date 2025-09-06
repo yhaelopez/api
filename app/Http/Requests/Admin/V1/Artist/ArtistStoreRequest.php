@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Api\V1\Artist;
+namespace App\Http\Requests\Admin\V1\Artist;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class ArtistUpdateRequest extends FormRequest
+class ArtistStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,23 +22,25 @@ class ArtistUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        $artistId = $this->route('artist');
-
         return [
             'name' => [
-                'sometimes',
+                'required',
                 'string',
                 'max:255',
             ],
             'spotify_id' => [
-                'sometimes',
                 'nullable',
                 'string',
                 'max:255',
-                Rule::unique('artists', 'spotify_id')->ignore($artistId),
+                'unique:artists,spotify_id',
+            ],
+            'owner_id' => [
+                'nullable',
+                'integer',
+                'exists:users,id',
             ],
             'profile_photo' => [
-                'sometimes',
+                'nullable',
                 'file',
                 'image',
                 'mimes:jpeg,png,webp',
@@ -56,8 +57,11 @@ class ArtistUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'name.required' => 'The artist name field is required.',
             'name.max' => 'The artist name may not be greater than 255 characters.',
             'spotify_id.unique' => 'An artist with this Spotify ID already exists.',
+            'owner_id.integer' => 'The owner must be a valid user ID.',
+            'owner_id.exists' => 'The selected owner does not exist.',
             'profile_photo.file' => 'The profile photo must be a valid file.',
             'profile_photo.image' => 'The profile photo must be an image.',
             'profile_photo.mimes' => 'The profile photo must be a JPEG, PNG, or WebP file.',

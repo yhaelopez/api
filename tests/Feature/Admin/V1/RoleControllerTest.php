@@ -21,7 +21,7 @@ describe('Role API', function () {
             $this->actingAs($user, GuardEnum::API->value);
 
             // Act
-            $response = $this->getJson(route('v1.roles.index'));
+            $response = $this->getJson(route('admin.v1.roles.index'));
 
             // Assert
             $response->assertStatus(200)
@@ -53,7 +53,7 @@ describe('Role API', function () {
             $this->actingAs($user, GuardEnum::API->value);
 
             // Act
-            $response = $this->getJson(route('v1.roles.index'));
+            $response = $this->getJson(route('admin.v1.roles.index'));
 
             // Assert
             $response->assertStatus(200);
@@ -71,7 +71,7 @@ describe('Role API', function () {
 
         test('unauthenticated user cannot view roles', function () {
             // Act
-            $response = $this->getJson(route('v1.roles.index'));
+            $response = $this->getJson(route('admin.v1.roles.index'));
 
             // Assert
             $response->assertStatus(401);

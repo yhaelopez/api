@@ -26,7 +26,7 @@ describe('User API', function () {
             User::factory()->count(20)->create();
 
             // Act - Get the first page with 10 users per page
-            $response = $this->getJson(route('v1.users.index', ['page' => 1, 'per_page' => 10]));
+            $response = $this->getJson(route('admin.v1.users.index', ['page' => 1, 'per_page' => 10]));
 
             // Assert - Check response structure and data
             $response->assertStatus(200)
@@ -58,7 +58,7 @@ describe('User API', function () {
             $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
             // Act
-            $response = $this->postJson(route('v1.users.store'), [
+            $response = $this->postJson(route('admin.v1.users.store'), [
                 'name' => 'Test User',
                 'email' => 'test@example.com',
                 'password' => 'password123',
@@ -94,7 +94,7 @@ describe('User API', function () {
             $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
             // Act
-            $response = $this->postJson(route('v1.users.store'), []);
+            $response = $this->postJson(route('admin.v1.users.store'), []);
 
             // Assert
             $response->assertStatus(422)
@@ -110,7 +110,7 @@ describe('User API', function () {
             User::factory()->create(['email' => 'existing@example.com']);
 
             // Act
-            $response = $this->postJson(route('v1.users.store'), [
+            $response = $this->postJson(route('admin.v1.users.store'), [
                 'name' => 'Test User',
                 'email' => 'existing@example.com',
                 'password' => 'password123',
@@ -132,7 +132,7 @@ describe('User API', function () {
             $user = User::factory()->create();
 
             // Act
-            $response = $this->getJson(route('v1.users.show', $user));
+            $response = $this->getJson(route('admin.v1.users.show', $user));
 
             // Assert
             $response->assertStatus(200)
@@ -164,7 +164,7 @@ describe('User API', function () {
             $user = User::factory()->create(['name' => 'Original Name']);
 
             // Act
-            $response = $this->putJson(route('v1.users.update', $user), [
+            $response = $this->putJson(route('admin.v1.users.update', $user), [
                 'name' => 'Updated Name',
                 'email' => 'updated@example.com',
             ]);
@@ -192,7 +192,7 @@ describe('User API', function () {
             $user2 = User::factory()->create(['email' => 'other@example.com']);
 
             // Act
-            $response = $this->putJson(route('v1.users.update', $user2), [
+            $response = $this->putJson(route('admin.v1.users.update', $user2), [
                 'name' => 'Updated Name',
                 'email' => 'existing@example.com',
             ]);
@@ -213,7 +213,7 @@ describe('User API', function () {
             $user = User::factory()->create();
 
             // Act
-            $response = $this->deleteJson(route('v1.users.destroy', $user));
+            $response = $this->deleteJson(route('admin.v1.users.destroy', $user));
 
             // Assert
             $response->assertStatus(200)
@@ -235,7 +235,7 @@ describe('User API', function () {
             $user->delete();
 
             // Act
-            $response = $this->postJson(route('v1.users.restore', $user));
+            $response = $this->postJson(route('admin.v1.users.restore', $user));
 
             // Assert
             $response->assertStatus(200)
@@ -269,7 +269,7 @@ describe('User API', function () {
             $user->delete();
 
             // Act
-            $response = $this->deleteJson(route('v1.users.force-delete', $user));
+            $response = $this->deleteJson(route('admin.v1.users.force-delete', $user));
 
             // Assert
             $response->assertStatus(200)
@@ -297,7 +297,7 @@ describe('User API', function () {
                 ->toMediaCollection('profile_photos');
 
             // Act
-            $response = $this->deleteJson(route('v1.users.profile-photo.delete', $user));
+            $response = $this->deleteJson(route('admin.v1.users.profile-photo.delete', $user));
 
             // Assert
             $response->assertStatus(200)
@@ -320,7 +320,7 @@ describe('User API', function () {
             $user = User::factory()->create();
 
             // Act
-            $response = $this->deleteJson(route('v1.users.profile-photo.delete', $user));
+            $response = $this->deleteJson(route('admin.v1.users.profile-photo.delete', $user));
 
             // Assert
             $response->assertStatus(404)
@@ -339,7 +339,7 @@ describe('User API', function () {
             $user = User::factory()->create();
 
             // Act
-            $response = $this->postJson(route('v1.users.send-password-reset', $user));
+            $response = $this->postJson(route('admin.v1.users.send-password-reset', $user));
 
             // Assert
             $response->assertStatus(200)

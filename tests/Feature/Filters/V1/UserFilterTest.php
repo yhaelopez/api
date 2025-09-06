@@ -28,7 +28,7 @@ describe('User Filtering', function () {
             User::factory()->create(['name' => 'Bob Johnson']);
 
             // Act
-            $response = $this->getJson(route('v1.users.index', ['search' => 'John']));
+            $response = $this->getJson(route('admin.v1.users.index', ['search' => 'John']));
 
             // Assert
             $response->assertStatus(200);
@@ -45,7 +45,7 @@ describe('User Filtering', function () {
             User::factory()->create(['email' => 'bob@test.com']);
 
             // Act
-            $response = $this->getJson(route('v1.users.index', ['search' => 'example.com']));
+            $response = $this->getJson(route('admin.v1.users.index', ['search' => 'example.com']));
 
             // Assert
             $response->assertStatus(200);
@@ -60,7 +60,7 @@ describe('User Filtering', function () {
             User::factory()->create(['name' => 'John Doe']);
 
             // Act
-            $response = $this->getJson(route('v1.users.index', ['search' => 'NonExistent']));
+            $response = $this->getJson(route('admin.v1.users.index', ['search' => 'NonExistent']));
 
             // Assert
             $response->assertStatus(200);
@@ -85,7 +85,7 @@ describe('User Filtering', function () {
             $user3 = User::factory()->create(); // No role
 
             // Act
-            $response = $this->getJson(route('v1.users.index', ['role' => 'member']));
+            $response = $this->getJson(route('admin.v1.users.index', ['role' => 'member']));
 
             // Assert
             $response->assertStatus(200);
@@ -108,7 +108,7 @@ describe('User Filtering', function () {
             $user3 = User::factory()->create(); // No role
 
             // Act
-            $response = $this->getJson(route('v1.users.index', ['role_id' => $memberRole->id]));
+            $response = $this->getJson(route('admin.v1.users.index', ['role_id' => $memberRole->id]));
 
             // Assert
             $response->assertStatus(200);
@@ -133,7 +133,7 @@ describe('User Filtering', function () {
             $user3->save();
 
             // Act
-            $response = $this->getJson(route('v1.users.index', [
+            $response = $this->getJson(route('admin.v1.users.index', [
                 'created_from' => now()->subDays(7)->format('Y-m-d'),
                 'created_to' => now()->subDays(2)->format('Y-m-d'),
             ]));
@@ -159,7 +159,7 @@ describe('User Filtering', function () {
             $user3->save();
 
             // Act
-            $response = $this->getJson(route('v1.users.index', [
+            $response = $this->getJson(route('admin.v1.users.index', [
                 'updated_from' => now()->subDays(7)->format('Y-m-d'),
                 'updated_to' => now()->subDays(2)->format('Y-m-d'),
             ]));
@@ -179,7 +179,7 @@ describe('User Filtering', function () {
             $inactiveUser->delete();
 
             // Act
-            $response = $this->getJson(route('v1.users.index', ['with_inactive' => true]));
+            $response = $this->getJson(route('admin.v1.users.index', ['with_inactive' => true]));
 
             // Assert
             $response->assertStatus(200);
@@ -194,7 +194,7 @@ describe('User Filtering', function () {
             $inactiveUser->delete();
 
             // Act
-            $response = $this->getJson(route('v1.users.index', ['only_inactive' => true]));
+            $response = $this->getJson(route('admin.v1.users.index', ['only_inactive' => true]));
 
             // Assert
             $response->assertStatus(200);
@@ -211,7 +211,7 @@ describe('User Filtering', function () {
             User::factory()->create(['name' => 'Bob']);
 
             // Act
-            $response = $this->getJson(route('v1.users.index', [
+            $response = $this->getJson(route('admin.v1.users.index', [
                 'sort_by' => 'name',
                 'sort_direction' => 'asc',
             ]));
@@ -230,7 +230,7 @@ describe('User Filtering', function () {
             User::factory()->create(['name' => 'Bob']);
 
             // Act
-            $response = $this->getJson(route('v1.users.index', [
+            $response = $this->getJson(route('admin.v1.users.index', [
                 'sort_by' => 'name',
                 'sort_direction' => 'desc',
             ]));
@@ -257,7 +257,7 @@ describe('User Filtering', function () {
             $user3->save();
 
             // Act
-            $response = $this->getJson(route('v1.users.index'));
+            $response = $this->getJson(route('admin.v1.users.index'));
 
             // Assert
             $response->assertStatus(200);
@@ -273,7 +273,7 @@ describe('User Filtering', function () {
             User::factory()->count(25)->create();
 
             // Act
-            $response = $this->getJson(route('v1.users.index', ['per_page' => 10, 'page' => 1]));
+            $response = $this->getJson(route('admin.v1.users.index', ['per_page' => 10, 'page' => 1]));
 
             // Assert
             $response->assertStatus(200)
@@ -300,7 +300,7 @@ describe('User Filtering', function () {
             User::factory()->count(25)->create();
 
             // Act
-            $response = $this->getJson(route('v1.users.index', ['per_page' => 10, 'page' => 2]));
+            $response = $this->getJson(route('admin.v1.users.index', ['per_page' => 10, 'page' => 2]));
 
             // Assert
             $response->assertStatus(200)

@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1;
+namespace App\Http\Controllers\Admin\V1;
 
 use App\Exceptions\ForceDeleteActiveRecordException;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\V1\Artist\ArtistIndexRequest;
-use App\Http\Requests\Api\V1\Artist\ArtistStoreRequest;
-use App\Http\Requests\Api\V1\Artist\ArtistUpdateRequest;
+use App\Http\Requests\Admin\V1\Artist\ArtistIndexRequest;
+use App\Http\Requests\Admin\V1\Artist\ArtistStoreRequest;
+use App\Http\Requests\Admin\V1\Artist\ArtistUpdateRequest;
 use App\Http\Resources\V1\Artist\ArtistCollection;
 use App\Http\Resources\V1\Artist\ArtistResource;
 use App\Models\Artist;

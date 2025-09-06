@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1;
+namespace App\Http\Controllers\Admin\V1;
 
 use App\Exceptions\ForceDeleteActiveRecordException;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\V1\User\UserIndexRequest;
-use App\Http\Requests\Api\V1\User\UserStoreRequest;
-use App\Http\Requests\Api\V1\User\UserUpdateRequest;
+use App\Http\Requests\Admin\V1\User\UserIndexRequest;
+use App\Http\Requests\Admin\V1\User\UserStoreRequest;
+use App\Http\Requests\Admin\V1\User\UserUpdateRequest;
 use App\Http\Resources\V1\User\UserCollection;
 use App\Http\Resources\V1\User\UserResource;
 use App\Models\User;

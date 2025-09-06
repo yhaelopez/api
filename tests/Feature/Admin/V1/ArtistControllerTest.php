@@ -27,7 +27,7 @@ describe('Artist API', function () {
             Artist::factory()->count(20)->create();
 
             // Act - Get the first page with 10 artists per page
-            $response = $this->getJson(route('v1.artists.index', ['page' => 1, 'per_page' => 10]));
+            $response = $this->getJson(route('admin.v1.artists.index', ['page' => 1, 'per_page' => 10]));
 
             // Assert - Check response structure and data
             $response->assertStatus(200)
@@ -62,7 +62,7 @@ describe('Artist API', function () {
             $user = User::factory()->regularUser()->create();
 
             // Act
-            $response = $this->postJson(route('v1.artists.store'), [
+            $response = $this->postJson(route('admin.v1.artists.store'), [
                 'name' => 'Test Artist',
                 'spotify_id' => 'test-spotify-id',
                 'owner_id' => $user->id,
@@ -99,7 +99,7 @@ describe('Artist API', function () {
             $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
             // Act
-            $response = $this->postJson(route('v1.artists.store'), [
+            $response = $this->postJson(route('admin.v1.artists.store'), [
                 'name' => 'Test Artist',
                 'spotify_id' => 'test-spotify-id',
             ]);
@@ -123,7 +123,7 @@ describe('Artist API', function () {
             $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
             // Act
-            $response = $this->postJson(route('v1.artists.store'), [
+            $response = $this->postJson(route('admin.v1.artists.store'), [
                 'spotify_id' => 'test-spotify-id',
             ]);
 
@@ -141,7 +141,7 @@ describe('Artist API', function () {
             Artist::factory()->create(['spotify_id' => 'existing-spotify-id']);
 
             // Act
-            $response = $this->postJson(route('v1.artists.store'), [
+            $response = $this->postJson(route('admin.v1.artists.store'), [
                 'name' => 'Test Artist',
                 'spotify_id' => 'existing-spotify-id',
             ]);
@@ -157,7 +157,7 @@ describe('Artist API', function () {
             $this->actingAs($superadmin, GuardEnum::ADMIN->value);
 
             // Act
-            $response = $this->postJson(route('v1.artists.store'), [
+            $response = $this->postJson(route('admin.v1.artists.store'), [
                 'name' => 'Test Artist',
                 'owner_id' => 999, // Non-existent user ID
             ]);
@@ -178,7 +178,7 @@ describe('Artist API', function () {
             $artist = Artist::factory()->create();
 
             // Act
-            $response = $this->getJson(route('v1.artists.show', $artist));
+            $response = $this->getJson(route('admin.v1.artists.show', $artist));
 
             // Assert
             $response->assertStatus(200)
@@ -207,7 +207,7 @@ describe('Artist API', function () {
             $artist = Artist::factory()->create(['name' => 'Original Name']);
 
             // Act
-            $response = $this->putJson(route('v1.artists.update', $artist), [
+            $response = $this->putJson(route('admin.v1.artists.update', $artist), [
                 'name' => 'Updated Name',
                 'spotify_id' => 'updated-spotify-id',
             ]);
@@ -235,7 +235,7 @@ describe('Artist API', function () {
             $artist2 = Artist::factory()->create(['spotify_id' => 'other-spotify-id']);
 
             // Act
-            $response = $this->putJson(route('v1.artists.update', $artist2), [
+            $response = $this->putJson(route('admin.v1.artists.update', $artist2), [
                 'name' => 'Updated Name',
                 'spotify_id' => 'existing-spotify-id',
             ]);
@@ -256,7 +256,7 @@ describe('Artist API', function () {
             $artist = Artist::factory()->create();
 
             // Act
-            $response = $this->deleteJson(route('v1.artists.destroy', $artist));
+            $response = $this->deleteJson(route('admin.v1.artists.destroy', $artist));
 
             // Assert
             $response->assertStatus(200)
@@ -278,7 +278,7 @@ describe('Artist API', function () {
             $artist->delete();
 
             // Act
-            $response = $this->postJson(route('v1.artists.restore', $artist));
+            $response = $this->postJson(route('admin.v1.artists.restore', $artist));
 
             // Assert
             $response->assertStatus(200)
@@ -312,7 +312,7 @@ describe('Artist API', function () {
             $artist->delete();
 
             // Act
-            $response = $this->deleteJson(route('v1.artists.force-delete', $artist));
+            $response = $this->deleteJson(route('admin.v1.artists.force-delete', $artist));
 
             // Assert
             $response->assertStatus(200)
@@ -341,7 +341,7 @@ describe('Artist API', function () {
                 ->toMediaCollection('profile_photos');
 
             // Act
-            $response = $this->deleteJson(route('v1.artists.profile-photo.delete', $artist));
+            $response = $this->deleteJson(route('admin.v1.artists.profile-photo.delete', $artist));
 
             // Assert
             $response->assertStatus(200)
@@ -364,7 +364,7 @@ describe('Artist API', function () {
             $artist = Artist::factory()->create();
 
             // Act
-            $response = $this->deleteJson(route('v1.artists.profile-photo.delete', $artist));
+            $response = $this->deleteJson(route('admin.v1.artists.profile-photo.delete', $artist));
 
             // Assert
             $response->assertStatus(404)
