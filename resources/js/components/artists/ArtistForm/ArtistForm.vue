@@ -26,6 +26,8 @@ interface Props {
   artist?: Artist | null;
   isEditMode?: boolean;
   open?: boolean;
+  users?: User[];
+  loadingUsers?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -34,6 +36,8 @@ const props = withDefaults(defineProps<Props>(), {
   artist: null,
   isEditMode: false,
   open: false,
+  users: () => [],
+  loadingUsers: false,
 });
 
 const emit = defineEmits<{
@@ -51,23 +55,6 @@ const form = useForm<CreateArtist | UpdateArtist>({
 });
 
 const existingProfilePhoto = ref<Record<string, any> | undefined>(undefined);
-const users = ref<User[]>([]);
-const loadingUsers = ref(false);
-
-// Fetch users for owner selection
-const fetchUsers = async () => {
-  if (loadingUsers.value) return;
-  
-  try {
-    loadingUsers.value = true;
-    const response = await ArtistService.getUsersForSelection();
-    users.value = response.data;
-  } catch (error) {
-    console.error('Failed to fetch users:', error);
-  } finally {
-    loadingUsers.value = false;
-  }
-};
 
 // Watch for artist prop changes to populate form in edit mode
 watch(() => props.artist, (newArtist) => {
@@ -82,19 +69,6 @@ watch(() => props.artist, (newArtist) => {
   }
 }, { immediate: true });
 
-// Fetch users when dialog opens
-watch(() => props.open, (isOpen) => {
-  if (isOpen && !props.isEditMode) {
-    fetchUsers();
-  }
-});
-
-// Fetch users on component mount
-onMounted(() => {
-  if (props.open && !props.isEditMode) {
-    fetchUsers();
-  }
-});
 
 const submit = async () => {
   try {
@@ -123,7 +97,7 @@ const submit = async () => {
       const createData: CreateArtist = {
         name: form.name,
         spotify_id: form.spotify_id || undefined,
-        owner_id: form.owner_id || null
+        owner_id: form.owner_id
       };
 
       // Include temp_folder if provided
@@ -173,13 +147,21 @@ const cardDescription = computed(() =>
 const submitButtonText = computed(() => isEditMode.value ? 'Update Artist' : 'Create Artist');
 const icon = computed(() => isEditMode.value ? UserCheck : UserPlus);
 
+// Computed property for select value
+const selectOwnerId = computed({
+  get: () => form.owner_id ? form.owner_id.toString() : '',
+  set: (value: string | number) => {
+    form.owner_id = value ? parseInt(value.toString()) : null;
+  }
+});
+
 // Owner options for select
 const ownerOptions = computed(() => {
-  const options = [
-    { value: null, label: 'No owner (unassigned)' }
+  const options: { value: string | number; label: string }[] = [
+    { value: '', label: 'No owner (unassigned)' }
   ];
   
-  users.value.forEach(user => {
+  props.users?.forEach(user => {
     options.push({
       value: user.id,
       label: `${user.name} (${user.email})`
@@ -245,13 +227,13 @@ const ownerOptions = computed(() => {
               <span class="text-gray-500 text-sm">(optional)</span>
             </Label>
             <Select 
-              v-model="form.owner_id"
+              v-model="selectOwnerId"
               :options="ownerOptions"
               placeholder="Select an owner (leave empty for unassigned)"
               :class="{ 'border-red-500': form.errors.owner_id }"
             />
             <InputError :message="form.errors.owner_id" />
-            <div v-if="loadingUsers" class="text-sm text-gray-500">
+            <div v-if="props.loadingUsers" class="text-sm text-gray-500">
               Loading users...
             </div>
           </div>

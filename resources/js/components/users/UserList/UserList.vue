@@ -23,7 +23,7 @@ const loadingRoles = ref(false);
 const loadRoles = async () => {
   try {
     loadingRoles.value = true;
-    const response = await fetch('/api/v1/roles');
+    const response = await fetch('/api/admin/v1/roles');
     const data = await response.json();
     roles.value = data.data;
   } catch (error) {

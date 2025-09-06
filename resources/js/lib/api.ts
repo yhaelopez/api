@@ -36,7 +36,7 @@ class ApiClient {
   private baseUrl: string;
 
   constructor() {
-    this.baseUrl = '/api';
+    this.baseUrl = '/api/admin';
   }
 
   private getCsrfToken(): string | null {

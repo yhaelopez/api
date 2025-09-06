@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import type { ArtistListEmits, Artist } from '@/types/artist';
+import type { User } from '@/types/user';
 import { ArtistTable } from '../ArtistTable';
 import { ArtistForm } from '../ArtistForm';
 import { useArtists } from '@/composables/useArtists';
+import { UserService } from '@/services/UserService';
 import { Button } from '@/components/ui/button';
 import { Pagination } from '@/components/ui/pagination';
 import { UserPlus } from 'lucide-vue-next';
@@ -14,6 +16,25 @@ const { artists, loading, error, pagination, fetchArtists } = useArtists();
 const showCreateForm = ref(false);
 const showEditForm = ref(false);
 const editingArtist = ref<Artist | null>(null);
+
+// User management
+const users = ref<User[]>([]);
+const loadingUsers = ref(false);
+
+// Fetch users for owner selection
+const fetchUsers = async () => {
+  if (loadingUsers.value) return;
+  
+  try {
+    loadingUsers.value = true;
+    const response = await UserService.getUsers();
+    users.value = response.data;
+  } catch (error) {
+    console.error('Failed to fetch users:', error);
+  } finally {
+    loadingUsers.value = false;
+  }
+};
 
 // URL-based pagination
 const getCurrentPageFromUrl = (): number => {
@@ -112,13 +133,16 @@ const handlePerPageChange = (perPage: number) => {
   fetchArtists({ page: 1, perPage }); // Reset to page 1 when changing per_page
 };
 
-onMounted(() => {
+onMounted(async () => {
   // Get current values from URL (with sensible defaults)
   const currentPage = getCurrentPageFromUrl();
   const currentPerPage = getCurrentPerPageFromUrl();
   
-  // Fetch artists with the current page and per_page from URL
-  fetchArtists({ page: currentPage, perPage: currentPerPage });
+  // Fetch both artists and users in parallel
+  await Promise.all([
+    fetchArtists({ page: currentPage, perPage: currentPerPage }),
+    fetchUsers()
+  ]);
 });
 </script>
 
@@ -174,6 +198,8 @@ onMounted(() => {
     <ArtistForm
       :is-edit-mode="false"
       :open="showCreateForm"
+      :users="users"
+      :loading-users="loadingUsers"
       @update:open="showCreateForm = $event"
       @artist-created="handleArtistCreated"
       @cancelled="handleCreateCancelled"
@@ -184,6 +210,8 @@ onMounted(() => {
       :is-edit-mode="true"
       :artist="editingArtist"
       :open="showEditForm"
+      :users="users"
+      :loading-users="loadingUsers"
       @update:open="showEditForm = $event"
       @artist-updated="handleArtistUpdated"
       @cancelled="handleEditCancelled"

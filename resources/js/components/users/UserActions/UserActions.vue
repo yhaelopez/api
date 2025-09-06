@@ -93,7 +93,7 @@ const handleResetPassword = async () => {
   isResettingPassword.value = true;
   try {
     // Use the new user-specific endpoint
-    const response = await fetch(`/api/v1/users/${props.user.id}/send-password-reset`, {
+    const response = await fetch(`/api/admin/v1/users/${props.user.id}/send-password-reset`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

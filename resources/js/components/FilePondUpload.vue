@@ -212,7 +212,7 @@ const pond = ref(null)
 
 // Server configuration for FilePond
 const serverConfig = {
-  url: '/api/v1/upload/temp',
+  url: '/api/admin/v1/upload/temp',
   headers: {
     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
     'Authorization': `Bearer ${localStorage.getItem('auth_token') || ''}`
@@ -237,7 +237,7 @@ const serverConfig = {
     }
   },
   revert: {
-    url: '/api/v1/upload/temp',
+    url: '/api/admin/v1/upload/temp',
     method: 'DELETE',
     headers: {
       'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
@@ -249,7 +249,7 @@ const serverConfig = {
     // Check if this is a profile photo for a specific user
     if (props.user && props.existingFile) {
       // This is a user profile photo, use the specific user endpoint
-      fetch(`/api/v1/users/${props.user.id}/profile-photo`, {
+      fetch(`/api/admin/v1/users/${props.user.id}/profile-photo`, {
         method: 'DELETE',
         headers: {
           'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
