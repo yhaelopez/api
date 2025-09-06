@@ -26,6 +26,7 @@ class Artist extends Model implements HasMedia
         'owner_id',
         'spotify_id',
         'name',
+        'restored_at',
     ];
 
     /**

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, onMounted } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import type { Artist, CreateArtist, UpdateArtist } from '@/types/artist';
+import type { User } from '@/types/user';
 import { ArtistService } from '@/services/ArtistService';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -16,6 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import Select from '@/components/ui/select/Select.vue';
 import { LoaderCircle, UserPlus, UserCheck } from 'lucide-vue-next';
 
 interface Props {
@@ -44,22 +46,55 @@ const emit = defineEmits<{
 const form = useForm<CreateArtist | UpdateArtist>({
   name: '',
   spotify_id: '',
+  owner_id: null,
   temp_folder: '',
 });
 
 const existingProfilePhoto = ref<Record<string, any> | undefined>(undefined);
+const users = ref<User[]>([]);
+const loadingUsers = ref(false);
+
+// Fetch users for owner selection
+const fetchUsers = async () => {
+  if (loadingUsers.value) return;
+  
+  try {
+    loadingUsers.value = true;
+    const response = await ArtistService.getUsersForSelection();
+    users.value = response.data;
+  } catch (error) {
+    console.error('Failed to fetch users:', error);
+  } finally {
+    loadingUsers.value = false;
+  }
+};
 
 // Watch for artist prop changes to populate form in edit mode
 watch(() => props.artist, (newArtist) => {
   if (newArtist && props.isEditMode) {
     form.name = newArtist.name;
     form.spotify_id = newArtist.spotify_id || '';
+    form.owner_id = newArtist.owner?.id || null;
     // Reset temp_folder in edit mode
     form.temp_folder = '';
     // Set existing profile photo if available
     existingProfilePhoto.value = newArtist.profile_photo || undefined;
   }
 }, { immediate: true });
+
+// Fetch users when dialog opens
+watch(() => props.open, (isOpen) => {
+  if (isOpen && !props.isEditMode) {
+    fetchUsers();
+  }
+});
+
+// Fetch users on component mount
+onMounted(() => {
+  if (props.open && !props.isEditMode) {
+    fetchUsers();
+  }
+});
 
 const submit = async () => {
   try {
@@ -87,7 +122,8 @@ const submit = async () => {
       
       const createData: CreateArtist = {
         name: form.name,
-        spotify_id: form.spotify_id || undefined
+        spotify_id: form.spotify_id || undefined,
+        owner_id: form.owner_id || null
       };
 
       // Include temp_folder if provided
@@ -136,6 +172,22 @@ const cardDescription = computed(() =>
 );
 const submitButtonText = computed(() => isEditMode.value ? 'Update Artist' : 'Create Artist');
 const icon = computed(() => isEditMode.value ? UserCheck : UserPlus);
+
+// Owner options for select
+const ownerOptions = computed(() => {
+  const options = [
+    { value: null, label: 'No owner (unassigned)' }
+  ];
+  
+  users.value.forEach(user => {
+    options.push({
+      value: user.id,
+      label: `${user.name} (${user.email})`
+    });
+  });
+  
+  return options;
+});
 </script>
 
 <template>
@@ -186,7 +238,23 @@ const icon = computed(() => isEditMode.value ? UserCheck : UserPlus);
             <InputError :message="form.errors.spotify_id" />
           </div>
 
-
+          <!-- Owner Field (only show in create mode) -->
+          <div v-if="!isEditMode" class="space-y-2">
+            <Label for="owner_id">
+              Owner
+              <span class="text-gray-500 text-sm">(optional)</span>
+            </Label>
+            <Select 
+              v-model="form.owner_id"
+              :options="ownerOptions"
+              placeholder="Select an owner (leave empty for unassigned)"
+              :class="{ 'border-red-500': form.errors.owner_id }"
+            />
+            <InputError :message="form.errors.owner_id" />
+            <div v-if="loadingUsers" class="text-sm text-gray-500">
+              Loading users...
+            </div>
+          </div>
 
           <!-- Profile Photo Field -->
           <div class="space-y-2">

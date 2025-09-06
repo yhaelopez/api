@@ -46,7 +46,6 @@ class UserFactory extends Factory
         ]);
     }
 
-
     /**
      * Create a regular user with basic role
      */

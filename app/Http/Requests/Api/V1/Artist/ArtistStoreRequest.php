@@ -34,6 +34,11 @@ class ArtistStoreRequest extends FormRequest
                 'max:255',
                 'unique:artists,spotify_id',
             ],
+            'owner_id' => [
+                'nullable',
+                'integer',
+                'exists:users,id',
+            ],
             'profile_photo' => [
                 'nullable',
                 'file',
@@ -55,6 +60,8 @@ class ArtistStoreRequest extends FormRequest
             'name.required' => 'The artist name field is required.',
             'name.max' => 'The artist name may not be greater than 255 characters.',
             'spotify_id.unique' => 'An artist with this Spotify ID already exists.',
+            'owner_id.integer' => 'The owner must be a valid user ID.',
+            'owner_id.exists' => 'The selected owner does not exist.',
             'profile_photo.file' => 'The profile photo must be a valid file.',
             'profile_photo.image' => 'The profile photo must be an image.',
             'profile_photo.mimes' => 'The profile photo must be a JPEG, PNG, or WebP file.',

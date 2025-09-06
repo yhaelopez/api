@@ -84,15 +84,10 @@
                                         "type": "string",
                                         "example": "0TnOYISbd1XYRBk9myaseg"
                                     },
-                                    "popularity": {
-                                        "description": "Optional popularity score (0-100)",
+                                    "owner_id": {
+                                        "description": "Optional user ID to assign as owner (Admin only)",
                                         "type": "integer",
-                                        "example": 85
-                                    },
-                                    "followers_count": {
-                                        "description": "Optional follower count",
-                                        "type": "integer",
-                                        "example": 5432109
+                                        "example": 1
                                     },
                                     "temp_folder": {
                                         "description": "Optional temporary folder name from FilePond upload",
@@ -203,16 +198,6 @@
                                         "description": "Optional Spotify artist ID",
                                         "type": "string",
                                         "example": "0TnOYISbd1XYRBk9myaseg"
-                                    },
-                                    "popularity": {
-                                        "description": "Optional popularity score (0-100)",
-                                        "type": "integer",
-                                        "example": 85
-                                    },
-                                    "followers_count": {
-                                        "description": "Optional follower count",
-                                        "type": "integer",
-                                        "example": 5432109
                                     },
                                     "temp_folder": {
                                         "description": "Optional temporary folder name from FilePond upload",
@@ -471,6 +456,38 @@
                     },
                     "500": {
                         "description": "Internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/artists/users": {
+            "get": {
+                "tags": [
+                    "Artist"
+                ],
+                "summary": "Get users for artist owner selection",
+                "operationId": "40d0036f2d55f1588f29ef90d7cbc87e",
+                "responses": {
+                    "200": {
+                        "description": "Users retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/UserResource"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
                     }
                 },
                 "security": [
@@ -1233,16 +1250,6 @@
                     "name": {
                         "type": "string",
                         "example": "Radiohead"
-                    },
-                    "popularity": {
-                        "type": "integer",
-                        "example": 85,
-                        "nullable": true
-                    },
-                    "followers_count": {
-                        "type": "integer",
-                        "example": 5432109,
-                        "nullable": true
                     },
                     "owner": {
                         "oneOf": [

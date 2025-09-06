@@ -1,5 +1,6 @@
 import { artistsApi, type ArtistsListParams, type ArtistsListResponse } from '@/lib/api/artists';
 import type { Artist, CreateArtist } from '@/types/artist';
+import { UserService } from '@/services/UserService';
 
 export interface ArtistFilters {
   search?: string;
@@ -117,14 +118,6 @@ export class ArtistService {
       errors.push('Name is required');
     }
 
-    if (artistData.popularity !== undefined && (artistData.popularity < 0 || artistData.popularity > 100)) {
-      errors.push('Popularity must be between 0 and 100');
-    }
-
-    if (artistData.followers_count !== undefined && artistData.followers_count < 0) {
-      errors.push('Followers count cannot be negative');
-    }
-
     return errors;
   }
 
@@ -140,5 +133,12 @@ export class ArtistService {
    */
   static getArtistInitials(artist: Artist): string {
     return artist.name.charAt(0).toUpperCase();
+  }
+
+  /**
+   * Get users for owner selection
+   */
+  static async getUsersForSelection() {
+    return await UserService.getUsers();
   }
 }

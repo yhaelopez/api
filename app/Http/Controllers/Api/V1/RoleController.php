@@ -69,11 +69,10 @@ class RoleController extends Controller
 
         // Always return API roles (user roles) for this endpoint
         $guard = GuardEnum::API->value;
-        
+
         // Get roles filtered by the API guard (user roles)
         $roles = $this->roleService->getRolesListByGuard($guard, $page, $perPage);
 
         return new RoleCollection($roles);
     }
-
 }

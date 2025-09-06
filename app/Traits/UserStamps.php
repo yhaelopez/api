@@ -74,8 +74,8 @@ trait UserStamps
         // Only record if it's a user doing the action (api guard), not an admin
         if (Auth::guard('api')->check()) {
             $this->restored_by = Auth::guard('api')->id();
-            $this->restored_at = now();
         }
+        $this->restored_at = now();
     }
 
     /**

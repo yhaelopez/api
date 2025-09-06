@@ -22,12 +22,14 @@ export interface Artist {
 export interface CreateArtist {
   name: string;
   spotify_id?: string;
+  owner_id?: number | null;
   temp_folder?: string;
 }
 
 export interface UpdateArtist {
   name?: string;
   spotify_id?: string;
+  owner_id?: number | null;
   temp_folder?: string;
 }
 

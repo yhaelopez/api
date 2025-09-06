@@ -52,7 +52,7 @@ test('superadmin can view all roles', function () {
 
     // Should have at least 1 role (member for API guard)
     $this->assertGreaterThanOrEqual(1, count($response->json('data')));
-    
+
     // All roles should be from API guard (user roles)
     $roles = $response->json('data');
     foreach ($roles as $role) {
@@ -71,7 +71,7 @@ test('authorized user can view all roles', function () {
 
     // Assert - Should succeed
     $response->assertStatus(200);
-    
+
     // All roles should be from API guard (user roles)
     $roles = $response->json('data');
     foreach ($roles as $role) {

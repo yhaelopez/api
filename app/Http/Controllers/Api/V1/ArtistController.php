@@ -15,7 +15,6 @@ use App\Services\TemporaryFileService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use OpenApi\Annotations as OA;
 
@@ -113,6 +112,7 @@ class ArtistController extends Controller
      *
      *             @OA\Property(property="name", type="string", example="Radiohead"),
      *             @OA\Property(property="spotify_id", type="string", example="0TnOYISbd1XYRBk9myaseg", description="Optional Spotify artist ID"),
+     *             @OA\Property(property="owner_id", type="integer", example=1, description="Optional user ID to assign as owner (Admin only)"),
      *             @OA\Property(property="temp_folder", type="string", example="uuid-string", description="Optional temporary folder name from FilePond upload")
      *         )
      *     ),
@@ -140,8 +140,11 @@ class ArtistController extends Controller
 
         $data = $request->validated();
 
-        // Set the current user as the owner
-        $data['owner_id'] = Auth::id();
+        // Owner ID is always passed via API - no automatic assignment
+        // If no owner_id provided, set to null (unassigned artist)
+        if (empty($data['owner_id'])) {
+            $data['owner_id'] = null;
+        }
 
         // Create artist first
         $artist = $this->artistService->createArtist($data);

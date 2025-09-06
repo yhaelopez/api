@@ -57,7 +57,6 @@ class ArtistFilter extends BaseFilter
         }
     }
 
-
     /**
      * Get artist-specific sortable fields
      *

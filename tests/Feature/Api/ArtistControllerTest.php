@@ -598,7 +598,6 @@ test('store method validates spotify_id uniqueness', function () {
         ->assertJsonValidationErrors(['spotify_id']);
 });
 
-
 // UPDATE METHOD TESTS
 
 test('superadmin can update any artist', function () {
