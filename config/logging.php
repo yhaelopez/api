@@ -81,6 +81,14 @@ return [
             'replace_placeholders' => true,
         ],
 
+        'admins' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/admins.log'),
+            'level' => env('LOG_LEVEL', 'info'),
+            'days' => env('LOG_DAILY_DAYS', 14),
+            'replace_placeholders' => true,
+        ],
+
         'users' => [
             'driver' => 'daily',
             'path' => storage_path('logs/users.log'),

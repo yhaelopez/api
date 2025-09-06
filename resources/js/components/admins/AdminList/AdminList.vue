@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import type { UserListEmits, User } from '@/types/user';
-import { UserTable } from '../UserTable';
-import { UserForm } from '../UserForm';
-import { useUsers } from '@/composables/useUsers';
+import type { AdminListEmits, Admin } from '@/types/admin';
+import AdminTable from '../AdminTable/AdminTable.vue';
+import AdminForm from '../AdminForm/AdminForm.vue';
+import { useAdmins } from '@/composables/useAdmins';
 import { Button } from '@/components/ui/button';
 import { Pagination } from '@/components/ui/pagination';
 import { UserPlus } from 'lucide-vue-next';
 
-const emit = defineEmits<UserListEmits>();
+const emit = defineEmits<AdminListEmits>();
 
-const { users, loading, error, pagination, fetchUsers } = useUsers();
+const { admins, loading, error, pagination, fetchAdmins } = useAdmins();
 const showCreateForm = ref(false);
 const showEditForm = ref(false);
-const editingUser = ref<User | null>(null);
+const editingAdmin = ref<Admin | null>(null);
 
 // Roles state
 const roles = ref<Array<{ id: number; name: string }>>([]);
@@ -23,7 +23,7 @@ const loadingRoles = ref(false);
 const loadRoles = async () => {
   try {
     loadingRoles.value = true;
-    const response = await fetch('/api/admin/v1/roles?guard=api');
+    const response = await fetch('/api/admin/v1/roles?guard=admin');
     const data = await response.json();
     roles.value = data.data;
   } catch (error) {
@@ -60,36 +60,36 @@ const updateUrlWithPerPage = (perPage: number) => {
   window.history.pushState({}, '', url.toString());
 };
 
-const handleUserSelect = (user: User) => {
-  emit('userSelected', user);
+const handleAdminSelect = (admin: Admin) => {
+  emit('adminSelected', admin);
 };
 
-const handleUserDeleted = () => {
-  // Refresh users after deletion, preserving current pagination
+const handleAdminDeleted = () => {
+  // Refresh admins after deletion, preserving current pagination
   const currentPage = getCurrentPageFromUrl();
   const currentPerPage = getCurrentPerPageFromUrl();
-  fetchUsers({ page: currentPage, perPage: currentPerPage });
+  fetchAdmins({ page: currentPage, perPage: currentPerPage });
 };
 
-const handleUserRestored = () => {
-  // Refresh users after restoration, preserving current pagination
+const handleAdminRestored = () => {
+  // Refresh admins after restoration, preserving current pagination
   const currentPage = getCurrentPageFromUrl();
   const currentPerPage = getCurrentPerPageFromUrl();
-  fetchUsers({ page: currentPage, perPage: currentPerPage });
+  fetchAdmins({ page: currentPage, perPage: currentPerPage });
 };
 
-const handleUserForceDeleted = () => {
-  // Refresh users after permanent deletion, preserving current pagination
+const handleAdminForceDeleted = () => {
+  // Refresh admins after permanent deletion, preserving current pagination
   const currentPage = getCurrentPageFromUrl();
   const currentPerPage = getCurrentPerPageFromUrl();
-  fetchUsers({ page: currentPage, perPage: currentPerPage });
+  fetchAdmins({ page: currentPage, perPage: currentPerPage });
 };
 
-const handleUserCreated = () => {
-  // Refresh users after creation, preserving current pagination
+const handleAdminCreated = () => {
+  // Refresh admins after creation, preserving current pagination
   const currentPage = getCurrentPageFromUrl();
   const currentPerPage = getCurrentPerPageFromUrl();
-  fetchUsers({ page: currentPage, perPage: currentPerPage });
+  fetchAdmins({ page: currentPage, perPage: currentPerPage });
   showCreateForm.value = false;
 };
 
@@ -101,38 +101,38 @@ const openCreateForm = () => {
   showCreateForm.value = true;
 };
 
-const handleUserEdit = (user: User) => {
-  editingUser.value = user;
+const handleAdminEdit = (admin: Admin) => {
+  editingAdmin.value = admin;
   showEditForm.value = true;
 };
 
-const handleUserUpdated = () => {
-  // Refresh users after update, preserving current pagination
+const handleAdminUpdated = () => {
+  // Refresh admins after update, preserving current pagination
   const currentPage = getCurrentPageFromUrl();
   const currentPerPage = getCurrentPerPageFromUrl();
-  fetchUsers({ page: currentPage, perPage: currentPerPage });
+  fetchAdmins({ page: currentPage, perPage: currentPerPage });
   showEditForm.value = false;
-  editingUser.value = null;
+  editingAdmin.value = null;
 };
 
 const handleEditCancelled = () => {
   showEditForm.value = false;
-  editingUser.value = null;
+  editingAdmin.value = null;
 };
 
 const handlePageChange = (page: number) => {
   updateUrlWithPage(page);
-  fetchUsers({ page, perPage: getCurrentPerPageFromUrl() });
+  fetchAdmins({ page, perPage: getCurrentPerPageFromUrl() });
 };
 
 const handlePerPageChange = (perPage: number) => {
   updateUrlWithPerPage(perPage);
-  fetchUsers({ page: 1, perPage }); // Reset to page 1 when changing per_page
+  fetchAdmins({ page: 1, perPage }); // Reset to page 1 when changing per_page
 };
 
-const handleUserResetPassword = (user: User) => {
+const handleAdminResetPassword = (admin: Admin) => {
   // Implement password reset logic here
-  console.log('Reset password for user:', user);
+  console.log('Reset password for admin:', admin);
   // You might want to show a confirmation modal or a success message
 };
 
@@ -144,18 +144,18 @@ onMounted(() => {
   const currentPage = getCurrentPageFromUrl();
   const currentPerPage = getCurrentPerPageFromUrl();
   
-  // Fetch users with the current page and per_page from URL
-  fetchUsers({ page: currentPage, perPage: currentPerPage });
+  // Fetch admins with the current page and per_page from URL
+  fetchAdmins({ page: currentPage, perPage: currentPerPage });
 });
 </script>
 
 <template>
   <div class="space-y-6">
     <div class="flex justify-end items-center">
-      <!-- <h1 class="text-2xl font-bold text-gray-900">Users</h1> -->
+      <!-- <h1 class="text-2xl font-bold text-gray-900">Admins</h1> -->
       <Button @click="openCreateForm" class="flex items-center gap-2">
         <UserPlus class="h-4 w-4" />
-        Create User
+        Create Admin
       </Button>
     </div>
     
@@ -173,15 +173,15 @@ onMounted(() => {
       </div>
     </div>
     
-    <UserTable 
-      :users="users" 
+    <AdminTable 
+      :admins="admins" 
       :loading="loading"
-      @select="handleUserSelect"
-      @delete="handleUserDeleted"
-      @restore="handleUserRestored"
-      @force-delete="handleUserForceDeleted"
-      @edit="handleUserEdit"
-      @user-reset-password="handleUserResetPassword"
+      @select="handleAdminSelect"
+      @delete="handleAdminDeleted"
+      @restore="handleAdminRestored"
+      @force-delete="handleAdminForceDeleted"
+      @edit="handleAdminEdit"
+      @admin-reset-password="handleAdminResetPassword"
     />
 
     <!-- Pagination -->
@@ -198,26 +198,26 @@ onMounted(() => {
       />
     </div>
 
-    <!-- Create User Form Modal -->
-    <UserForm
+    <!-- Create Admin Form Modal -->
+    <AdminForm
       :is-edit-mode="false"
       :open="showCreateForm"
       :roles="roles"
       :loading-roles="loadingRoles"
       @update:open="showCreateForm = $event"
-      @user-created="handleUserCreated"
+      @admin-created="handleAdminCreated"
       @cancelled="handleCreateCancelled"
     />
 
-    <!-- Edit User Form Modal -->
-    <UserForm
+    <!-- Edit Admin Form Modal -->
+    <AdminForm
       :is-edit-mode="true"
-      :user="editingUser"
+      :admin="editingAdmin || undefined"
       :open="showEditForm"
       :roles="roles"
       :loading-roles="loadingRoles"
       @update:open="showEditForm = $event"
-      @user-updated="handleUserUpdated"
+      @admin-updated="handleAdminUpdated"
       @cancelled="handleEditCancelled"
     />
 

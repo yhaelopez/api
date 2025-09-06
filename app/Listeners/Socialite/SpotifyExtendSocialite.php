@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Listeners;
+namespace App\Listeners\Socialite;
 
 use SocialiteProviders\Manager\SocialiteWasCalled;
 use SocialiteProviders\Spotify\Provider;

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\V1\AdminController;
 use App\Http\Controllers\Admin\V1\ArtistController;
 use App\Http\Controllers\Admin\V1\RoleController;
 use App\Http\Controllers\Admin\V1\UploadController;
@@ -13,6 +14,21 @@ Route::prefix('admin/v1')->middleware(['web', 'auth:admin,api', 'throttle:60,1']
 
     // Upload Controller
     Route::post('upload/temp', [UploadController::class, 'storeTemp'])->name('admin.v1.upload.temp');
+
+    // Admin Controller
+    Route::apiResource('admins', AdminController::class)->names('admin.v1.admins');
+
+    // Custom admin routes
+    Route::post('admins/{admin}/restore', [AdminController::class, 'restore'])
+        ->name('admin.v1.admins.restore')
+        ->withTrashed();
+    Route::delete('admins/{admin}/force-delete', [AdminController::class, 'forceDelete'])
+        ->name('admin.v1.admins.force-delete')
+        ->withTrashed();
+    Route::delete('admins/{admin}/profile-photo', [AdminController::class, 'removeProfilePhoto'])
+        ->name('admin.v1.admins.profile-photo.delete');
+    Route::post('admins/{admin}/send-password-reset', [AdminController::class, 'sendPasswordResetLink'])
+        ->name('admin.v1.admins.send-password-reset');
 
     // User Controller
     Route::apiResource('users', UserController::class)->names('admin.v1.users');

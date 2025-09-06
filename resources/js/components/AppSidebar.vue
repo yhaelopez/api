@@ -5,7 +5,7 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Users, Music } from 'lucide-vue-next';
+import { BookOpen, Folder, LayoutGrid, Users, Music, Shield, Telescope, Clock, FileText } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
@@ -13,6 +13,11 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: '/dashboard',
         icon: LayoutGrid,
+    },
+    {
+        title: 'Admins',
+        href: '/admins?page=1&per_page=5',
+        icon: Shield,
     },
     {
         title: 'Users',
@@ -27,17 +32,17 @@ const mainNavItems: NavItem[] = [
     {
         title: 'Telescope',
         href: '/telescope',
-        icon: LayoutGrid,
+        icon: Telescope,
     },
     {
         title: 'Horizon',
         href: '/horizon',
-        icon: LayoutGrid,
+        icon: Clock,
     },
     {
         title: 'Swagger',
         href: '/api/documentation',
-        icon: LayoutGrid,
+        icon: FileText,
     },
 ];
 

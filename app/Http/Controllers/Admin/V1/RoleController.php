@@ -47,6 +47,15 @@ class RoleController extends Controller
      *         @OA\Schema(type="integer", default=15)
      *     ),
      *
+     *     @OA\Parameter(
+     *         name="guard",
+     *         in="query",
+     *         description="Guard name to filter roles",
+     *         required=false,
+     *
+     *         @OA\Schema(type="string", enum={"api", "admin"}, default="api")
+     *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation",
@@ -66,11 +75,15 @@ class RoleController extends Controller
 
         $perPage = request('per_page', 15);
         $page = request('page', 1);
+        $guard = request('guard', GuardEnum::API->value);
 
-        // Always return API roles (user roles) for this endpoint
-        $guard = GuardEnum::API->value;
+        // Validate guard parameter
+        $validGuards = [GuardEnum::API->value, GuardEnum::ADMIN->value];
+        if (! in_array($guard, $validGuards)) {
+            return response()->json(['error' => 'Invalid guard parameter'], 400);
+        }
 
-        // Get roles filtered by the API guard (user roles)
+        // Get roles filtered by the specified guard
         $roles = $this->roleService->getRolesListByGuard($guard, $page, $perPage);
 
         return new RoleCollection($roles);

@@ -40,6 +40,9 @@ class PermissionsSeeder extends Seeder
 
         // Artist module permissions (for both guards)
         $this->createArtistPermissions();
+
+        // Admin module permissions (for admin guard only)
+        $this->createAdminPermissions();
     }
 
     /**
@@ -65,6 +68,16 @@ class PermissionsSeeder extends Seeder
         $artistPermissions = PermissionsEnum::getArtistPermissions();
         $this->createPermissionGroup($artistPermissions, GuardEnum::API->value);
         $this->createPermissionGroup($artistPermissions, GuardEnum::ADMIN->value);
+    }
+
+    /**
+     * Create admin management permissions
+     */
+    private function createAdminPermissions(): void
+    {
+        // Admin permissions for admin guard only
+        $adminPermissions = PermissionsEnum::getAdminManagementPermissions();
+        $this->createPermissionGroup($adminPermissions, GuardEnum::ADMIN->value);
     }
 
     /**

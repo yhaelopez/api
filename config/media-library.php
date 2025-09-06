@@ -1,7 +1,9 @@
 <?php
 
+use App\Media\AdminPathGenerator;
 use App\Media\ArtistPathGenerator;
 use App\Media\UserPathGenerator;
+use App\Models\Admin;
 use App\Models\Artist;
 use App\Models\User;
 
@@ -100,6 +102,7 @@ return [
         // Use custom path generator for User model
         User::class => UserPathGenerator::class,
         Artist::class => ArtistPathGenerator::class,
+        Admin::class => AdminPathGenerator::class,
     ],
 
     /*

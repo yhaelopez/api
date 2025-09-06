@@ -2,8 +2,12 @@
 
 namespace App\Services;
 
+use App\Events\Admin\AdminUpdated;
 use App\Events\User\UserUpdated;
+use App\Models\Admin;
+use App\Models\User;
 use App\Repositories\RoleRepository;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
@@ -16,7 +20,7 @@ class RoleService
     /**
      * Get paginated list of roles
      */
-    public function getRolesList(int $page = 1, int $perPage = 15): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    public function getRolesList(int $page = 1, int $perPage = 15): LengthAwarePaginator
     {
         return $this->roleRepository->paginate($page, $perPage);
     }
@@ -24,7 +28,7 @@ class RoleService
     /**
      * Get paginated list of roles filtered by guard
      */
-    public function getRolesListByGuard(string $guard, int $page = 1, int $perPage = 15): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    public function getRolesListByGuard(string $guard, int $page = 1, int $perPage = 15): LengthAwarePaginator
     {
         return $this->roleRepository->paginateByGuard($guard, $page, $perPage);
     }
@@ -67,7 +71,11 @@ class RoleService
     public function syncRoles(Model $model, array $roles): void
     {
         $model->syncRoles($roles);
-        event(new UserUpdated($model));
+
+        match ($model) {
+            Admin::class => event(new AdminUpdated($model)),
+            User::class => event(new UserUpdated($model)),
+        };
     }
 
     /**
@@ -76,6 +84,10 @@ class RoleService
     public function assignRole(Model $model, $role): void
     {
         $model->assignRole($role);
-        event(new UserUpdated($model));
+
+        match ($model::class) {
+            User::class => event(new UserUpdated($model)),
+            Admin::class => event(new AdminUpdated($model)),
+        };
     }
 }

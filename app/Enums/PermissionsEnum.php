@@ -20,6 +20,14 @@ enum PermissionsEnum: string
     case ARTISTS_RESTORE = 'artists.restore';
     case ARTISTS_FORCE_DELETE = 'artists.forceDelete';
 
+    case ADMINS_VIEW_ANY = 'admins.viewAny';
+    case ADMINS_VIEW = 'admins.view';
+    case ADMINS_CREATE = 'admins.create';
+    case ADMINS_UPDATE = 'admins.update';
+    case ADMINS_DELETE = 'admins.delete';
+    case ADMINS_RESTORE = 'admins.restore';
+    case ADMINS_FORCE_DELETE = 'admins.forceDelete';
+
     public static function getUserPermissions(): array
     {
         return [
@@ -63,6 +71,26 @@ enum PermissionsEnum: string
             self::ARTISTS_DELETE->value,
             self::ARTISTS_RESTORE->value,
             self::ARTISTS_FORCE_DELETE->value,
+            self::ADMINS_VIEW_ANY->value,
+            self::ADMINS_VIEW->value,
+            self::ADMINS_CREATE->value,
+            self::ADMINS_UPDATE->value,
+            self::ADMINS_DELETE->value,
+            self::ADMINS_RESTORE->value,
+            self::ADMINS_FORCE_DELETE->value,
+        ];
+    }
+
+    public static function getAdminManagementPermissions(): array
+    {
+        return [
+            self::ADMINS_VIEW_ANY->value,
+            self::ADMINS_VIEW->value,
+            self::ADMINS_CREATE->value,
+            self::ADMINS_UPDATE->value,
+            self::ADMINS_DELETE->value,
+            self::ADMINS_RESTORE->value,
+            self::ADMINS_FORCE_DELETE->value,
         ];
     }
 

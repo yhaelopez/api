@@ -28,4 +28,8 @@ Route::middleware('auth:admin')->group(function () {
     Route::get('artists', function () {
         return inertia('artists/index');
     })->name('artists.index');
+
+    Route::get('admins', function () {
+        return inertia('admins/index');
+    })->name('admins.index');
 });

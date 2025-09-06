@@ -10,13 +10,510 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/v1/admins": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Display a listing of admins",
+                "operationId": "df91b201d4237ddff79f52e404df75f1",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search term for name or email",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 255
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter by verification status",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "verified",
+                                "pending"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "sort_by",
+                        "in": "query",
+                        "description": "Field to sort by",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "name",
+                                "email",
+                                "created_at",
+                                "updated_at"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "sort_direction",
+                        "in": "query",
+                        "description": "Sort direction",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "with_inactive",
+                        "in": "query",
+                        "description": "Include soft-deleted admins",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "only_inactive",
+                        "in": "query",
+                        "description": "Show only soft-deleted admins",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminCollection"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Store a newly created admin",
+                "operationId": "9d9ca69097a019e5b2bb3a79407a9f91",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AdminStoreRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Admin created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminResource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admins/{id}": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Display the specified admin",
+                "operationId": "024763a0221de3238db7ec5d8f899fab",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Admin ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminResource"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Admin not found"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Update the specified admin",
+                "operationId": "ed5acd6c191964f67a9d431318ff7741",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Admin ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AdminUpdateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Admin updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminResource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Admin not found"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Remove the specified admin",
+                "operationId": "f72a44a5a6c6d9d1fd7c38a16fab782b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Admin ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Admin deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Admin deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Admin not found"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admins/{id}/restore": {
+            "post": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Restore a soft-deleted admin",
+                "operationId": "71dead148f496491c5dd35cd1d5faad4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Admin ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Admin restored successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminResource"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Admin not found"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admins/{id}/force-delete": {
+            "delete": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Permanently delete an admin",
+                "operationId": "772cede229872696bbb69730a0e488a4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Admin ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Admin permanently deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Admin permanently deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Cannot force delete active admin"
+                    },
+                    "404": {
+                        "description": "Admin not found"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admins/{id}/profile-photo": {
+            "delete": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Remove admin profile photo",
+                "operationId": "f226d74a16c1f9573c22aa967c85f053",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Admin ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Profile photo removed successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profile photo removed successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Admin not found"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admins/{id}/send-password-reset": {
+            "post": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Send password reset link to admin",
+                "operationId": "b62bfaf82937750731568bf54b983344",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Admin ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Password reset link sent successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Password reset link sent successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Admin not found"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/v1/artists": {
             "get": {
                 "tags": [
                     "Artist"
                 ],
                 "summary": "Display a listing of artists",
-                "operationId": "e2c4d5317ff52fdac6da7054e473fcd5",
+                "operationId": "13a1f35299e05a59c69cfe22dd89e2d5",
                 "parameters": [
                     {
                         "name": "page",
@@ -65,7 +562,7 @@
                     "Artist"
                 ],
                 "summary": "Store a newly created artist",
-                "operationId": "8cd01cb21c8a0af9cbbc6afd9d451600",
+                "operationId": "2fa6203e506e3794471a2f9ec57740a9",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -131,7 +628,7 @@
                     "Artist"
                 ],
                 "summary": "Display the specified artist",
-                "operationId": "2c677f9fe35b725e9e1e992c0caca59b",
+                "operationId": "16bac8b71684b5b4bbf3fa88d8757b67",
                 "parameters": [
                     {
                         "name": "artist",
@@ -172,7 +669,7 @@
                     "Artist"
                 ],
                 "summary": "Update the specified artist",
-                "operationId": "e9e650e4122fd56660cf356f5bf232d9",
+                "operationId": "a7404403d79091d4fb73bac1f7808da3",
                 "parameters": [
                     {
                         "name": "artist",
@@ -242,7 +739,7 @@
                     "Artist"
                 ],
                 "summary": "Delete the specified artist",
-                "operationId": "3d242052030634b02b02320435d1368f",
+                "operationId": "90ce4e904084d6442ad63e907839d1ec",
                 "parameters": [
                     {
                         "name": "artist",
@@ -291,7 +788,7 @@
                     "Artist"
                 ],
                 "summary": "Restore the specified soft-deleted artist",
-                "operationId": "0b8e8d7820ae5050f95257bd6ac92572",
+                "operationId": "2cf4edf321a1be389174c76c9753ef74",
                 "parameters": [
                     {
                         "name": "artist",
@@ -343,7 +840,7 @@
                     "Artist"
                 ],
                 "summary": "Permanently delete the specified artist",
-                "operationId": "8bbd4b566883ef45c6223d0a1b8adad9",
+                "operationId": "ecb0cd2c401d78721647a864e31687fb",
                 "parameters": [
                     {
                         "name": "artist",
@@ -398,7 +895,7 @@
                     "Artist"
                 ],
                 "summary": "Remove the artist's profile photo",
-                "operationId": "fe5d70b2f768552f3266145f8fb03889",
+                "operationId": "19150486df4774aec43bd2654ca5c3e9",
                 "parameters": [
                     {
                         "name": "artist",
@@ -465,45 +962,13 @@
                 ]
             }
         },
-        "/api/v1/artists/users": {
-            "get": {
-                "tags": [
-                    "Artist"
-                ],
-                "summary": "Get users for artist owner selection",
-                "operationId": "40d0036f2d55f1588f29ef90d7cbc87e",
-                "responses": {
-                    "200": {
-                        "description": "Users retrieved successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/UserResource"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
         "/api/v1/roles": {
             "get": {
                 "tags": [
                     "Role"
                 ],
                 "summary": "Display a listing of roles",
-                "operationId": "c1294bb85dfc016a8f9c0d3f0907293f",
+                "operationId": "a250b4e6aa478949d06fb6e7fa1d7ef6",
                 "parameters": [
                     {
                         "name": "page",
@@ -523,6 +988,20 @@
                         "schema": {
                             "type": "integer",
                             "default": 15
+                        }
+                    },
+                    {
+                        "name": "guard",
+                        "in": "query",
+                        "description": "Guard name to filter roles",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "api",
+                            "enum": [
+                                "api",
+                                "admin"
+                            ]
                         }
                     }
                 ],
@@ -554,7 +1033,7 @@
                     "Upload"
                 ],
                 "summary": "Store a temporary file",
-                "operationId": "04cc7f22328763d0af0dedb46573f9c1",
+                "operationId": "84d71c9241c3205151e17076b62f1e47",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -628,7 +1107,7 @@
                     "User"
                 ],
                 "summary": "Display a listing of users",
-                "operationId": "12e989554c281d650dff75443acabf54",
+                "operationId": "58e3fdbd4969eca81ac41819a77e2136",
                 "parameters": [
                     {
                         "name": "page",
@@ -677,7 +1156,7 @@
                     "User"
                 ],
                 "summary": "Store a newly created user",
-                "operationId": "64da9b5a20fa4f20e947ed61b2bbb6da",
+                "operationId": "e2769f6532a4574b9581dd12cad0dae4",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -748,7 +1227,7 @@
                     "User"
                 ],
                 "summary": "Display the specified user",
-                "operationId": "919fd317e275a070bcadcf4874123e45",
+                "operationId": "e2ec4b6fac811ac7b6e9c13e35590a92",
                 "parameters": [
                     {
                         "name": "user",
@@ -789,7 +1268,7 @@
                     "User"
                 ],
                 "summary": "Update the specified user",
-                "operationId": "df2f483fc27e7b42e89953bad0cf1485",
+                "operationId": "e38af4a3cc354948bf5719d5f94c13e4",
                 "parameters": [
                     {
                         "name": "user",
@@ -868,7 +1347,7 @@
                     "User"
                 ],
                 "summary": "Delete the specified user",
-                "operationId": "17c42665206652a0fd309e2f348f97ed",
+                "operationId": "9218d5b37265635cc1fd8b6e75221d9d",
                 "parameters": [
                     {
                         "name": "user",
@@ -917,7 +1396,7 @@
                     "User"
                 ],
                 "summary": "Restore the specified soft-deleted user",
-                "operationId": "630f96fb759f4ef6817270e5cf4786df",
+                "operationId": "898485ee822e98b90a208968df427d5b",
                 "parameters": [
                     {
                         "name": "user",
@@ -969,7 +1448,7 @@
                     "User"
                 ],
                 "summary": "Permanently delete the specified user",
-                "operationId": "bc693371ae39aa8b8fb8ea96d7361e6f",
+                "operationId": "dc8d56ca1c12299d1944972a4b2c449a",
                 "parameters": [
                     {
                         "name": "user",
@@ -1024,7 +1503,7 @@
                     "User"
                 ],
                 "summary": "Remove the user's profile photo",
-                "operationId": "176337a48ca4ab49f6edb195dddb84c9",
+                "operationId": "5050ec42b6863350842236d3e4215bf4",
                 "parameters": [
                     {
                         "name": "user",
@@ -1097,7 +1576,7 @@
                     "User"
                 ],
                 "summary": "Send password reset link to user",
-                "operationId": "bf5f8bb3a5cb0c385fb5ce54fc5e5570",
+                "operationId": "ef44fd7fea95d99bc9377647e8ee143e",
                 "parameters": [
                     {
                         "name": "user",
@@ -1147,6 +1626,319 @@
     },
     "components": {
         "schemas": {
+            "AdminIndexRequest": {
+                "title": "Admin Index Request",
+                "description": "Query parameters for listing admins",
+                "properties": {
+                    "page": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "example": 1
+                    },
+                    "per_page": {
+                        "type": "integer",
+                        "maximum": 100,
+                        "minimum": 1,
+                        "example": 15
+                    },
+                    "search": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "john"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "verified",
+                            "pending"
+                        ],
+                        "example": "verified"
+                    },
+                    "sort_by": {
+                        "type": "string",
+                        "enum": [
+                            "name",
+                            "email",
+                            "created_at",
+                            "updated_at"
+                        ],
+                        "example": "name"
+                    },
+                    "sort_direction": {
+                        "type": "string",
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "example": "asc"
+                    },
+                    "with_inactive": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "only_inactive": {
+                        "type": "boolean",
+                        "example": false
+                    }
+                },
+                "type": "object"
+            },
+            "AdminStoreRequest": {
+                "title": "Admin Store Request",
+                "description": "Request data for creating a new admin",
+                "required": [
+                    "name",
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "John Doe"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "maxLength": 255,
+                        "example": "john.doe@example.com"
+                    },
+                    "password": {
+                        "type": "string",
+                        "minLength": 8,
+                        "example": "password123"
+                    },
+                    "role_id": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "temp_folder": {
+                        "type": "string",
+                        "example": "temp_uploads_123",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "AdminUpdateRequest": {
+                "title": "Admin Update Request",
+                "description": "Request data for updating an existing admin",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "John Doe"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "maxLength": 255,
+                        "example": "john.doe@example.com"
+                    },
+                    "password": {
+                        "type": "string",
+                        "minLength": 8,
+                        "example": "password123"
+                    },
+                    "password_confirmation": {
+                        "type": "string",
+                        "example": "password123"
+                    },
+                    "role_id": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "temp_folder": {
+                        "type": "string",
+                        "example": "temp_uploads_123",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "AdminCollection": {
+                "title": "Admin Collection",
+                "description": "Admin collection resource",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AdminResource"
+                        }
+                    },
+                    "links": {
+                        "properties": {
+                            "first": {
+                                "type": "string",
+                                "example": "http://localhost/api/v1/admins?page=1"
+                            },
+                            "last": {
+                                "type": "string",
+                                "example": "http://localhost/api/v1/admins?page=2"
+                            },
+                            "prev": {
+                                "type": "string",
+                                "example": "http://localhost/api/v1/admins?page=1"
+                            },
+                            "next": {
+                                "type": "string",
+                                "example": "http://localhost/api/v1/admins?page=2"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "meta": {
+                        "properties": {
+                            "current_page": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "from": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "last_page": {
+                                "type": "integer",
+                                "example": 2
+                            },
+                            "links": {
+                                "type": "array",
+                                "items": {
+                                    "properties": {
+                                        "url": {
+                                            "type": "string",
+                                            "example": "http://localhost/api/v1/admins?page=1"
+                                        },
+                                        "label": {
+                                            "type": "string",
+                                            "example": "1"
+                                        },
+                                        "active": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "path": {
+                                "type": "string",
+                                "example": "http://localhost/api/v1/admins"
+                            },
+                            "per_page": {
+                                "type": "integer",
+                                "example": 15
+                            },
+                            "to": {
+                                "type": "integer",
+                                "example": 15
+                            },
+                            "total": {
+                                "type": "integer",
+                                "example": 30
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "AdminResource": {
+                "title": "Admin Resource",
+                "description": "Admin resource representation",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "John Doe"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "john.doe@mail.com"
+                    },
+                    "roles": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/RoleResource"
+                        },
+                        "nullable": true
+                    },
+                    "permissions": {
+                        "description": "All permissions the admin has through their roles",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PermissionResource"
+                        },
+                        "nullable": true
+                    },
+                    "profile_photo": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/AdminProfilePhotoResource"
+                            }
+                        ],
+                        "nullable": true,
+                        "description": "Admin's profile photo information"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2021-01-01 12:00:00",
+                        "nullable": true
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2021-01-01 12:00:00",
+                        "nullable": true
+                    },
+                    "deleted_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "null",
+                        "nullable": true
+                    },
+                    "restored_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "null",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "AdminProfilePhotoResource": {
+                "title": "Admin Profile Photo Resource",
+                "description": "Admin profile photo information for FilePond integration",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "url": {
+                        "type": "string",
+                        "example": "/storage/admins/48/profile_photo/profile_photo_1756599663.jpg"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "profile_photo_1756599663.jpg"
+                    },
+                    "size": {
+                        "type": "integer",
+                        "example": 12345
+                    },
+                    "mime_type": {
+                        "type": "string",
+                        "example": "image/jpeg"
+                    }
+                },
+                "type": "object"
+            },
             "ArtistCollection": {
                 "title": "Artist Collection",
                 "description": "Artist collection resource",
@@ -1734,6 +2526,10 @@
         }
     },
     "tags": [
+        {
+            "name": "Admin",
+            "description": "Admin management"
+        },
         {
             "name": "Artist",
             "description": "Artist management"

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, computed, onMounted } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import type { Artist, CreateArtist, UpdateArtist } from '@/types/artist';
 import type { User } from '@/types/user';
